@@ -1,1 +1,10 @@
-console.log('Hello World!');
+import dotenv from 'dotenv';
+import { GPTController } from './components/OpenAI';
+dotenv.config();
+
+
+async function main() {
+  console.log(await GPTController.getInstance().ask('Say this is a test'));
+}
+
+main();
