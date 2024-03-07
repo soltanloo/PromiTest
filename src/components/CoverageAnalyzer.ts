@@ -48,7 +48,7 @@ const mockPromiseCoverageData: PromiseCoverageReport = [
     }
 ];
 
-class AsyncCoverageAnalyzer {
+class CoverageAnalyzer {
     private coverageData?: PromiseCoverageReport;
 
     constructor(projectPath: string) {
