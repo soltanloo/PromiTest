@@ -25,10 +25,11 @@ export interface PromiseInfo {
     type: PromiseType;
     warnings: PromiseCoverageWarnings;
     parent?: PromiseIdentifier;
+    links: PromiseIdentifier[];
     code: string;
 }
 
-type PromiseCoverageReport = Array<PromiseInfo>;
+export type PromiseCoverageReport = PromiseInfo[];
 
 const mockPromiseCoverageData: PromiseCoverageReport = [
     {
@@ -38,6 +39,7 @@ const mockPromiseCoverageData: PromiseCoverageReport = [
         warnings: {
             rejection: true,
         },
+        links: [],
         code: `new Promise((resolve, reject) => {
                     if (num > 10) {
                         resolve("The number is greater than 10!");
