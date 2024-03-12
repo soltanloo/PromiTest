@@ -1,39 +1,49 @@
-import {PromiseNode} from "./PromiseNode";
-import {PromiseIdentifier, PromiseInfo} from "./CoverageAnalyzer";
+import { PromiseNode } from "./PromiseNode";
+import { PromiseIdentifier } from "./CoverageAnalyzer";
+
+export type NodeDirectory = Map<PromiseIdentifier, PromiseNode>;
 
 export class PromiseGraph {
-    adjacencyMap: Map<PromiseIdentifier, PromiseNode[]> = new Map();
+  adjacencyMap: Map<PromiseIdentifier, PromiseNode[]> = new Map();
+  nodeDirectory: NodeDirectory;
 
-    constructor() {
+  constructor(nodeDirectory: NodeDirectory) {
+    this.nodeDirectory = nodeDirectory;
+  }
 
+  addNode(identifier: PromiseIdentifier, newNode: PromiseNode) {
+    if (!this.nodeDirectory.has(identifier)) {
+      this.nodeDirectory.set(identifier, newNode);
     }
 
-    addNode(identifier: PromiseIdentifier, info: PromiseInfo) {
-        if (!this.adjacencyMap.has(identifier)) {
-            this.adjacencyMap.set(identifier, []);
-        }
-        const newNode = new PromiseNode(identifier, info);
-        this.adjacencyMap.forEach((value, key) => {
-            if (info.links?.includes(key)) {
-                value.push(newNode);
-            } else if (key == identifier) {
-                info.links?.forEach(link => {
-                    let linkedNode = this.findNodeById(link);
-                    if (linkedNode) {
-                        value.push(linkedNode);
-                    }
-                });
-            }
-        });
+    if (!this.adjacencyMap.has(identifier)) {
+      this.adjacencyMap.set(identifier, []);
     }
 
-    findNodeById(identifier: PromiseIdentifier): PromiseNode | undefined {
-        let foundNode: PromiseNode | undefined = undefined;
-        this.adjacencyMap.forEach((value, key) => {
-            if (key == identifier) {
-                foundNode = new PromiseNode(key, value[0].promiseInfo);
-            }
-        });
-        return foundNode;
+    const {
+      parent: chainedParent,
+      links: linkedParents,
+      inputs: bundledParents,
+    } = newNode.promiseInfo;
+
+    if (chainedParent) {
+      if (!this.adjacencyMap.has(chainedParent))
+        this.addNode(chainedParent, this.nodeDirectory.get(chainedParent)!);
+      this.adjacencyMap.get(chainedParent)?.push(newNode);
     }
+
+    if (linkedParents) this.addParents(linkedParents, newNode);
+    if (bundledParents) this.addParents(bundledParents, newNode);
+  }
+
+  addParents(parentList: PromiseIdentifier[], newNode: PromiseNode) {
+    parentList?.forEach((parentIdentifier: PromiseIdentifier) => {
+      if (!this.adjacencyMap.has(parentIdentifier))
+        this.addNode(
+          parentIdentifier,
+          this.nodeDirectory.get(parentIdentifier)!,
+        );
+      this.adjacencyMap.get(parentIdentifier)?.push(newNode);
+    });
+  }
 }
