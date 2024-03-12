@@ -1,10 +1,10 @@
-import {PromiseInfo} from "./CoverageAnalyzer";
+import {PromiseIdentifier, PromiseInfo} from "./CoverageAnalyzer";
 
 export class PromiseNode {
     promiseInfo: PromiseInfo;
-    identifier: number;
+    identifier: PromiseIdentifier;
 
-    constructor(identifier: number, info: PromiseInfo) {
+    constructor(identifier: PromiseIdentifier, info: PromiseInfo) {
         this.identifier = identifier;
         this.promiseInfo = info;
     }

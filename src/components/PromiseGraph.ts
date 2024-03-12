@@ -1,23 +1,23 @@
 import {PromiseNode} from "./PromiseNode";
-import {PromiseInfo} from "./CoverageAnalyzer";
+import {PromiseIdentifier, PromiseInfo} from "./CoverageAnalyzer";
 
 export class PromiseGraph {
-    adjacencyList: Map<number, PromiseNode[]>;
+    adjacencyMap: Map<PromiseIdentifier, PromiseNode[]> = new Map();
 
     constructor() {
-        this.adjacencyList = new Map();
+
     }
 
-    addNode(identifier: number, info: PromiseInfo) {
-        if (!this.adjacencyList.has(identifier)) {
-            this.adjacencyList.set(identifier, []);
+    addNode(identifier: PromiseIdentifier, info: PromiseInfo) {
+        if (!this.adjacencyMap.has(identifier)) {
+            this.adjacencyMap.set(identifier, []);
         }
         const newNode = new PromiseNode(identifier, info);
-        this.adjacencyList.forEach((value, key) => {
-            if (info.links.includes(key)) {
+        this.adjacencyMap.forEach((value, key) => {
+            if (info.links?.includes(key)) {
                 value.push(newNode);
             } else if (key == identifier) {
-                info.links.forEach(link => {
+                info.links?.forEach(link => {
                     let linkedNode = this.findNodeById(link);
                     if (linkedNode) {
                         value.push(linkedNode);
@@ -27,9 +27,9 @@ export class PromiseGraph {
         });
     }
 
-    findNodeById(identifier: number): PromiseNode | undefined {
+    findNodeById(identifier: PromiseIdentifier): PromiseNode | undefined {
         let foundNode: PromiseNode | undefined = undefined;
-        this.adjacencyList.forEach((value, key) => {
+        this.adjacencyMap.forEach((value, key) => {
             if (key == identifier) {
                 foundNode = new PromiseNode(key, value[0].promiseInfo);
             }
