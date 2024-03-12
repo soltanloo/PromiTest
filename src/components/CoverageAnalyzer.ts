@@ -8,7 +8,7 @@ type PromiseType =
     | "PromiseReject"
     | "PromiseAll"
     | "PromiseRace";
-type PromiseIdentifier = number;
+export type PromiseIdentifier = number;
 
 export interface PromiseCoverageWarnings {
     fulfillment?: boolean;
@@ -25,7 +25,8 @@ export interface PromiseInfo {
     type: PromiseType;
     warnings: PromiseCoverageWarnings;
     parent?: PromiseIdentifier;
-    links: PromiseIdentifier[];
+    links?: PromiseIdentifier[];
+    inputs?: PromiseIdentifier[]; // Keeps track of the input promises to .all() and .race()
     code: string;
 }
 
