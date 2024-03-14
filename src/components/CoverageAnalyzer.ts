@@ -1,3 +1,5 @@
+import * as console from "node:console";
+
 type Location = `${string}:${string}:${string}:${string}:${string}`;
 type PromiseType =
     | "NewPromise"
@@ -33,7 +35,7 @@ export interface PromiseInfo {
 export type PromiseCoverageReport = PromiseInfo[];
 
 export class CoverageAnalyzer {
-    static REPORTS_PATH = "../coverage-reports";
+    static REPORTS_PATH = "../../coverage-reports";
     coverageData?: PromiseCoverageReport;
     projectName: string;
     projectPath: string;
@@ -53,15 +55,14 @@ export class CoverageAnalyzer {
     }
 
     private async readReport(): Promise<any> {
-        let rawCoverageReport;
         try {
-            rawCoverageReport = await fetch(`${CoverageAnalyzer.REPORTS_PATH}/${this.projectName}.json`);
-            if (rawCoverageReport.ok) {
-                return await rawCoverageReport.json() as any;
-            } else {
-                throw new Error();
-            }
+            let filePath = `${CoverageAnalyzer.REPORTS_PATH}/${this.projectName}.json`;
+            let {
+                default: rawCoverageReport
+            } = await import(filePath);
+            return rawCoverageReport;
         } catch (error) {
+            console.log(error)
             throw new Error("Error occurred while fetching Coverage Report");
         }
     }
