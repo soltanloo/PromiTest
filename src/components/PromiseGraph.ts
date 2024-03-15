@@ -1,9 +1,9 @@
 import {PromiseNode} from "./PromiseNode";
 import {PromiseIdentifier} from "../types/CoverageAnalyzer.type";
-import {NodeDirectory} from "../types/PromiseGraph.types";
+import {NodeDirectory, PromiseAdjacencyMap} from "../types/PromiseGraph.types";
 
 export class PromiseGraph {
-    adjacencyMap: Map<PromiseIdentifier, PromiseNode[]> = new Map();
+    adjacencyMap: PromiseAdjacencyMap = new Map();
     nodeDirectory: NodeDirectory;
 
     constructor(nodeDirectory: NodeDirectory) {

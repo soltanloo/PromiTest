@@ -1,23 +1,25 @@
-import {assert, expect} from "chai";
+import {assert} from "chai";
 import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor";
+import {readJson} from "../src/utils/common";
+import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
+
+function runUnitTest(testName: string): void {
+    describe(testName, () => {
+        it("graph adjacency map should be correctly built", async () => {
+            let expectedRefinedCoverageReport = await readJson(`./fixtures/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
+            let promiseGraphConstructor = new PromiseGraphConstructor(expectedRefinedCoverageReport);
+            promiseGraphConstructor.constructGraph();
+
+            let expectedPromiseGraph = await readJson(`./fixtures/${testName}/expected-promise-graph.json`);
+
+            let actualPromiseGraph = Object.fromEntries(promiseGraphConstructor.promiseGraph.adjacencyMap);
+            assert.deepEqual(actualPromiseGraph, expectedPromiseGraph);
+        });
+    })
+}
 
 describe("PromiseGraphConstructor ", () => {
-    let promiseGraphConstructor: PromiseGraphConstructor;
-    it("should successfully create a graph of a single promise", async () => {
-        let promiseIdentifier = 116;
-        promiseGraphConstructor = new PromiseGraphConstructor([
-            {
-                identifier: promiseIdentifier,
-                location: 'path/to/file.js:12:5:17:20',
-                type: 'NewPromise',
-                warnings: {rejection: true},
-                code: "new Promise((resolve, reject) => {\n                    if (num > 10) {\n                        resolve(\"The number is greater than 10!\");\n                    } else {\n                        reject(\"The number is not greater than 10.\");\n                    }\n                });"
-            }
-        ]);
-        promiseGraphConstructor.constructGraph();
-        let {adjacencyMap} = promiseGraphConstructor.promiseGraph
-        assert.isTrue(adjacencyMap.has(promiseIdentifier))
-        assert.isEmpty(adjacencyMap.get(promiseIdentifier))
-        assert.equal(adjacencyMap.size, 1)
+    describe("unit tests", () => {
+        runUnitTest("new-promise-never-rejected-and-rejectable");
     })
 });
