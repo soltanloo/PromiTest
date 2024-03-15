@@ -1,12 +1,10 @@
-import {GPTController} from "../src/components/GPTController";
-import {assert, expect} from "chai";
+import {assert} from "chai";
 import {CoverageAnalyzer} from "../src/components/CoverageAnalyzer";
 
 describe("CoverageAnalyzer ", () => {
     let coverageAnalyzer: CoverageAnalyzer;
     before(() => {
-        coverageAnalyzer = new CoverageAnalyzer('sample', '' /* FIXME */);
-
+        coverageAnalyzer = new CoverageAnalyzer('sample', '' /* FIXME later */);
     })
     it("should successfully read the sample coverage report", async () => {
         let coverageReport = await coverageAnalyzer.analyze();
