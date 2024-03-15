@@ -1,14 +1,15 @@
-import { PromiseIdentifier, PromiseInfo } from "./CoverageAnalyzer";
+import {PromiseIdentifier, PromiseInfo} from "../types/CoverageAnalyzer.type";
 
 export class PromiseNode {
-  promiseInfo: PromiseInfo;
-  identifier: PromiseIdentifier;
-  chainedParents: PromiseNode[] = [];
-  linkedParents: PromiseNode[] = [];
-  bundledParents: PromiseNode[] = [];
+    promiseInfo: PromiseInfo;
+    identifier: PromiseIdentifier;
+    chainedParent?: PromiseNode;
+    linkedParents?: PromiseNode[];
+    bundledParents?: PromiseNode[];
 
-  constructor(identifier: PromiseIdentifier, info: PromiseInfo) {
-    this.identifier = identifier;
-    this.promiseInfo = info;
-  }
+
+    constructor(identifier: PromiseIdentifier, info: PromiseInfo) {
+        this.identifier = identifier;
+        this.promiseInfo = info;
+    }
 }

@@ -1,38 +1,5 @@
 import * as console from "node:console";
-
-type Location = `${string}:${string}:${string}:${string}:${string}`;
-type PromiseType =
-    | "NewPromise"
-    | "AsyncFunction"
-    | "PromiseThen"
-    | "PromiseCatch"
-    | "PromiseResolve"
-    | "PromiseReject"
-    | "PromiseAll"
-    | "PromiseRace";
-export type PromiseIdentifier = number;
-
-export interface PromiseCoverageWarnings {
-    fulfillment?: boolean;
-    rejection?: boolean;
-    fulfillReactionRegistration?: boolean;
-    rejectReactionRegistration?: boolean;
-    fulfillReactionExecution?: boolean;
-    rejectReactionExecution?: boolean;
-}
-
-export interface PromiseInfo {
-    identifier: PromiseIdentifier;
-    location: Location;
-    type: PromiseType;
-    warnings: PromiseCoverageWarnings;
-    parent?: PromiseIdentifier;
-    links?: PromiseIdentifier[];
-    inputs?: PromiseIdentifier[]; // Keeps track of the input promises to .all() and .race()
-    code: string;
-}
-
-export type PromiseCoverageReport = PromiseInfo[];
+import {PromiseCoverageReport} from "../types/CoverageAnalyzer.type";
 
 export class CoverageAnalyzer {
     static REPORTS_PATH = "../../coverage-reports";

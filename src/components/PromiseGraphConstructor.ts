@@ -1,28 +1,32 @@
-import { PromiseCoverageReport, PromiseIdentifier } from "./CoverageAnalyzer";
-import { PromiseNode } from "./PromiseNode";
-import { PromiseGraph } from "./PromiseGraph";
+import {PromiseNode} from "./PromiseNode";
+import {PromiseGraph} from "./PromiseGraph";
+import {PromiseCoverageReport, PromiseIdentifier} from "../types/CoverageAnalyzer.type";
+import * as console from "node:console";
 
 export class PromiseGraphConstructor {
-  promiseCoverageData: PromiseCoverageReport;
-  promiseGraph!: PromiseGraph;
+    promiseCoverageData: PromiseCoverageReport;
+    promiseGraph!: PromiseGraph;
 
-  constructor(_promiseCoverageData: PromiseCoverageReport) {
-    this.promiseCoverageData = _promiseCoverageData;
-  }
+    constructor(_promiseCoverageData: PromiseCoverageReport) {
+        this.promiseCoverageData = _promiseCoverageData;
+    }
 
-  public constructGraph() {
-    const nodeDirectory = new Map<PromiseIdentifier, PromiseNode>();
-    this.promiseCoverageData.forEach((promise) =>
-      nodeDirectory.set(
-        promise.identifier,
-        new PromiseNode(promise.identifier, promise),
-      ),
-    );
+    public constructGraph(): PromiseGraph {
+        const nodeDirectory = new Map<PromiseIdentifier, PromiseNode>();
+        this.promiseCoverageData.forEach((promise) => {
+                nodeDirectory.set(
+                    promise.identifier,
+                    new PromiseNode(promise.identifier, promise),
+                )
+            }
+        );
 
-    this.promiseGraph = new PromiseGraph(nodeDirectory);
+        this.promiseGraph = new PromiseGraph(nodeDirectory);
 
-    nodeDirectory.forEach((node) => {
-      this.promiseGraph.addNode(node.identifier, node);
-    });
-  }
+        nodeDirectory.forEach((node) => {
+            this.promiseGraph.addNode(node.identifier, node);
+        });
+        
+        return this.promiseGraph;
+    }
 }
