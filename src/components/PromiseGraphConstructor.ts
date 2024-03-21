@@ -26,7 +26,11 @@ export class PromiseGraphConstructor {
         nodeDirectory.forEach((node) => {
             this.promiseGraph.addNode(node.identifier, node);
         });
-        
+
         return this.promiseGraph;
+    }
+
+    public getAdjacencyMapAsObject(): Object {
+        return Object.fromEntries(this.promiseGraph.adjacencyMap)
     }
 }

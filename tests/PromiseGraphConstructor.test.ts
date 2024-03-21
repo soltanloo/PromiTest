@@ -1,6 +1,6 @@
 import {assert} from "chai";
 import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor";
-import {readJson} from "../src/utils/common";
+import {readJson} from "./common";
 import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 
 function runUnitTest(testName: string): void {
@@ -12,7 +12,7 @@ function runUnitTest(testName: string): void {
 
             let expectedPromiseGraph = await readJson(`./fixtures/${testName}/expected-promise-graph.json`);
 
-            let actualPromiseGraph = Object.fromEntries(promiseGraphConstructor.promiseGraph.adjacencyMap);
+            let actualPromiseGraph = promiseGraphConstructor.getAdjacencyMapAsObject()
             assert.deepEqual(actualPromiseGraph, expectedPromiseGraph);
         });
     })
