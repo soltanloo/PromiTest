@@ -1,15 +1,34 @@
-import {IncomingEdges, PromiseAdjacencyMap} from "../types/PromiseGraph.types";
+import {IncomingEdges, NodeDirectory, PromiseAdjacencyMap} from "../types/PromiseGraph.types";
 import {PromiseIdentifier} from "../types/CoverageAnalyzer.type";
 import {PromiseNode} from "./PromiseNode";
+import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
+import {NoIncomingEdgesStrategy} from "./NoIncomingEdgesStrategy";
 
 export class PromiseGraphTestabilityMarker {
-    public markGraph(promiseGraph: PromiseAdjacencyMap) {
+    public markGraph(promiseGraph: PromiseAdjacencyMap, nodeDirectory: NodeDirectory) {
         const sortedNodes = this.topologicalSort(promiseGraph);
 
         for (const pid of sortedNodes) {
-            let node = promiseGraph.get(pid)
-            //TODO: calculate incoming edges
+            const node = nodeDirectory.get(pid);
+            if (node) {
+                this.markNode(node);
+            }
         }
+    }
+
+    public markNode(node: PromiseNode): void {
+        let strategy: NodeMarkingStrategy;
+
+        switch (node.incomingEdges) {
+            case IncomingEdges.NONE:
+                strategy = new NoIncomingEdgesStrategy();
+                break;
+
+            default:
+                throw new Error("Unhandled node type");
+        }
+
+        strategy.markNode(node);
     }
 
     public topologicalSort(nodes: PromiseAdjacencyMap): PromiseIdentifier[] {
@@ -41,9 +60,5 @@ export class PromiseGraphTestabilityMarker {
         });
 
         return stack.reverse();
-    }
-
-    public calculateIncomingEdges(node: PromiseNode): IncomingEdges | undefined {
-        return
     }
 }
