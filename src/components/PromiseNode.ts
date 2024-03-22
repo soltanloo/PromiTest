@@ -7,6 +7,12 @@ export class PromiseNode {
     linkedParents?: PromiseNode[];
     bundledParents?: PromiseNode[];
 
+    flags?: {
+        rejectable?: boolean;
+        fulfillable?: boolean;
+        nonSettlable?: boolean;
+    }
+
 
     constructor(identifier: PromiseIdentifier, info: PromiseInfo) {
         this.identifier = identifier;
