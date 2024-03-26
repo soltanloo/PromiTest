@@ -11,7 +11,6 @@ function runUnitTest(testName: string): void {
             promiseGraphConstructor.constructGraph();
 
             let expectedPromiseGraph = await readJson(`./fixtures/${testName}/expected-promise-graph.json`);
-
             let actualPromiseGraph = promiseGraphConstructor.getAdjacencyMapAsObject()
             assert.deepEqual(actualPromiseGraph, expectedPromiseGraph);
         });

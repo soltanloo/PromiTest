@@ -33,4 +33,8 @@ export class PromiseGraphConstructor {
     public getAdjacencyMapAsObject(): Object {
         return Object.fromEntries(this.promiseGraph.adjacencyMap)
     }
+
+    public getNodeDirectoryAsObject(): Object {
+        return Object.fromEntries(this.promiseGraph.nodeDirectory)
+    }
 }

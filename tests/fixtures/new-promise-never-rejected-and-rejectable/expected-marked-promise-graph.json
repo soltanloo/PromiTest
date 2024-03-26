@@ -1,0 +1,18 @@
+{
+  "116": {
+    "flags": {
+      "rejectable": true
+    },
+    "identifier": 116,
+    "promiseInfo": {
+      "identifier": 116,
+      "location": "path/to/file.js:12:5:17:20",
+      "type": "NewPromise",
+      "warnings": {
+        "rejection": true
+      },
+      "code": "new Promise((resolve, reject) => {\n                    if (num > 10) {\n                        resolve(\"The number is greater than 10!\");\n                    } else {\n                        reject(\"The number is not greater than 10.\");\n                    }\n                });"
+    },
+    "incomingEdges": "NONE"
+  }
+}

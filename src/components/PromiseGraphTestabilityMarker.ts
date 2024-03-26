@@ -3,13 +3,14 @@ import {PromiseIdentifier} from "../types/CoverageAnalyzer.type";
 import {PromiseNode} from "./PromiseNode";
 import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
 import {NoIncomingEdgesStrategy} from "./NoIncomingEdgesStrategy";
+import {PromiseGraph} from "./PromiseGraph";
 
 export class PromiseGraphTestabilityMarker {
-    public markGraph(promiseGraph: PromiseAdjacencyMap, nodeDirectory: NodeDirectory) {
-        const sortedNodes = this.topologicalSort(promiseGraph);
+    public markGraph(promiseGraph: PromiseGraph) {
+        const sortedNodes = this.topologicalSort(promiseGraph.adjacencyMap);
 
         for (const pid of sortedNodes) {
-            const node = nodeDirectory.get(pid);
+            const node = promiseGraph.nodeDirectory.get(pid);
             if (node) {
                 this.markNode(node);
             }
