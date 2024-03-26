@@ -2,12 +2,13 @@ import {IncomingEdges, NodeDirectory, PromiseAdjacencyMap} from "../types/Promis
 import {PromiseIdentifier} from "../types/CoverageAnalyzer.type";
 import {PromiseNode} from "./PromiseNode";
 import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
-import {NoIncomingEdgesStrategy} from "./NoIncomingEdgesStrategy";
+import {RootNodeMarkingStrategy} from "./RootNodeMarkingStrategy";
 import {PromiseGraph} from "./PromiseGraph";
 
 export class PromiseGraphTestabilityMarker {
     public markGraph(promiseGraph: PromiseGraph) {
         const sortedNodes = this.topologicalSort(promiseGraph.adjacencyMap);
+        promiseGraph.setSortedNodes(sortedNodes);
 
         for (const pid of sortedNodes) {
             const node = promiseGraph.nodeDirectory.get(pid);
@@ -22,7 +23,7 @@ export class PromiseGraphTestabilityMarker {
 
         switch (node.incomingEdges) {
             case IncomingEdges.NONE:
-                strategy = new NoIncomingEdgesStrategy();
+                strategy = new RootNodeMarkingStrategy();
                 break;
 
             default:

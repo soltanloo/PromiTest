@@ -1,7 +1,7 @@
 import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
 import {PromiseNode} from "./PromiseNode";
 
-export class NoIncomingEdgesStrategy implements NodeMarkingStrategy {
+export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     markNode(node: PromiseNode): void {
         if (node.promiseInfo.warnings.rejection && this.isRejectable(node)) {
             node.flags.rejectable = true;

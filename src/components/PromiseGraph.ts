@@ -5,6 +5,7 @@ import {NodeDirectory, PromiseAdjacencyMap} from "../types/PromiseGraph.types";
 export class PromiseGraph {
     adjacencyMap: PromiseAdjacencyMap = new Map();
     nodeDirectory: NodeDirectory;
+    sortedNodes?: PromiseIdentifier[];
 
     constructor(nodeDirectory: NodeDirectory) {
         this.nodeDirectory = nodeDirectory;
@@ -44,5 +45,9 @@ export class PromiseGraph {
                 );
             this.adjacencyMap.get(parentIdentifier)?.push(newNode);
         });
+    }
+
+    setSortedNodes(sortedNodes: PromiseIdentifier[]) {
+        this.sortedNodes = sortedNodes;
     }
 }
