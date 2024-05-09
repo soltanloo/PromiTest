@@ -22,7 +22,7 @@ export class GPTController {
         return new Promise((resolve, reject) => {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
                 messages: [{ role: 'user', content: question }],
-                model: 'gpt-4-0125-preview',
+                model: 'gpt-4-turbo',
             };
 
             GPTController.apiInstance.chat.completions.create(params)
