@@ -1,5 +1,6 @@
 import { PromiseIdentifier, PromiseInfo } from "../types/CoverageAnalyzer.type";
 import { IncomingEdges } from "../types/PromiseGraph.types";
+import { Prompt } from "./Prompt";
 
 export class PromiseNode {
     promiseInfo: PromiseInfo;
@@ -8,6 +9,7 @@ export class PromiseNode {
     chainedParent?: PromiseNode;
     linkedParents?: PromiseNode[];
     bundledParents?: PromiseNode[];
+    prompt?: Prompt;
 
     flags: {
         rejectable?: boolean;
