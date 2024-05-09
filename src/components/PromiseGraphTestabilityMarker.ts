@@ -1,9 +1,9 @@
-import {IncomingEdges, NodeDirectory, PromiseAdjacencyMap} from "../types/PromiseGraph.types";
-import {PromiseIdentifier} from "../types/CoverageAnalyzer.type";
-import {PromiseNode} from "./PromiseNode";
-import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
-import {NoIncomingEdgesStrategy} from "./NoIncomingEdgesStrategy";
-import {PromiseGraph} from "./PromiseGraph";
+import { IncomingEdges, NodeDirectory, PromiseAdjacencyMap } from "../types/PromiseGraph.types";
+import { PromiseIdentifier } from "../types/CoverageAnalyzer.type";
+import { PromiseNode } from "./PromiseNode";
+import { NodeMarkingStrategy } from "./NodeMarkingStrategy";
+import { NoIncomingEdgesStrategy } from "./NoIncomingEdgesStrategy";
+import { PromiseGraph } from "./PromiseGraph";
 
 export class PromiseGraphTestabilityMarker {
     public markGraph(promiseGraph: PromiseGraph) {

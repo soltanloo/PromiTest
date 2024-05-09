@@ -1,4 +1,4 @@
-import {CoverageAnalyzer} from "./CoverageAnalyzer";
+import { CoverageAnalyzer } from "./CoverageAnalyzer";
 
 export class Main {
     public async run() {

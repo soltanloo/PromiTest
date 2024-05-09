@@ -1,6 +1,6 @@
-import {PromiseNode} from "./PromiseNode";
-import {PromiseIdentifier} from "../types/CoverageAnalyzer.type";
-import {NodeDirectory, PromiseAdjacencyMap} from "../types/PromiseGraph.types";
+import { PromiseNode } from "./PromiseNode";
+import { PromiseIdentifier } from "../types/CoverageAnalyzer.type";
+import { NodeDirectory, PromiseAdjacencyMap } from "../types/PromiseGraph.types";
 
 export class PromiseGraph {
     adjacencyMap: PromiseAdjacencyMap = new Map();

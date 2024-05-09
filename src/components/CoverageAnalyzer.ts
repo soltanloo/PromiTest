@@ -1,5 +1,5 @@
 import * as console from "node:console";
-import {PromiseCoverageReport} from "../types/CoverageAnalyzer.type";
+import { PromiseCoverageReport } from "../types/CoverageAnalyzer.type";
 
 export class CoverageAnalyzer {
     static REPORTS_PATH = "../../coverage-reports";

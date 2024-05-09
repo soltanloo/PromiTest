@@ -1,4 +1,4 @@
-import {PromiseNode} from "./PromiseNode";
+import { PromiseNode } from "./PromiseNode";
 
 export interface NodeAction {
     execute(node: PromiseNode): void;

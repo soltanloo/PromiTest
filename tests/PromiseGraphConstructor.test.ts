@@ -1,7 +1,7 @@
-import {assert} from "chai";
-import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor";
-import {readJson} from "./common";
-import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
+import { assert } from "chai";
+import { PromiseGraphConstructor } from "../src/components/PromiseGraphConstructor";
+import { readJson } from "./common";
+import { PromiseCoverageReport } from "../src/types/CoverageAnalyzer.type";
 
 function runUnitTest(testName: string): void {
     describe(testName, () => {

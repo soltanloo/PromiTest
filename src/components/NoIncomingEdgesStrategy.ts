@@ -1,8 +1,8 @@
-import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
-import {PromiseNode} from "./PromiseNode";
+import { NodeMarkingStrategy } from "./NodeMarkingStrategy";
+import { PromiseNode } from "./PromiseNode";
 
 export class NoIncomingEdgesStrategy implements NodeMarkingStrategy {
-    markNode(node: PromiseNode): void {
+    public markNode(node: PromiseNode): void {
         if (node.promiseInfo.warnings.rejection && this.isRejectable(node)) {
             node.flags.rejectable = true;
         }
@@ -11,7 +11,7 @@ export class NoIncomingEdgesStrategy implements NodeMarkingStrategy {
         }
     }
 
-    isRejectable(node: PromiseNode): boolean {
+    private isRejectable(node: PromiseNode): boolean {
         if (node.promiseInfo.type === "NewPromise") {
             const rejectablePatterns = [/reject\(/, /throw /];
             return rejectablePatterns.some(pattern => pattern.test(node.promiseInfo.code));

@@ -1,6 +1,6 @@
-import {PromiseNode} from "./PromiseNode";
-import {PromiseGraph} from "./PromiseGraph";
-import {PromiseCoverageReport, PromiseIdentifier} from "../types/CoverageAnalyzer.type";
+import { PromiseNode } from "./PromiseNode";
+import { PromiseGraph } from "./PromiseGraph";
+import { PromiseCoverageReport, PromiseIdentifier } from "../types/CoverageAnalyzer.type";
 import * as console from "node:console";
 
 export class PromiseGraphConstructor {
@@ -14,11 +14,11 @@ export class PromiseGraphConstructor {
     public constructGraph(): PromiseGraph {
         const nodeDirectory = new Map<PromiseIdentifier, PromiseNode>();
         this.promiseCoverageData.forEach((promise) => {
-                nodeDirectory.set(
-                    promise.identifier,
-                    new PromiseNode(promise.identifier, promise),
-                )
-            }
+            nodeDirectory.set(
+                promise.identifier,
+                new PromiseNode(promise.identifier, promise),
+            )
+        }
         );
 
         this.promiseGraph = new PromiseGraph(nodeDirectory);

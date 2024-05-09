@@ -1,5 +1,5 @@
-import {PromiseIdentifier, PromiseInfo} from "../types/CoverageAnalyzer.type";
-import {IncomingEdges} from "../types/PromiseGraph.types";
+import { PromiseIdentifier, PromiseInfo } from "../types/CoverageAnalyzer.type";
+import { IncomingEdges } from "../types/PromiseGraph.types";
 
 export class PromiseNode {
     promiseInfo: PromiseInfo;

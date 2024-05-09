@@ -1,5 +1,5 @@
-import {assert} from "chai";
-import {CoverageAnalyzer} from "../src/components/CoverageAnalyzer";
+import { assert } from "chai";
+import { CoverageAnalyzer } from "../src/components/CoverageAnalyzer";
 
 describe("CoverageAnalyzer ", () => {
     let coverageAnalyzer: CoverageAnalyzer;
@@ -13,7 +13,7 @@ describe("CoverageAnalyzer ", () => {
                 identifier: 116,
                 location: 'path/to/file.js:12:5:17:20',
                 type: 'NewPromise',
-                warnings: {rejection: true},
+                warnings: { rejection: true },
                 code: "new Promise((resolve, reject) => {\n                    if (num > 10) {\n                        resolve(\"The number is greater than 10!\");\n                    } else {\n                        reject(\"The number is not greater than 10.\");\n                    }\n                });"
             }
         ]);
