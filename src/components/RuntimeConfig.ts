@@ -2,16 +2,17 @@ import * as fs from "fs"
 import * as path from "path"
 import {Configuration} from "../types/Configuration.type";
 import {PROMITEST_CONFIG_FILE_NAME} from "./constants";
-import {OptionValues} from "commander";
 
 
 export default class RuntimeConfig {
     private static instance: RuntimeConfig;
     private readonly _config: Configuration;
+    private readonly _projectPath: string;
 
     constructor(projectPath: string) {
         try {
             const rc = JSON.parse(fs.readFileSync(path.join(projectPath, PROMITEST_CONFIG_FILE_NAME), 'utf-8'))
+            this._projectPath = projectPath;
             this._config = {
                 ...rc
             }
@@ -23,6 +24,10 @@ export default class RuntimeConfig {
 
     get config(): Configuration {
         return this._config;
+    }
+
+    get projectPath(): string {
+        return this._projectPath;
     }
 
     public static getInstance(projectPath?: string): RuntimeConfig {
