@@ -7,13 +7,14 @@ import {PROMITEST_CONFIG_FILE_NAME} from "./constants";
 export default class RuntimeConfig {
     private static instance: RuntimeConfig;
     private readonly _config: Configuration;
-    private readonly _projectPath: string;
 
     constructor(projectPath: string) {
         try {
             const rc = JSON.parse(fs.readFileSync(path.join(projectPath, PROMITEST_CONFIG_FILE_NAME), 'utf-8'))
-            this._projectPath = projectPath;
+            let projectName = projectPath.split("/").pop() as string;
             this._config = {
+                projectPath,
+                projectName,
                 ...rc
             }
         } catch (e) {
@@ -24,10 +25,6 @@ export default class RuntimeConfig {
 
     get config(): Configuration {
         return this._config;
-    }
-
-    get projectPath(): string {
-        return this._projectPath;
     }
 
     public static getInstance(projectPath?: string): RuntimeConfig {
