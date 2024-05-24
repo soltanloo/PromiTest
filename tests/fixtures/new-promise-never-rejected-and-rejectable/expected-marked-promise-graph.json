@@ -3,7 +3,7 @@
     "flags": {
       "rejectable": true
     },
-    "identifier": 116,
+    "id": 116,
     "promiseInfo": {
       "identifier": 116,
       "location": "path/to/file.js:12:5:17:20",

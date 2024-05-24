@@ -1,5 +1,4 @@
-import {IncomingEdges, PromiseAdjacencyMap} from "../types/PromiseGraph.types";
-import {PromiseIdentifier} from "../types/CoverageAnalyzer.type";
+import {IncomingEdges} from "../types/PromiseGraph.type";
 import {PromiseNode} from "./PromiseNode";
 import {RootNodeMarkingStrategy} from "./RootNodeMarkingStrategy";
 import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
@@ -7,15 +6,16 @@ import {PromiseGraph} from "./PromiseGraph";
 
 export class PromiseGraphTestabilityMarker {
     public markGraph(promiseGraph: PromiseGraph) {
-        const sortedNodes = this.topologicalSort(promiseGraph.adjacencyMap);
-        promiseGraph.setSortedNodes(sortedNodes);
+        const sortedNodes = promiseGraph.topologicalSort()
 
         for (const pid of sortedNodes) {
-            const node = promiseGraph.nodeDirectory.get(pid);
+            const node = promiseGraph.getNode(pid);
             if (node) {
-                this.markNode(node);
+                this.markNode(node as PromiseNode);
             }
         }
+
+        return promiseGraph;
     }
 
     public markNode(node: PromiseNode): void {
@@ -31,36 +31,5 @@ export class PromiseGraphTestabilityMarker {
         }
 
         strategy.markNode(node);
-    }
-
-    public topologicalSort(nodes: PromiseAdjacencyMap): PromiseIdentifier[] {
-        let stack: PromiseIdentifier[] = [];
-        let visited = new Set<PromiseIdentifier>();
-        let inStack = new Set<PromiseIdentifier>();
-
-        const visit = (pid: PromiseIdentifier) => {
-            if (inStack.has(pid)) {
-                throw new Error('Graph is not a DAG - detected a cycle!');
-            }
-
-            if (!visited.has(pid)) {
-                visited.add(pid);
-                inStack.add(pid);
-
-                const edges = nodes.get(pid) || [];
-                edges.forEach(node => visit(node.identifier));
-
-                inStack.delete(pid);
-                stack.push(pid);
-            }
-        };
-
-        nodes.forEach((_, id) => {
-            if (!visited.has(id)) {
-                visit(id);
-            }
-        });
-
-        return stack.reverse();
     }
 }

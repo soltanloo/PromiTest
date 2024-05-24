@@ -1,53 +1,34 @@
-import { PromiseNode } from "./PromiseNode";
-import { PromiseIdentifier } from "../types/CoverageAnalyzer.type";
-import { NodeDirectory, PromiseAdjacencyMap } from "../types/PromiseGraph.types";
+import {PromiseNode} from "./PromiseNode";
+import {PromiseNodeId} from "../types/PromiseGraph.type";
+import {Graph} from "./Graph";
 
-export class PromiseGraph {
-    adjacencyMap: PromiseAdjacencyMap = new Map();
-    nodeDirectory: NodeDirectory;
-    sortedNodes?: PromiseIdentifier[];
-
-    constructor(nodeDirectory: NodeDirectory) {
-        this.nodeDirectory = nodeDirectory;
+export class PromiseGraph extends Graph {
+    constructor(nodes?: Map<PromiseNodeId, PromiseNode>) {
+        super(nodes);
     }
 
-    addNode(identifier: PromiseIdentifier, newNode: PromiseNode) {
-        if (!this.nodeDirectory.has(identifier)) {
-            this.nodeDirectory.set(identifier, newNode);
-        }
+    addNode(newNode: PromiseNode) {
+        super.addNode(newNode);
+        this.addIncomingEdges(newNode);
+    }
 
-        if (!this.adjacencyMap.has(identifier)) {
-            this.adjacencyMap.set(identifier, []);
-        }
-
+    private addIncomingEdges(newNode: PromiseNode) {
         const {
-            parent: chainedParent,
-            links: linkedParents,
-            inputs: bundledParents,
+            parent: chainedParentId,
+            links: linkedParentsIds,
+            inputs: bundledParentsIds,
         } = newNode.promiseInfo;
 
-        if (chainedParent) {
-            if (!this.adjacencyMap.has(chainedParent))
-                this.addNode(chainedParent, this.nodeDirectory.get(chainedParent)!);
-            this.adjacencyMap.get(chainedParent)?.push(newNode);
-        }
+        const parents = [
+            ...(chainedParentId ? [chainedParentId] : []),
+            ...(linkedParentsIds ?? []),
+            ...(bundledParentsIds ?? [])
+        ];
 
-        if (linkedParents) this.addParents(linkedParents, newNode);
-        if (bundledParents) this.addParents(bundledParents, newNode);
+        parents.forEach((parentId) => {
+            this.addEdge(parentId, newNode.id)
+        })
     }
 
-    addParents(parentList: PromiseIdentifier[], newNode: PromiseNode) {
-        parentList?.forEach((parentIdentifier: PromiseIdentifier) => {
-            if (!this.adjacencyMap.has(parentIdentifier))
-                this.addNode(
-                    parentIdentifier,
-                    this.nodeDirectory.get(parentIdentifier)!,
-                );
-            this.adjacencyMap.get(parentIdentifier)?.push(newNode);
-        });
-    }
 
-    setSortedNodes(sortedNodes: PromiseIdentifier[]) {
-        this.sortedNodes = sortedNodes;
-    }
 }

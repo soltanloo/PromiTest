@@ -1,10 +1,12 @@
-import { PromiseIdentifier, PromiseInfo } from "../types/CoverageAnalyzer.type";
-import { IncomingEdges } from "../types/PromiseGraph.types";
-import { Prompt } from "./Prompt";
+import {PromiseInfo} from "../types/CoverageAnalyzer.type";
+import {IncomingEdges, PromiseNodeId} from "../types/PromiseGraph.type";
+import {Prompt} from "./Prompt";
+import {Node} from "../types/Graph.type";
 
-export class PromiseNode {
+//TODO: Define PromiseNode interface that extends Node and then define a new class that implements PromiseNode interface
+export class PromiseNode implements Node {
     promiseInfo: PromiseInfo;
-    identifier: PromiseIdentifier;
+    id: PromiseNodeId;
     incomingEdges: IncomingEdges;
     chainedParent?: PromiseNode;
     linkedParents?: PromiseNode[];
@@ -18,12 +20,13 @@ export class PromiseNode {
     } = {}
 
 
-    constructor(identifier: PromiseIdentifier, info: PromiseInfo) {
-        this.identifier = identifier;
+    constructor(id: PromiseNodeId, info: PromiseInfo) {
+        this.id = id;
         this.promiseInfo = info;
         this.incomingEdges = this.calculateIncomingEdges();
     }
 
+    //FIXME: calculate based on the promise graph edges, not the properties of promiseInfo.
     public calculateIncomingEdges(): IncomingEdges {
         const hasBundledInputs = !!this.promiseInfo.inputs?.length;
         const hasChainedParent = !!this.promiseInfo.parent;

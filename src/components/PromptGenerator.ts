@@ -1,8 +1,6 @@
 import {PromiseGraph} from "./PromiseGraph";
 import {PromiseNode} from "./PromiseNode";
-import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
-import {IncomingEdges} from "../types/PromiseGraph.types";
-import {RootNodeMarkingStrategy} from "./RootNodeMarkingStrategy";
+import {IncomingEdges} from "../types/PromiseGraph.type";
 import {PromptGenerationStrategy} from "./PromptGenerationStrategy";
 import {RootNodePromptGenerationStrategy} from "./RootNodePromptGenerationStrategy";
 import {Prompt} from "./Prompt";
@@ -13,9 +11,9 @@ export class PromptGenerator {
         if (!sortedNodes) throw new Error("No sorted nodes found.");
 
         for (const pid of sortedNodes) {
-            const node = promiseGraph.nodeDirectory.get(pid);
+            const node = promiseGraph.getNode(pid);
             if (node) {
-                node.prompt = this.generatePrompt(node);
+                node.prompt = this.generatePrompt(node as PromiseNode);
             }
         }
     }
