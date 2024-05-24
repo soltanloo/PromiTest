@@ -8,7 +8,7 @@ interface Range {
     end: number | null;
 }
 
-interface FileDetails {
+export interface FileDetails {
     label: string;
     file: string;
     start: Position;
