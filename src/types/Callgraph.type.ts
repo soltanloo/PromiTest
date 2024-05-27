@@ -1,4 +1,4 @@
-interface Position {
+export interface Position {
     row: number | null;
     column: number | null;
 }
@@ -22,3 +22,10 @@ interface CallgraphEdge {
 }
 
 export type JSCallgraphOutput = CallgraphEdge[];
+
+export interface FunctionDefinition {
+    name: string;
+    file: string;
+    start: Position;
+    end: Position;
+}
