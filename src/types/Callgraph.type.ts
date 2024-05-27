@@ -1,11 +1,11 @@
 export interface Position {
-    row: number | null;
-    column: number | null;
+    row: number;
+    column: number;
 }
 
 interface Range {
-    start: number | null;
-    end: number | null;
+    start: number;
+    end: number;
 }
 
 export interface FileDetails {
