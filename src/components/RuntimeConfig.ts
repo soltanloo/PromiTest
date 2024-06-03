@@ -12,7 +12,7 @@ export default class RuntimeConfig {
         try {
             projectPath += projectPath.endsWith("/") ? "" : "/";
             const rc = JSON.parse(fs.readFileSync(path.join(projectPath, PROMITEST_CONFIG_FILE_NAME), 'utf-8'))
-            let projectName = projectPath.split("/").pop() as string;
+            let projectName = projectPath.split("/").slice(-2, -1)[0]; // To handle trailing slashes
             this._config = {
                 projectPath,
                 projectName,
