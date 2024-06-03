@@ -1,11 +1,19 @@
 import {Prompt} from "./Prompt";
+import {rootNodePromptTemplate} from "../prompt-templates/RootNodePromptTemplate";
 
 export class RootNodePrompt extends Prompt {
     getPromptText(): string {
-        return `This is a promise of type "${this.promiseNode.promiseInfo.type}", which is not ${this.neverRejected ? "Rejected" : "Resolved"} by the current test suite. It's potentially ${this.isFulfillable ? "Resolvable" : "Rejectable"} because it ${this.candidacyReason}.If possible, generate a test that can cover this execution path.
-        
-        Location: ${this.promiseNode.promiseInfo.location}
-        
-        ${this.promiseNode.promiseInfo.code}`;
+        const placeholders = {
+            promiseType: this.promiseNode.promiseInfo.type,
+            notStatus: this.neverRejected ? "Rejected" : "Resolved",
+            potentiallyStatus: this.isFulfillable ? "Resolvable" : "Rejectable",
+            candidacyReason: this.candidacyReason || '',
+            location: this.promiseNode.promiseInfo.location,
+            code: this.promiseNode.promiseInfo.code,
+            testRunner: this.rc.testRunner,
+            //TODO: executionPath: ,
+        }
+
+        return Prompt.replacePlaceholders(rootNodePromptTemplate, placeholders);
     }
 }

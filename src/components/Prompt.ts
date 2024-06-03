@@ -1,10 +1,14 @@
 import {PromiseNode} from "./PromiseNode";
+import RuntimeConfig from "./RuntimeConfig";
+import {Configuration} from "../types/Configuration.type";
 
 export abstract class Prompt {
     promiseNode: PromiseNode;
+    rc: Configuration;
 
     constructor(promiseNode: PromiseNode) {
         this.promiseNode = promiseNode;
+        this.rc = RuntimeConfig.getInstance().config;
     }
 
     get neverRejected(): boolean {
@@ -36,6 +40,10 @@ export abstract class Prompt {
                     return "contains a call to reject() function or a throw keyword"
             }
         }
+    }
+
+    static replacePlaceholders(template: string, data: { [key: string]: string }): string {
+        return template.replace(/{{(.*?)}}/g, (_, key) => data[key.trim()]);
     }
 
     abstract getPromptText(): string;
