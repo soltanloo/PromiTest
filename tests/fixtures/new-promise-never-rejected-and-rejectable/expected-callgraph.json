@@ -1,0 +1,59 @@
+{
+  "test/test.js:anon:9:34:11:2": {
+    "id": "test/test.js:anon:9:34:11:2",
+    "fileDetails": {
+      "label": "anon",
+      "file": "test/test.js",
+      "start": {
+        "row": 9,
+        "column": 34
+      },
+      "end": {
+        "row": 11,
+        "column": 2
+      },
+      "range": {
+        "start": 182,
+        "end": 187
+      }
+    }
+  },
+  "index.js:foo:3:0:7:1": {
+    "id": "index.js:foo:3:0:7:1",
+    "fileDetails": {
+      "label": "foo",
+      "file": "index.js",
+      "start": {
+        "row": 3,
+        "column": 0
+      },
+      "end": {
+        "row": 7,
+        "column": 1
+      },
+      "range": {
+        "start": 45,
+        "end": 54
+      }
+    }
+  },
+  "index.js:bar:9:0:14:1": {
+    "id": "index.js:bar:9:0:14:1",
+    "fileDetails": {
+      "label": "bar",
+      "file": "index.js",
+      "start": {
+        "row": 9,
+        "column": 0
+      },
+      "end": {
+        "row": 14,
+        "column": 1
+      },
+      "range": {
+        "start": 66,
+        "end": 209
+      }
+    }
+  }
+}

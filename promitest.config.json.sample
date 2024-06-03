@@ -1,3 +1,4 @@
 {
-    "testDirectory": "path/to/tests"
+    "testDirectory": "path/to/tests",
+    "testRunner": "mocha|tap"
 }
