@@ -10,6 +10,7 @@ export default class RuntimeConfig {
 
     constructor(projectPath: string) {
         try {
+            projectPath += projectPath.endsWith("/") ? "" : "/";
             const rc = JSON.parse(fs.readFileSync(path.join(projectPath, PROMITEST_CONFIG_FILE_NAME), 'utf-8'))
             let projectName = projectPath.split("/").pop() as string;
             this._config = {
