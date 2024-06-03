@@ -14,7 +14,7 @@ export default class CallgraphGenerator {
     constructor() {
         const RC = RuntimeConfig.getInstance();
 
-        const args = {strategy: "FULL", output: null, cg: 'cg'};
+        const args = {strategy: "DEMAND", output: null, cg: 'cg'};
         JCG.setArgs(args);
         JCG.setFiles([RC.config.projectPath]);
         JCG.setFilter(['+^.*\\.js$', '-^.*node_modules\\/.*\\.js$',]);
