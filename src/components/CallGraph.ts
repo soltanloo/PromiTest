@@ -52,7 +52,8 @@ export class CallGraph extends Graph {
     private pruneGraph() {
         const rc = RuntimeConfig.getInstance().config;
         const testNodes = Array.from(this.nodes.values()).filter(node =>
-            (node.fileDetails as FileDetails).file.includes(`${rc.projectPath}/${rc.testDirectory}`)
+            //FIXME: use a better method
+            (node.fileDetails as FileDetails).file.includes(`${rc.testDirectory}`)
         );
 
         const visited = new Set<NodeId>();

@@ -33,6 +33,10 @@ export default class CallgraphGenerator {
                 sourceNode.start = enclosingFunction.start;
                 sourceNode.end = enclosingFunction.end;
             }
+
+            const rc = RuntimeConfig.getInstance().config;
+            edge.source.file = edge.source.file.replace(rc.projectPath, '');
+            edge.target.file = edge.target.file.replace(rc.projectPath, '');
         })
 
         this._refinedCallgraph = new CallGraph(this._jscallgraph)
