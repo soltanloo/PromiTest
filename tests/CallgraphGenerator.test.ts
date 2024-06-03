@@ -1,11 +1,8 @@
 import {assert} from "chai";
-import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor";
 import {readJson} from "./common";
-import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 import RuntimeConfig from "../src/components/RuntimeConfig";
 import path from 'path';
 import CallgraphGenerator from "../src/components/CallgraphGenerator";
-import {parseFunctionDefinitions} from "../src/utils/AST";
 
 function runUnitTest(testName: string): void {
     describe(testName, () => {
