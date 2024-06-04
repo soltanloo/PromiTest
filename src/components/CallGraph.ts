@@ -3,10 +3,6 @@ import {Node, NodeId} from "../types/Graph.type";
 import {FileDetails, JSCallgraphOutput} from "../types/Callgraph.type";
 import RuntimeConfig from "./RuntimeConfig";
 
-interface CallNode extends Node {
-    fileDetails: FileDetails
-}
-
 export class CallGraph extends Graph {
     constructor(callgraphOutput?: JSCallgraphOutput) {
         super();

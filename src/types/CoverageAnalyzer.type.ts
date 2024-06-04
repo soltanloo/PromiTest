@@ -1,5 +1,3 @@
-// export type Location = `${string}:${string}:${string}:${string}:${string}`;
-
 import {Position} from "./File.type";
 
 interface PromiseLocation {
@@ -7,7 +5,8 @@ interface PromiseLocation {
     file: string,
     start: Position,
     end: Position,
-};
+}
+
 export type PromiseType =
     | "NewPromise"
     | "AsyncFunction"
