@@ -1,5 +1,5 @@
 import {Graph} from "./Graph";
-import {Node, NodeId} from "../types/Graph.type";
+import {NodeId} from "../types/Graph.type";
 import {FileDetails, JSCallgraphOutput} from "../types/Callgraph.type";
 import RuntimeConfig from "./RuntimeConfig";
 
