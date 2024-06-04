@@ -14,6 +14,7 @@ export interface FileDetails {
     start: Position;
     end: Position;
     range: Range;
+    exported: boolean;
 }
 
 interface CallgraphEdge {
@@ -28,4 +29,6 @@ export interface FunctionDefinition {
     file: string;
     start: Position;
     end: Position;
+    exported: boolean;
+    sourceCode: string;
 }

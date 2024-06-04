@@ -1,5 +1,6 @@
-import {FunctionDefinition, Position} from "../types/Callgraph.type";
+import {FunctionDefinition} from "../types/Callgraph.type";
 import {parseFunctionDefinitions} from "../utils/AST";
+import {Position} from "../types/File.type";
 
 export default class FileRepository {
     private static readonly functionDefinitions: Map<string, FunctionDefinition[]> = new Map();
