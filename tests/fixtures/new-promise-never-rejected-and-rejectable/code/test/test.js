@@ -5,8 +5,10 @@ const {
 	foo
 } = require('../index.js');
 
-describe.only('foo test', function () {
+describe('foo test', function () {
 	it('should resolve bar Promise', function (done) {
-		foo().then(done);
+		foo().then(() => {
+			done()
+		});
 	})
 })

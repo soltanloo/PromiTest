@@ -1,11 +1,22 @@
 [
   {
-    "identifier": 116,
-    "location": "path/to/file.js:12:5:17:20",
+    "identifier": 82,
+    "location": {
+      "encoded": "index.js:bar:9:0:14:1",
+      "file": "index.js",
+      "start": {
+        "row": 9,
+        "column": 0
+      },
+      "end": {
+        "row": 14,
+        "column": 1
+      }
+    },
     "type": "NewPromise",
     "warnings": {
       "rejection": true
     },
-    "code": "new Promise((resolve, reject) => {\n                    if (num > 10) {\n                        resolve(\"The number is greater than 10!\");\n                    } else {\n                        reject(\"The number is not greater than 10.\");\n                    }\n                });"
+    "code": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}"
   }
 ]
