@@ -1,21 +1,28 @@
-import { assert } from "chai";
-import { CoverageAnalyzer } from "../src/components/CoverageAnalyzer";
+import {assert} from "chai";
+import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor";
+import {readJson} from "./common";
+import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
+import {CoverageAnalyzer} from "../src/components/CoverageAnalyzer";
+import path from "path";
+import RuntimeConfig from "../src/components/RuntimeConfig";
+
+export function runUnitTest(testName: string): void {
+    describe(testName, () => {
+        before(async () => {
+            let projectPath = path.resolve(__dirname, `fixtures/${testName}/code`);
+            RuntimeConfig.getInstance(projectPath)
+        })
+        it("should successfully read the raw coverage report", async () => {
+            let coverageAnalyzer = new CoverageAnalyzer();
+            let coverageReport = await coverageAnalyzer.analyze();
+            let expectedCoverageReport = await readJson(`./fixtures/${testName}/expected-jscope-coverage-report.json`);
+            assert.deepEqual(coverageReport, expectedCoverageReport);
+        });
+    })
+}
 
 describe("CoverageAnalyzer ", () => {
-    let coverageAnalyzer: CoverageAnalyzer;
-    before(() => {
-        coverageAnalyzer = new CoverageAnalyzer('sample', '' /* FIXME later */);
-    })
-    it("should successfully read the sample coverage report", async () => {
-        let coverageReport = await coverageAnalyzer.analyze();
-        assert.deepEqual(coverageReport, [
-            {
-                identifier: 116,
-                location: 'path/to/file.js:12:5:17:20',
-                type: 'NewPromise',
-                warnings: { rejection: true },
-                code: "new Promise((resolve, reject) => {\n                    if (num > 10) {\n                        resolve(\"The number is greater than 10!\");\n                    } else {\n                        reject(\"The number is not greater than 10.\");\n                    }\n                });"
-            }
-        ]);
+    describe("unit tests for the case:", () => {
+        runUnitTest("new-promise-never-rejected-and-rejectable");
     })
 });

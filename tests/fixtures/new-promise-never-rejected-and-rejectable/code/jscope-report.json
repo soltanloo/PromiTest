@@ -1,0 +1,66 @@
+{
+  "82": {
+    "id": 82,
+    "location": "/Users/nermitt/Education/SFU/Research/JScope/NEW/projects/jscope-sample/index.js:10:10:13:5",
+    "iid": 82,
+    "executorFids": [
+      "f15"
+    ],
+    "refs": [
+      {
+        "id": 77,
+        "location": "/Users/nermitt/Education/SFU/Research/JScope/NEW/projects/jscope-sample/index.js:5:10:5:19"
+      }
+    ],
+    "pids": [
+      "p4"
+    ],
+    "links": [],
+    "parent": null,
+    "_parents": [
+      null
+    ],
+    "type": "NewPromise",
+    "_types": [
+      "NewPromise"
+    ],
+    "code": "new Promise((resolve, reject) => {\n    if (condition) resolve(\"Hello World!\");\n    else reject(\"Rejected\");\n  })",
+    "settle": {
+      "fulfill": [
+        {
+          "fid": "f16",
+          "tag": "settle",
+          "reaction": "fulfill",
+          "value": "N/A",
+          "path": "f16"
+        }
+      ],
+      "reject": []
+    },
+    "register": {
+      "fulfill": [
+        {
+          "fid": "f20",
+          "wrapperFid": "f18",
+          "tag": "register",
+          "reaction": "fulfill",
+          "path": "f20"
+        }
+      ],
+      "reject": []
+    },
+    "execute": {
+      "fulfill": [
+        {
+          "fid": "f20",
+          "wrapperFid": "f18",
+          "tag": "execute",
+          "reaction": "fulfill",
+          "path": "f20"
+        }
+      ],
+      "reject": []
+    },
+    "_logs": []
+  }
+}

@@ -4,7 +4,7 @@ import {readJson} from "./common";
 import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 import {PromiseGraphTestabilityMarker} from "../src/components/PromiseGraphTestabilityMarker";
 
-function runUnitTest(testName: string): void {
+export function runUnitTest(testName: string): void {
     describe(testName, () => {
         it("graph should be correctly marked", async () => {
             let expectedRefinedCoverageReport = await readJson(`./fixtures/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;

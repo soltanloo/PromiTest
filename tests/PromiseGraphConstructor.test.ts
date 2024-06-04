@@ -3,7 +3,7 @@ import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor
 import {readJson} from "./common";
 import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 
-function runUnitTest(testName: string): void {
+export function runUnitTest(testName: string): void {
     describe(testName, () => {
         it("graph adjacency map should be correctly built", async () => {
             let expectedRefinedCoverageReport = await readJson(`./fixtures/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;

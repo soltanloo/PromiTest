@@ -1,16 +1,19 @@
 import * as console from "node:console";
-import { PromiseCoverageReport } from "../types/CoverageAnalyzer.type";
+import {PromiseCoverageReport} from "../types/CoverageAnalyzer.type";
+import RuntimeConfig from "./RuntimeConfig";
+import {Configuration} from "../types/Configuration.type";
 
 export class CoverageAnalyzer {
-    static REPORTS_PATH = "../../coverage-reports";
     coverageData?: PromiseCoverageReport;
     projectName: string;
     projectPath: string;
     rawCoverageReport: any;
+    RC: Configuration;
 
-    constructor(projectName: string, projectPath: string) {
-        this.projectName = projectName;
-        this.projectPath = projectPath;
+    constructor() {
+        this.RC = RuntimeConfig.getInstance().config;
+        this.projectName = this.RC.projectName;
+        this.projectPath = this.RC.projectPath;
     }
 
     public async analyze(): Promise<PromiseCoverageReport> {
@@ -23,7 +26,7 @@ export class CoverageAnalyzer {
 
     private async readReport(): Promise<any> {
         try {
-            let filePath = `${CoverageAnalyzer.REPORTS_PATH}/${this.projectName}.json`;
+            let filePath = `${this.projectPath}/jscope-report.json`;
             let {
                 default: rawCoverageReport
             } = await import(filePath);
