@@ -9,11 +9,18 @@ import FileRepository from "./FileRepository";
 export default class CallgraphGenerator {
 
     RC = RuntimeConfig.getInstance();
-    private _jscallgraph: JSCallgraphOutput;
-    private _refinedCallgraph: CallGraph;
+    private _jscallgraph!: JSCallgraphOutput;
+    private _refinedCallgraph!: CallGraph;
 
     constructor() {
+        this.constructGraph();
+    }
 
+    get callgraph(): CallGraph {
+        return this._refinedCallgraph;
+    }
+
+    constructGraph(projectPath = this.RC.config.projectPath): CallGraph {
         const args = {strategy: "DEMAND", output: null, cg: 'cg'};
         JCG.setArgs(args);
         JCG.setFiles([this.RC.config.projectPath]);
@@ -28,11 +35,7 @@ export default class CallgraphGenerator {
             edge.target = this.fillEnclosingFunctionOfNode(edge.target);
         })
 
-        this._refinedCallgraph = new CallGraph(this._jscallgraph)
-    }
-
-    get callgraph(): CallGraph {
-        return this._refinedCallgraph;
+        return this._refinedCallgraph = new CallGraph(this._jscallgraph)
     }
 
     fillEnclosingFunctionOfNode(node: FileDetails) {

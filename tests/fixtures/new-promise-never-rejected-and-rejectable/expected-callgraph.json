@@ -1,59 +1,68 @@
 {
-  "test/test.js:anon:9:34:11:2": {
-    "id": "test/test.js:anon:9:34:11:2",
+  "index.js:bar:9:0:14:1": {
     "fileDetails": {
-      "label": "anon",
-      "file": "test/test.js",
-      "start": {
-        "row": 9,
-        "column": 34
-      },
       "end": {
-        "row": 11,
-        "column": 2
+        "column": 1,
+        "row": 14
       },
+      "exported": true,
+      "file": "index.js",
+      "label": "bar",
+      "name": "bar",
       "range": {
-        "start": 182,
-        "end": 187
+        "end": 209,
+        "start": 66
+      },
+      "sourceCode": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}",
+      "start": {
+        "column": 0,
+        "row": 9
       }
-    }
+    },
+    "id": "index.js:bar:9:0:14:1"
   },
   "index.js:foo:3:0:7:1": {
-    "id": "index.js:foo:3:0:7:1",
     "fileDetails": {
+      "end": {
+        "column": 1,
+        "row": 7
+      },
+      "exported": true,
+      "file": "index.js",
       "label": "foo",
-      "file": "index.js",
-      "start": {
-        "row": 3,
-        "column": 0
-      },
-      "end": {
-        "row": 7,
-        "column": 1
-      },
+      "name": "foo",
       "range": {
-        "start": 45,
-        "end": 54
+        "end": 54,
+        "start": 45
+      },
+      "sourceCode": "function foo() {\n\t//...\n\treturn bar(true);\n\t//...\n}",
+      "start": {
+        "column": 0,
+        "row": 3
       }
-    }
+    },
+    "id": "index.js:foo:3:0:7:1"
   },
-  "index.js:bar:9:0:14:1": {
-    "id": "index.js:bar:9:0:14:1",
+  "test/test.js:anon:9:34:13:2": {
     "fileDetails": {
-      "label": "bar",
-      "file": "index.js",
-      "start": {
-        "row": 9,
-        "column": 0
-      },
       "end": {
-        "row": 14,
-        "column": 1
+        "column": 2,
+        "row": 13
       },
+      "exported": false,
+      "file": "test/test.js",
+      "label": "anon",
+      "name": "anonymous",
       "range": {
-        "start": 66,
-        "end": 209
+        "end": 182,
+        "start": 177
+      },
+      "sourceCode": "function (done) {\n\t\tfoo().then(() => {\n\t\t\tdone()\n\t\t});\n\t}",
+      "start": {
+        "column": 34,
+        "row": 9
       }
-    }
+    },
+    "id": "test/test.js:anon:9:34:13:2"
   }
 }
