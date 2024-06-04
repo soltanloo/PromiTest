@@ -1,10 +1,18 @@
 import {AdjacencyList, Node, NodeId} from "../types/Graph.type";
 
 export class Graph {
+    private _inDegrees: Map<NodeId, number> = new Map();
+
     constructor(nodes?: Map<NodeId, Node>) {
         if (nodes) {
             this.addNodes(nodes);
         }
+    }
+
+    private _entryPoints: Set<NodeId> = new Set();
+
+    get entryPoints(): NodeId[] {
+        return Array.from(this._entryPoints);
     }
 
     private _nodes: Map<NodeId, Node> = new Map<NodeId, Node>();
@@ -32,6 +40,11 @@ export class Graph {
             this._adjacencyList.set(node.id, []);
         }
 
+        if (!this._inDegrees.has(node.id)) {
+            this._inDegrees.set(node.id, 0);
+        }
+
+        this._entryPoints.add(node.id);
     }
 
     addNodes(nodes: Map<NodeId, Node>) {
@@ -48,6 +61,8 @@ export class Graph {
         if (destinationNode) {
             if (!this._adjacencyList.get(from)) this._adjacencyList.set(from, []);
             this._adjacencyList.get(from)?.push(destinationNode);
+            this._inDegrees.set(to, (this._inDegrees.get(to) || 0) + 1);
+            this._entryPoints.delete(to);
         } else throw new Error('destination node does not exist');
     }
 
@@ -105,4 +120,28 @@ export class Graph {
         return Object.fromEntries(this._nodes)
     }
 
+    bfsShortestPath(start: NodeId, end: NodeId): { path: NodeId[], distance: number } {
+        let queue: { node: NodeId, path: NodeId[], distance: number }[] = [];
+        let visited = new Set<NodeId>();
+
+        queue.push({node: start, path: [start], distance: 0});
+        visited.add(start);
+
+        while (queue.length > 0) {
+            let {node, path, distance} = queue.shift()!;
+
+            if (node === end) {
+                return {path, distance};
+            }
+
+            this.getEdges(node).forEach(neighbor => {
+                if (!visited.has(neighbor.id)) {
+                    visited.add(neighbor.id);
+                    queue.push({node: neighbor.id, path: [...path, neighbor.id], distance: distance + 1});
+                }
+            });
+        }
+
+        return {path: [], distance: Infinity}; // No path found
+    }
 }

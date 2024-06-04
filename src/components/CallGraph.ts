@@ -15,6 +15,17 @@ export class CallGraph extends Graph {
         }
     }
 
+    findPathsFromTestsTo(target: NodeId): { start: NodeId, path: NodeId[], distance: number }[] {
+        return this.entryPoints.map(start => {
+            const {path, distance} = this.bfsShortestPath(start, target);
+            return {start, path, distance};
+        });
+    }
+
+    findShortestPathFromTestsTo(target: NodeId): NodeId[] {
+        return this.findPathsFromTestsTo(target).sort((a, b) => a.distance - b.distance).pop()!.path;
+    }
+
     private loadCallgraph(callgraphOutput: JSCallgraphOutput) {
         let isNativeFunction = (node: FileDetails) => {
             return [node.start.row, node.start.column, node.end.row, node.end.column].some(value => isNaN(value))

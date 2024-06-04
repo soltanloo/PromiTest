@@ -1,4 +1,13 @@
-export type Location = `${string}:${string}:${string}:${string}:${string}`;
+// export type Location = `${string}:${string}:${string}:${string}:${string}`;
+
+import {Position} from "./File.type";
+
+interface PromiseLocation {
+    encoded: string,
+    file: string,
+    start: Position,
+    end: Position,
+};
 export type PromiseType =
     | "NewPromise"
     | "AsyncFunction"
@@ -21,7 +30,7 @@ export interface PromiseCoverageWarnings {
 
 export interface PromiseInfo {
     identifier: PromiseIdentifier;
-    location: Location;
+    location: PromiseLocation;
     type: PromiseType;
     warnings: PromiseCoverageWarnings;
     parent?: PromiseIdentifier;

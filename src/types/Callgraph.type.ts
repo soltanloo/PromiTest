@@ -1,12 +1,4 @@
-export interface Position {
-    row: number;
-    column: number;
-}
-
-interface Range {
-    start: number;
-    end: number;
-}
+import {Position, Range} from "./File.type";
 
 export interface FileDetails {
     label: string;
