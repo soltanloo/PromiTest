@@ -11,12 +11,12 @@ import {assert} from "chai";
 export function runUnitTest(testName: string): void {
     describe(testName, () => {
         before(async () => {
-            let projectPath = path.resolve(__dirname, `fixtures/${testName}/code`);
+            let projectPath = path.resolve(__dirname, `fixtures/code/${testName}`);
             RuntimeConfig.getInstance(projectPath)
         })
 
         it("prompts should be correctly generated", async () => {
-            let expectedRefinedCoverageReport = await readJson(`./fixtures/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
+            let expectedRefinedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
             let promiseGraphConstructor = new PromiseGraphConstructor(expectedRefinedCoverageReport);
             promiseGraphConstructor.constructGraph();
 
@@ -28,7 +28,7 @@ export function runUnitTest(testName: string): void {
             let promptGenerator = new PromptGenerator(callgraphGenerator.callgraph);
             promptGenerator.generatePrompts(promiseGraphConstructor.promiseGraph);
 
-            let expectedPrompts = await readJson(`./fixtures/${testName}/expected-prompts.json`);
+            let expectedPrompts = await readJson(`./fixtures/expected-outputs/${testName}/expected-prompts.json`);
             // let actualPrompts =
             // assert.deepEqual(actualPrompts, expectedPrompts);
         });
@@ -37,6 +37,6 @@ export function runUnitTest(testName: string): void {
 
 describe("PromptGenerator ", () => {
     describe("unit tests", () => {
-        runUnitTest("new-promise-never-rejected-and-rejectable");
+        runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });

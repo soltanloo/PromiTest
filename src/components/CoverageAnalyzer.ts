@@ -26,7 +26,7 @@ export class CoverageAnalyzer {
 
     private async readReport(): Promise<any> {
         try {
-            let filePath = `${this.projectPath}/jscope-report.json`;
+            let filePath = `${this.projectPath}/async-coverage-report.json`;
             let {
                 default: rawCoverageReport
             } = await import(filePath);

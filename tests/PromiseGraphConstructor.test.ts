@@ -6,11 +6,11 @@ import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 export function runUnitTest(testName: string): void {
     describe(testName, () => {
         it("graph adjacency map should be correctly built", async () => {
-            let expectedRefinedCoverageReport = await readJson(`./fixtures/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
+            let expectedRefinedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
             let promiseGraphConstructor = new PromiseGraphConstructor(expectedRefinedCoverageReport);
             let promiseGraph = promiseGraphConstructor.constructGraph();
 
-            let expectedPromiseGraph = await readJson(`./fixtures/${testName}/expected-promise-graph.json`);
+            let expectedPromiseGraph = await readJson(`./fixtures/expected-outputs/${testName}/expected-promise-graph.json`);
             let actualPromiseGraph = promiseGraph.getAdjacencyListAsObject()
             assert.deepEqual(actualPromiseGraph, expectedPromiseGraph);
         });
@@ -19,6 +19,6 @@ export function runUnitTest(testName: string): void {
 
 describe("PromiseGraphConstructor ", () => {
     describe("unit tests", () => {
-        runUnitTest("new-promise-never-rejected-and-rejectable");
+        runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });

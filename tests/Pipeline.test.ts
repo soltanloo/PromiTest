@@ -6,18 +6,16 @@ import {runUnitTest as runPromiseGraphTestabilityMarkerUnitTest} from "./Promise
 
 function runUnitTest(testName: string): void {
     describe(testName, () => {
-        it("should successfully execute the pipeline", async () => {
-            runCoverageAnalyzerUnitTest(testName)
-            runPromiseGraphConstructorUnitTest(testName)
-            runPromiseGraphTestabilityMarkerUnitTest(testName)
-            runCallgraphGeneratorUnitTest(testName)
-            runPromptGeneratorUnitTest(testName)
-        });
+        runCoverageAnalyzerUnitTest(testName)
+        runPromiseGraphConstructorUnitTest(testName)
+        runPromiseGraphTestabilityMarkerUnitTest(testName)
+        runCallgraphGeneratorUnitTest(testName)
+        runPromptGeneratorUnitTest(testName)
     })
 }
 
 describe("Pipeline", () => {
     describe("unit tests for the case", () => {
-        runUnitTest("new-promise-never-rejected-and-rejectable");
+        runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });

@@ -11,15 +11,16 @@ import {PromptGenerator} from "../src/components/PromptGenerator";
 export function runUnitTest(testName: string): void {
     describe(testName, () => {
         before(async () => {
-            let projectPath = path.resolve(__dirname, `fixtures/${testName}/code`);
+            let projectPath = path.resolve(__dirname, `fixtures/code/${testName}`);
+            console.log(projectPath)
             RuntimeConfig.getInstance(projectPath)
         })
         it("callgraph should be correctly generated", async () => {
             let callgraphGenerator = new CallgraphGenerator();
-            let expectedCallgraph = await readJson(`./fixtures/${testName}/expected-callgraph.json`);
+            let expectedCallgraph = await readJson(`./fixtures/expected-outputs/${testName}/expected-callgraph.json`);
             let actualCallgraph = callgraphGenerator.callgraph.getNodesAsObject();
 
-            let expectedRefinedCoverageReport = await readJson(`./fixtures/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
+            let expectedRefinedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
             let promiseGraph = new PromiseGraphConstructor(expectedRefinedCoverageReport).constructGraph();
 
             let promiseGraphTestabilityMarker = new PromiseGraphTestabilityMarker();
@@ -35,6 +36,6 @@ export function runUnitTest(testName: string): void {
 
 describe("CallgraphGenerator ", () => {
     describe("unit tests", () => {
-        runUnitTest("new-promise-never-rejected-and-rejectable");
+        runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });
