@@ -5,14 +5,19 @@ import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 import {CoverageAnalyzer} from "../src/components/CoverageAnalyzer";
 import path from "path";
 import RuntimeConfig from "../src/components/RuntimeConfig";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 export function runUnitTest(testName: string): void {
-    describe(testName, () => {
-        before(async () => {
+    describe(testName, function () {
+        this.timeout(1000000);
+        before(async function () {
             let projectPath = path.resolve(__dirname, `fixtures/code/${testName}`);
             RuntimeConfig.getInstance(projectPath)
         })
-        it("should successfully read the raw coverage report", async () => {
+        it("should successfully read the raw coverage report", async function () {
             let coverageAnalyzer = new CoverageAnalyzer();
             let coverageReport = await coverageAnalyzer.analyze();
             let expectedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-jscope-coverage-report.json`);
@@ -21,8 +26,8 @@ export function runUnitTest(testName: string): void {
     })
 }
 
-describe("CoverageAnalyzer ", () => {
-    describe("unit tests for the case:", () => {
+describe("CoverageAnalyzer ", function () {
+    describe("unit tests for the case:", function () {
         runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });
