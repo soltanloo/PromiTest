@@ -4,8 +4,8 @@ import {readJson} from "./common";
 import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 
 export function runUnitTest(testName: string): void {
-    describe(testName, () => {
-        it("graph adjacency map should be correctly built", async () => {
+    describe(testName, function () {
+        it("graph adjacency map should be correctly built", async function () {
             let expectedRefinedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
             let promiseGraphConstructor = new PromiseGraphConstructor(expectedRefinedCoverageReport);
             let promiseGraph = promiseGraphConstructor.constructGraph();
@@ -17,8 +17,8 @@ export function runUnitTest(testName: string): void {
     })
 }
 
-describe("PromiseGraphConstructor ", () => {
-    describe("unit tests", () => {
+describe("PromiseGraphConstructor ", function () {
+    describe("unit tests", function () {
         runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });

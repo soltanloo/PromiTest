@@ -9,13 +9,13 @@ import {PromiseGraphTestabilityMarker} from "../src/components/PromiseGraphTesta
 import {PromptGenerator} from "../src/components/PromptGenerator";
 
 export function runUnitTest(testName: string): void {
-    describe(testName, () => {
-        before(async () => {
+    describe(testName, function () {
+        before(async function () {
             let projectPath = path.resolve(__dirname, `fixtures/code/${testName}`);
             console.log(projectPath)
             RuntimeConfig.getInstance(projectPath)
         })
-        it("callgraph should be correctly generated", async () => {
+        it("callgraph should be correctly generated", async function () {
             let callgraphGenerator = new CallgraphGenerator();
             let expectedCallgraph = await readJson(`./fixtures/expected-outputs/${testName}/expected-callgraph.json`);
             let actualCallgraph = callgraphGenerator.callgraph.getNodesAsObject();
@@ -34,8 +34,8 @@ export function runUnitTest(testName: string): void {
     })
 }
 
-describe("CallgraphGenerator ", () => {
-    describe("unit tests", () => {
+describe("CallgraphGenerator ", function () {
+    describe("unit tests", function () {
         runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });

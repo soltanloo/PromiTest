@@ -4,7 +4,7 @@ import {assert} from "chai";
 
 dotenv.config();
 
-describe("GPT Controller", () => {
+describe("GPT Controller", function () {
     it('should respond correctly to "Say this is a test"', function (done) {
         this.timeout(30000);
         GPTController.getInstance()

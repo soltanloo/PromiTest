@@ -9,13 +9,13 @@ import CallgraphGenerator from "../src/components/CallgraphGenerator";
 import {assert} from "chai";
 
 export function runUnitTest(testName: string): void {
-    describe(testName, () => {
-        before(async () => {
+    describe(testName, function () {
+        before(async function () {
             let projectPath = path.resolve(__dirname, `fixtures/code/${testName}`);
             RuntimeConfig.getInstance(projectPath)
         })
 
-        it("prompts should be correctly generated", async () => {
+        it("prompts should be correctly generated", async function () {
             let expectedRefinedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`) as PromiseCoverageReport;
             let promiseGraphConstructor = new PromiseGraphConstructor(expectedRefinedCoverageReport);
             promiseGraphConstructor.constructGraph();
@@ -35,8 +35,8 @@ export function runUnitTest(testName: string): void {
     })
 }
 
-describe("PromptGenerator ", () => {
-    describe("unit tests", () => {
+describe("PromptGenerator ", function () {
+    describe("unit tests", function () {
         runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });

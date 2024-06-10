@@ -5,7 +5,7 @@ import {runUnitTest as runPromiseGraphConstructorUnitTest} from "./PromiseGraphC
 import {runUnitTest as runPromiseGraphTestabilityMarkerUnitTest} from "./PromiseGraphTestabilityMarker.test";
 
 function runUnitTest(testName: string): void {
-    describe(testName, () => {
+    describe(testName, function () {
         runCoverageAnalyzerUnitTest(testName)
         runPromiseGraphConstructorUnitTest(testName)
         runPromiseGraphTestabilityMarkerUnitTest(testName)
@@ -14,8 +14,8 @@ function runUnitTest(testName: string): void {
     })
 }
 
-describe("Pipeline", () => {
-    describe("unit tests for the case", () => {
+describe("Pipeline", function () {
+    describe("unit tests for the case", function () {
         runUnitTest("new-promise/nested-never-rejected-and-rejectable");
     })
 });
