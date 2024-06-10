@@ -2,7 +2,7 @@
   "promiseMap": {
     "80": {
       "id": 80,
-      "location": "/Users/nermitt/Education/SFU/Research/PromiTest/tests/fixtures/code/new-promise/nested-never-rejected-and-rejectable/index.js:10:9:13:4",
+      "location": "index.js:10:9:13:4",
       "iid": 80,
       "executorFids": [
         "f15"
@@ -10,7 +10,7 @@
       "refs": [
         {
           "id": 75,
-          "location": "/Users/nermitt/Education/SFU/Research/PromiTest/tests/fixtures/code/new-promise/nested-never-rejected-and-rejectable/index.js:5:9:5:18"
+          "location": "index.js:5:9:5:18"
         }
       ],
       "pids": [
@@ -76,12 +76,12 @@
   "functionsMap": {
     "f16": {
       "iid": 85,
-      "location": "/Users/nermitt/Education/SFU/Research/PromiTest/tests/fixtures/code/new-promise/nested-never-rejected-and-rejectable/index.js:11:18:11:41",
+      "location": "index.js:11:18:11:41",
       "returnVal": "N/A"
     },
     "f15": {
       "iid": 82,
-      "location": "/Users/nermitt/Education/SFU/Research/PromiTest/tests/fixtures/code/new-promise/nested-never-rejected-and-rejectable/index.js:10:21:13:3",
+      "location": "index.js:10:21:13:3",
       "returnVal": "N/A"
     }
   }

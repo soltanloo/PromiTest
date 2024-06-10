@@ -1,4 +1,3 @@
-import * as console from "node:console";
 import {PromiseCoverageReport} from "../types/CoverageAnalyzer.type";
 import RuntimeConfig from "./RuntimeConfig";
 import {Configuration} from "../types/Configuration.type";
@@ -29,7 +28,7 @@ export class CoverageAnalyzer {
     }
 
     private async runJScope(): Promise<void> {
-        let cmd = `node ${this.JSCOPE_PATH} ${this.projectPath} ${this.projectName}`;
+        let cmd = `node ${this.JSCOPE_PATH} ${this.projectPath} ${this.projectName} --relativePaths`;
         try {
             return await sh(cmd);
         } catch (error) {

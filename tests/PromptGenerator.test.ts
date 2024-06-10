@@ -6,7 +6,6 @@ import {PromptGenerator} from "../src/components/PromptGenerator";
 import path from "path";
 import RuntimeConfig from "../src/components/RuntimeConfig";
 import CallgraphGenerator from "../src/components/CallgraphGenerator";
-import {assert} from "chai";
 
 export function runUnitTest(testName: string): void {
     describe(testName, function () {
@@ -28,7 +27,7 @@ export function runUnitTest(testName: string): void {
             let promptGenerator = new PromptGenerator(callgraphGenerator.callgraph);
             promptGenerator.generatePrompts(promiseGraphConstructor.promiseGraph);
 
-            let expectedPrompts = await readJson(`./fixtures/expected-outputs/${testName}/expected-prompts.json`);
+            // let expectedPrompts = await readJson(`./fixtures/expected-outputs/${testName}/expected-prompts.json`);
             // let actualPrompts =
             // assert.deepEqual(actualPrompts, expectedPrompts);
         });
