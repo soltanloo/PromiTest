@@ -46,7 +46,7 @@ export type PInfo = {
     register: { fulfill: any[], reject: any[] },
     execute: { fulfill: any[], reject: any[] },
     _logs: any[], // For debugging purposes
-    coverage?: CoverageStatusTypeFlattened,
+    coverage: CoverageStatusTypeFlattened,
 }
 
 export type PMap = { [id: string]: PInfo; }
@@ -59,3 +59,7 @@ export type FInfo = {
 
 export type FMap = { [id: Fid]: FInfo; }
 
+export type JScopeCoverageReport = {
+    promiseMap: PMap,
+    functionsMap: FMap
+}

@@ -12,11 +12,11 @@ export abstract class Prompt {
     }
 
     get neverRejected(): boolean {
-        return !!this.promiseNode.promiseInfo.warnings.rejection;
+        return this.promiseNode.promiseInfo.warnings.rejection;
     }
 
     get neverResolved(): boolean {
-        return !!this.promiseNode.promiseInfo.warnings.fulfillment;
+        return this.promiseNode.promiseInfo.warnings.fulfillment;
     }
 
     get isFulfillable(): boolean {

@@ -23,7 +23,7 @@ export default class CallgraphGenerator {
     constructGraph(projectPath = this.RC.config.projectPath): CallGraph {
         const args = {strategy: "DEMAND", output: null, cg: 'cg'};
         JCG.setArgs(args);
-        JCG.setFiles([this.RC.config.projectPath]);
+        JCG.setFiles([projectPath]);
         JCG.setFilter(['+^.*\\.js$', '-^.*node_modules\\/.*\\.js$',]);
         JCG.setConsoleOutput(false);
         this._jscallgraph = JCG.build();
@@ -44,6 +44,6 @@ export default class CallgraphGenerator {
             endPosition: node.end
         });
 
-        return Object.assign({}, node, enclosingFunction, {file: node.file.replace(this.RC.config.projectPath, '')});
+        return Object.assign({}, node, enclosingFunction);
     }
 }

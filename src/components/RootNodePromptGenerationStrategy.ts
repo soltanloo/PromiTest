@@ -6,7 +6,7 @@ import {CallGraph} from "./CallGraph";
 
 export class RootNodePromptGenerationStrategy implements PromptGenerationStrategy {
     generatePrompt(node: PromiseNode, callgraph: CallGraph): Prompt {
-        const shortestPath = callgraph.findShortestPathFromTestsTo(node.promiseInfo.location.encoded).map(nodeId => callgraph.getNode(nodeId)!)
+        const shortestPath = callgraph.findShortestPathFromTestsTo(node.promiseInfo.enclosingFunction.location).map(nodeId => callgraph.getNode(nodeId)!)
         return new RootNodePrompt(node, shortestPath);
     }
 }

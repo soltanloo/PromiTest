@@ -7,6 +7,7 @@
       },
       "exported": true,
       "file": "index.js",
+      "location": "index.js:bar:9:0:14:1",
       "label": "bar",
       "name": "bar",
       "range": {
@@ -28,6 +29,7 @@
         "row": 7
       },
       "exported": true,
+      "location": "index.js:foo:3:0:7:1",
       "file": "index.js",
       "label": "foo",
       "name": "foo",
@@ -50,6 +52,7 @@
         "row": 13
       },
       "exported": false,
+      "location": "test/test.js:anonymous:9:34:13:2",
       "file": "test/test.js",
       "label": "anon",
       "name": "anonymous",

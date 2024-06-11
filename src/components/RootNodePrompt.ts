@@ -32,8 +32,8 @@ export class RootNodePrompt extends Prompt {
             notStatus: this.neverRejected ? "Rejected" : "Resolved",
             potentiallyStatus: this.isFulfillable ? "Resolvable" : "Rejectable",
             candidacyReason: this.candidacyReason || '',
-            location: this.promiseNode.promiseInfo.location.encoded,
-            code: this.promiseNode.promiseInfo.code,
+            location: this.promiseNode.promiseInfo.enclosingFunction.file,
+            code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,
             testRunner: this.rc.testRunner,
             executionPath: this.executionPathString,
         }

@@ -17,8 +17,14 @@ export function runUnitTest(testName: string): void {
         })
         it("should successfully read the raw coverage report", async function () {
             let coverageAnalyzer = new CoverageAnalyzer();
-            let coverageReport = await coverageAnalyzer.analyze();
+            let coverageReport = await coverageAnalyzer.readReport();
             let expectedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-jscope-coverage-report.json`);
+            assert.deepEqual(coverageReport, expectedCoverageReport);
+        });
+        it("should successfully refine the raw coverage report", async function () {
+            let coverageAnalyzer = new CoverageAnalyzer();
+            let coverageReport = await coverageAnalyzer.analyze();
+            let expectedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`);
             assert.deepEqual(coverageReport, expectedCoverageReport);
         });
     })

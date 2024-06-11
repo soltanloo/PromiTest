@@ -1,6 +1,7 @@
 import {Position} from "./File.type";
+import {FunctionDefinition} from "./Callgraph.type";
 
-interface PromiseLocation {
+export interface PromiseLocation {
     encoded: string,
     file: string,
     start: Position,
@@ -15,21 +16,23 @@ export type PromiseType =
     | "PromiseResolve"
     | "PromiseReject"
     | "PromiseAll"
-    | "PromiseRace";
+    | "PromiseRace"
+    | "Await";
 export type PromiseIdentifier = number;
 
 export interface PromiseCoverageWarnings {
-    fulfillment?: boolean;
-    rejection?: boolean;
-    fulfillReactionRegistration?: boolean;
-    rejectReactionRegistration?: boolean;
-    fulfillReactionExecution?: boolean;
-    rejectReactionExecution?: boolean;
+    fulfillment: boolean;
+    rejection: boolean;
+    fulfillReactionRegistration: boolean;
+    rejectReactionRegistration: boolean;
+    fulfillReactionExecution: boolean;
+    rejectReactionExecution: boolean;
 }
 
 export interface PromiseInfo {
     identifier: PromiseIdentifier;
     location: PromiseLocation;
+    enclosingFunction: FunctionDefinition;
     type: PromiseType;
     warnings: PromiseCoverageWarnings;
     parent?: PromiseIdentifier;

@@ -5,6 +5,7 @@ import * as fs from 'fs';
 // @ts-ignore
 import * as estraverse from 'estraverse';
 import {Position} from "../types/File.type";
+import RuntimeConfig from "../components/RuntimeConfig";
 
 interface EspreeNode {
     type: string;
@@ -69,6 +70,7 @@ function detectExports(ast: any): Set<string> {
 export function parseFunctionDefinitions(filePath: string): FunctionDefinition[] {
     const code = fs.readFileSync(filePath, 'utf-8');
     const functionDefinitions: FunctionDefinition[] = [];
+    const RC = RuntimeConfig.getInstance().config;
 
 
     const ast = parse(code, {
@@ -106,14 +108,18 @@ export function parseFunctionDefinitions(filePath: string): FunctionDefinition[]
                         return line;
                     }).join('\n');
 
-                functionDefinitions.push({
+                filePath = filePath.replace(RC.projectPath, '');
+
+                let functionDefinition = {
+                    location: `${filePath}:${name}:${node.loc!.start.line}:${node.loc!.start.column}:${node.loc!.end.line}:${node.loc!.end.column}`,
                     name,
                     start: toPosition(node.loc!.start),
                     end: toPosition(node.loc!.end),
                     file: filePath,
                     exported,
                     sourceCode: functionCode,
-                });
+                }
+                functionDefinitions.push(functionDefinition);
             }
         }
     });

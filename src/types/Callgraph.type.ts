@@ -17,6 +17,7 @@ interface CallgraphEdge {
 export type JSCallgraphOutput = CallgraphEdge[];
 
 export interface FunctionDefinition {
+    location: string;
     name: string;
     file: string;
     start: Position;

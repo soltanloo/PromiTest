@@ -1,14 +1,23 @@
-import {PromiseCoverageReport} from "../types/CoverageAnalyzer.type";
+import {
+    PromiseCoverageReport,
+    PromiseIdentifier,
+    PromiseInfo,
+    PromiseLocation,
+    PromiseType
+} from "../types/CoverageAnalyzer.type";
 import RuntimeConfig from "./RuntimeConfig";
 import {Configuration} from "../types/Configuration.type";
 import * as process from "node:process";
 import {sh} from "../utils/sh";
+import {JScopeCoverageReport, Pid} from "../types/JScope.type";
+import FileRepository from "./FileRepository";
+import path from "path";
 
 export class CoverageAnalyzer {
     coverageData?: PromiseCoverageReport;
     projectName: string;
     projectPath: string;
-    rawCoverageReport: any;
+    rawCoverageReport!: JScopeCoverageReport;
     RC: Configuration;
     readonly JSCOPE_PATH = process.env.JSCOPE_PATH;
 
@@ -27,6 +36,57 @@ export class CoverageAnalyzer {
         return this.coverageData;
     }
 
+    refineReport(report: JScopeCoverageReport = this.rawCoverageReport): PromiseCoverageReport {
+        let promiseMap = report.promiseMap;
+        let functionsMap = report.functionsMap;
+        let refinedCoverageReport: PromiseCoverageReport = [];
+        Object.entries(promiseMap).forEach(([key, value]) => {
+            let decodedLocation = this.decodeLocation(value.location);
+            let enclosingFunction = FileRepository.getEnclosingFunction(path.join(this.projectPath, decodedLocation.file), {
+                startPosition: decodedLocation.start,
+                endPosition: decodedLocation.end
+            });
+
+            let warnings = {
+                fulfillment: (value.coverage.settle_fulfill === false),
+                fulfillReactionRegistration: (value.coverage.register_fulfill === false),
+                fulfillReactionExecution: (value.coverage.execute_fulfill === false),
+                rejection: (value.coverage.settle_reject === false),
+                rejectReactionRegistration: (value.coverage.register_reject === false),
+                rejectReactionExecution: (value.coverage.execute_reject === false),
+            }
+
+            let refinedPromiseInfo: PromiseInfo = {
+                identifier: Number(key),
+                enclosingFunction: enclosingFunction!,
+                location: decodedLocation,
+                type: value.type as PromiseType,
+                warnings,
+                code: value.code ?? '',
+                //TODO: links, inputs, detached function/promise definitions
+            }
+
+            if (value.parent) {
+                refinedPromiseInfo.parent = this.extractPromiseIdFromString(value.parent)
+            }
+
+            refinedCoverageReport.push(refinedPromiseInfo);
+        });
+
+        return refinedCoverageReport;
+    }
+
+    async readReport(filePath: string = `${this.projectPath}/async-coverage-report.json`): Promise<JScopeCoverageReport> {
+        try {
+            let {
+                default: rawCoverageReport
+            } = await import(filePath);
+            return rawCoverageReport as JScopeCoverageReport;
+        } catch (error) {
+            throw new Error("Error occurred while fetching Coverage Report");
+        }
+    }
+
     private async runJScope(): Promise<void> {
         let cmd = `node ${this.JSCOPE_PATH} ${this.projectPath} ${this.projectName} --relativePaths`;
         try {
@@ -36,20 +96,29 @@ export class CoverageAnalyzer {
         }
     }
 
-    private async readReport(): Promise<any> {
-        try {
-            let filePath = `${this.projectPath}/async-coverage-report.json`;
-            let {
-                default: rawCoverageReport
-            } = await import(filePath);
-            return rawCoverageReport;
-        } catch (error) {
-            throw new Error("Error occurred while fetching Coverage Report");
-        }
+    private decodeLocation(location: string): PromiseLocation {
+
+        const parts = location.split(':');
+
+        return {
+            encoded: location,
+            file: parts[0],
+            start: {
+                row: parseInt(parts[1], 10),
+                column: parseInt(parts[2], 10),
+            },
+            end: {
+                row: parseInt(parts[3], 10),
+                column: parseInt(parts[4], 10),
+            }
+        };
     }
 
-    private refineReport(): PromiseCoverageReport {
-        //TODO: Do the refinement on the raw coverage report
-        return this.rawCoverageReport;
+    private extractPromiseIdFromString(pid: Pid | null): PromiseIdentifier | undefined {
+        if (pid === null || pid === undefined) {
+            return
+        }
+        const match = pid.match(/\d+/);
+        return match ? parseInt(match[0], 10) : undefined;
     }
 }
