@@ -5,10 +5,12 @@ import {Configuration} from "../types/Configuration.type";
 export abstract class Prompt {
     promiseNode: PromiseNode;
     rc: Configuration;
+    string: string;
 
     constructor(promiseNode: PromiseNode) {
         this.promiseNode = promiseNode;
         this.rc = RuntimeConfig.getInstance().config;
+        this.string = this.getPromptText();
     }
 
     get neverRejected(): boolean {

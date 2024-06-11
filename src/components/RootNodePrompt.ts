@@ -5,7 +5,6 @@ import {Node} from "../types/Graph.type";
 
 export class RootNodePrompt extends Prompt {
     executionPathString: string;
-    string: string;
 
     constructor(promiseNode: PromiseNode, executionPath: Node[]) {
         super(promiseNode);
@@ -18,10 +17,10 @@ export class RootNodePrompt extends Prompt {
         for (const node of executionPath) {
             executionPathString += `Location: ${node.fileDetails.file}
             
-            ${node.fileDetails.sourceCode}
-            
-            exported: ${node.fileDetails.exported}
-            ---`;
+${node.fileDetails.sourceCode}
+
+exported: ${node.fileDetails.exported}
+---`;
         }
         return executionPathString;
     }
