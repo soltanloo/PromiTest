@@ -1,8 +1,8 @@
-import { NodeMarkingStrategy } from "./NodeMarkingStrategy";
-import { PromiseNode } from "./PromiseNode";
+import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
+import {PromiseNode} from "../promise-graph/PromiseNode";
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
-   public markNode(node: PromiseNode): void {
+    public markNode(node: PromiseNode): void {
         if (node.promiseInfo.warnings.rejection && this.isRejectable(node)) {
             node.flags.rejectable = true;
         }
@@ -20,5 +20,9 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         }
 
         return false;
+    }
+
+    //TODO
+    private isResolvable(node: PromiseNode): void {
     }
 }

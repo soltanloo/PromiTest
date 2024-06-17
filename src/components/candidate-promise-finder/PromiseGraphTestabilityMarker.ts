@@ -1,8 +1,8 @@
-import {IncomingEdges} from "../types/PromiseGraph.type";
-import {PromiseNode} from "./PromiseNode";
+import {IncomingEdges} from "../../types/PromiseGraph.type";
+import {PromiseNode} from "../promise-graph/PromiseNode";
 import {RootNodeMarkingStrategy} from "./RootNodeMarkingStrategy";
 import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
-import {PromiseGraph} from "./PromiseGraph";
+import {PromiseGraph} from "../promise-graph/PromiseGraph";
 
 export class PromiseGraphTestabilityMarker {
     public markGraph(promiseGraph: PromiseGraph) {

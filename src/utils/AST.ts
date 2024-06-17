@@ -5,7 +5,7 @@ import * as fs from 'fs';
 // @ts-ignore
 import * as estraverse from 'estraverse';
 import {Position} from "../types/File.type";
-import RuntimeConfig from "../components/RuntimeConfig";
+import RuntimeConfig from "../components/configuration/RuntimeConfig";
 
 interface EspreeNode {
     type: string;

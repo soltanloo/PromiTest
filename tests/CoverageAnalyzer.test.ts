@@ -1,8 +1,8 @@
 import {assert} from "chai";
 import {readJson} from "./common";
-import {CoverageAnalyzer} from "../src/components/CoverageAnalyzer";
+import {CoverageAnalyzer} from "../src/components/coverage-analysis/CoverageAnalyzer";
 import path from "path";
-import RuntimeConfig from "../src/components/RuntimeConfig";
+import RuntimeConfig from "../src/components/configuration/RuntimeConfig";
 import dotenv from "dotenv";
 
 dotenv.config();

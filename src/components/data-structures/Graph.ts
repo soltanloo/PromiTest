@@ -1,4 +1,4 @@
-import {AdjacencyList, Node, NodeId} from "../types/Graph.type";
+import {AdjacencyList, Node, NodeId} from "../../types/Graph.type";
 
 export class Graph {
     private _inDegrees: Map<NodeId, number> = new Map();

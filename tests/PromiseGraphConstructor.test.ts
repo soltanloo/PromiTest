@@ -1,5 +1,5 @@
 import {assert} from "chai";
-import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor";
+import {PromiseGraphConstructor} from "../src/components/promise-graph/PromiseGraphConstructor";
 import {readJson} from "./common";
 import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
 

@@ -1,6 +1,6 @@
 import {PromiseNode} from "./PromiseNode";
 import {PromiseGraph} from "./PromiseGraph";
-import {PromiseCoverageReport, PromiseIdentifier} from "../types/CoverageAnalyzer.type";
+import {PromiseCoverageReport, PromiseIdentifier} from "../../types/CoverageAnalyzer.type";
 
 export class PromiseGraphConstructor {
     promiseCoverageData: PromiseCoverageReport;

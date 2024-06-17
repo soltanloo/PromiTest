@@ -1,8 +1,8 @@
-import {PromiseNode} from "./PromiseNode";
+import {PromiseNode} from "../promise-graph/PromiseNode";
 import {PromptGenerationStrategy} from "./PromptGenerationStrategy";
 import {Prompt} from "./Prompt";
 import {RootNodePrompt} from "./RootNodePrompt";
-import {CallGraph} from "./CallGraph";
+import {CallGraph} from "../call-graph/CallGraph";
 
 export class RootNodePromptGenerationStrategy implements PromptGenerationStrategy {
     generatePrompt(node: PromiseNode, callgraph: CallGraph): Prompt {

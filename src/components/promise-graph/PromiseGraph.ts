@@ -1,6 +1,6 @@
 import {PromiseNode} from "./PromiseNode";
-import {PromiseNodeId} from "../types/PromiseGraph.type";
-import {Graph} from "./Graph";
+import {PromiseNodeId} from "../../types/PromiseGraph.type";
+import {Graph} from "../data-structures/Graph";
 
 export class PromiseGraph extends Graph {
     constructor(nodes?: Map<PromiseNodeId, PromiseNode>) {

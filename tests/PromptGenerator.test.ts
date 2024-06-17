@@ -1,11 +1,11 @@
-import {PromiseGraphConstructor} from "../src/components/PromiseGraphConstructor";
+import {PromiseGraphConstructor} from "../src/components/promise-graph/PromiseGraphConstructor";
 import {readJson} from "./common";
 import {PromiseCoverageReport} from "../src/types/CoverageAnalyzer.type";
-import {PromiseGraphTestabilityMarker} from "../src/components/PromiseGraphTestabilityMarker";
-import {PromptGenerator} from "../src/components/PromptGenerator";
+import {PromiseGraphTestabilityMarker} from "../src/components/candidate-promise-finder/PromiseGraphTestabilityMarker";
+import {PromptGenerator} from "../src/components/prompt-generation/PromptGenerator";
 import path from "path";
-import RuntimeConfig from "../src/components/RuntimeConfig";
-import CallgraphGenerator from "../src/components/CallgraphGenerator";
+import RuntimeConfig from "../src/components/configuration/RuntimeConfig";
+import CallgraphGenerator from "../src/components/call-graph/CallgraphGenerator";
 import {assert} from "chai";
 
 export function runUnitTest(testName: string): void {

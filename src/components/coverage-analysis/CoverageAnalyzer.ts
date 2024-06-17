@@ -4,13 +4,13 @@ import {
     PromiseInfo,
     PromiseLocation,
     PromiseType
-} from "../types/CoverageAnalyzer.type";
-import RuntimeConfig from "./RuntimeConfig";
-import {Configuration} from "../types/Configuration.type";
+} from "../../types/CoverageAnalyzer.type";
+import RuntimeConfig from "../configuration/RuntimeConfig";
+import {Configuration} from "../../types/Configuration.type";
 import * as process from "node:process";
-import {sh} from "../utils/sh";
-import {JScopeCoverageReport, Pid} from "../types/JScope.type";
-import FileRepository from "./FileRepository";
+import {sh} from "../../utils/sh";
+import {JScopeCoverageReport, Pid} from "../../types/JScope.type";
+import FileRepository from "../apis/FileRepository";
 import path from "path";
 
 export class CoverageAnalyzer {

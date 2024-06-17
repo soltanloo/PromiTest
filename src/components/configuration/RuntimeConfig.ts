@@ -1,7 +1,7 @@
 import * as fs from "fs"
 import * as path from "path"
-import {Configuration} from "../types/Configuration.type";
-import {PROMITEST_CONFIG_FILE_NAME} from "./constants";
+import {Configuration} from "../../types/Configuration.type";
+import {PROMITEST_CONFIG_FILE_NAME} from "../../constants/constants";
 
 
 export default class RuntimeConfig {
