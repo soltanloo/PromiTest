@@ -5,3 +5,4 @@ node_modules
 .idea
 .run
 tests/fixtures/code/**/async-coverage-report.json
+tests/fixtures/code/**/promise-*-*-test.js
