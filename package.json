@@ -5,10 +5,9 @@
   "scripts": {
     "pretest": "cd tests/fixtures/code && npm install",
     "test": "mocha --import=tsx tests/**/*.test.ts",
-    "posttest": "rm -rf tests/fixtures/code/node_modules",
     "start": "tsx index.ts",
     "build": "tsc",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist tests/fixtures/code/node_modules"
   },
   "author": "",
   "license": "ISC",
