@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
-import { Main } from "./components/Main";
+import {Main} from "./components/Main";
 
 dotenv.config();
 
-new Main().run();
+(async () => {
+    await Main.run();
+})();

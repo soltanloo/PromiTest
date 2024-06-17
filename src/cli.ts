@@ -1,11 +1,14 @@
-import {CLI_ARGS} from "./components/constants";
+import {CLI_ARGS} from "./constants/constants";
 import {Command} from 'commander';
-import RuntimeConfig from "./components/RuntimeConfig";
+import RuntimeConfig from "./components/configuration/RuntimeConfig";
+import {Main} from "./components/Main";
+import dotenv from "dotenv";
 
 async function cli(projectPath: string) {
+    dotenv.config();
     RuntimeConfig.getInstance(projectPath);
 
-    //TODO: run Main
+    await Main.run();
 }
 
 (async function () {
