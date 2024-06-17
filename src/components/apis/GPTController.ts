@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 export class GPTController {
     private static instance: GPTController;
     private static apiInstance: OpenAI
+    private static readonly MAX_TOKENS = 1000;
 
     constructor() {
         GPTController.apiInstance = new OpenAI({
@@ -21,8 +22,14 @@ export class GPTController {
     public ask(question: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
-                messages: [{role: 'user', content: question}],
+                messages: [
+                    //     {
+                    //     role: 'system',
+                    //     content: 'You are an expert JavaScript developer who can write tests to increase the coverage of the program.'
+                    // },
+                    {role: 'user', content: question}],
                 model: 'gpt-4o',
+                max_tokens: GPTController.MAX_TOKENS
             };
 
             GPTController.apiInstance.chat.completions.create(params)
@@ -32,6 +39,9 @@ export class GPTController {
                     } else {
                         resolve(res.choices[0].message.content);
                     }
+                })
+                .catch((err) => {
+                    throw err;
                 })
         });
     }
