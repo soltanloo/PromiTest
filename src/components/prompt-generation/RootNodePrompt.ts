@@ -1,7 +1,7 @@
 import {Prompt} from "./Prompt";
-import {rootNodePromptTemplate} from "../prompt-templates/RootNodePromptTemplate";
-import {PromiseNode} from "./PromiseNode";
-import {Node} from "../types/Graph.type";
+import {rootNodePromptTemplate} from "../../prompt-templates/RootNodePromptTemplate";
+import {PromiseNode} from "../promise-graph/PromiseNode";
+import {Node} from "../../types/Graph.type";
 
 export class RootNodePrompt extends Prompt {
     executionPathString: string;
@@ -28,8 +28,8 @@ exported: ${node.fileDetails.exported}
     getPromptText(): string {
         const placeholders = {
             promiseType: this.promiseNode.promiseInfo.type,
-            notStatus: this.neverRejected ? "Rejected" : "Resolved",
-            potentiallyStatus: this.isFulfillable ? "Resolvable" : "Rejectable",
+            notStatus: this.promiseNode.neverRejected ? "Rejected" : "Resolved",
+            potentiallyStatus: this.promiseNode.isRejectable ? "Rejectable" : "Resolvable",
             candidacyReason: this.candidacyReason || '',
             location: this.promiseNode.promiseInfo.enclosingFunction.file,
             code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,

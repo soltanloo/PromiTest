@@ -26,6 +26,22 @@ export class PromiseNode implements Node {
         this.incomingEdges = this.calculateIncomingEdges();
     }
 
+    get neverRejected(): boolean {
+        return this.promiseInfo.warnings.rejection;
+    }
+
+    get neverResolved(): boolean {
+        return this.promiseInfo.warnings.fulfillment;
+    }
+
+    get isFulfillable(): boolean {
+        return !!this.flags.fulfillable;
+    }
+
+    get isRejectable(): boolean {
+        return !!this.flags.rejectable;
+    }
+
     //FIXME: calculate based on the promise graph edges, not the properties of promiseInfo.
     public calculateIncomingEdges(): IncomingEdges {
         const hasBundledInputs = !!this.promiseInfo.inputs?.length;
