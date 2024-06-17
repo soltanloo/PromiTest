@@ -1,7 +1,7 @@
-import {Graph} from "./Graph";
-import {NodeId} from "../types/Graph.type";
-import {FileDetails, JSCallgraphOutput} from "../types/Callgraph.type";
-import RuntimeConfig from "./RuntimeConfig";
+import {Graph} from "../data-structures/Graph";
+import {NodeId} from "../../types/Graph.type";
+import {FileDetails, JSCallgraphOutput} from "../../types/Callgraph.type";
+import RuntimeConfig from "../configuration/RuntimeConfig";
 
 export class CallGraph extends Graph {
     constructor(callgraphOutput?: JSCallgraphOutput) {
@@ -19,7 +19,7 @@ export class CallGraph extends Graph {
     }
 
     findShortestPathFromTestsTo(target: NodeId): NodeId[] {
-        return this.findPathsFromTestsTo(target).sort((a, b) => a.distance - b.distance).pop()!.path;
+        return this.findPathsFromTestsTo(target).sort((a, b) => a.distance - b.distance)[0].path;
     }
 
     private loadCallgraph(callgraphOutput: JSCallgraphOutput) {
