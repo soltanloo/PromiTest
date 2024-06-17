@@ -14,3 +14,9 @@ export enum IncomingEdges {
     LINK_AND_CHAIN = "LINK_AND_CHAIN",
     MULTIPLE_BUNDLE = "MULTIPLE_BUNDLE"
 }
+
+export type PromiseFlagTypes = 'rejectable' | 'fulfillable' | 'nonSettlable';
+
+export type PromiseFlags = {
+    [flag in PromiseFlagTypes]?: boolean;
+}

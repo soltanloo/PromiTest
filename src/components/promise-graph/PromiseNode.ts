@@ -1,7 +1,7 @@
-import {PromiseInfo} from "../types/CoverageAnalyzer.type";
-import {IncomingEdges, PromiseNodeId} from "../types/PromiseGraph.type";
-import {Prompt} from "./Prompt";
-import {Node} from "../types/Graph.type";
+import {PromiseInfo} from "../../types/CoverageAnalyzer.type";
+import {IncomingEdges, PromiseFlags, PromiseNodeId} from "../../types/PromiseGraph.type";
+import {Node} from "../../types/Graph.type";
+import {Prompts} from "../../types/Prompt.type";
 
 //TODO: Define PromiseNode interface that extends Node and then define a new class that implements PromiseNode interface
 export class PromiseNode implements Node {
@@ -11,13 +11,10 @@ export class PromiseNode implements Node {
     chainedParent?: PromiseNode;
     linkedParents?: PromiseNode[];
     bundledParents?: PromiseNode[];
-    prompt?: Prompt;
 
-    flags: {
-        rejectable?: boolean;
-        fulfillable?: boolean;
-        nonSettlable?: boolean;
-    } = {}
+    prompts: Prompts = {};
+
+    flags: PromiseFlags = {};
 
 
     constructor(id: PromiseNodeId, info: PromiseInfo) {

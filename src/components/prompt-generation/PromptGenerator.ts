@@ -1,11 +1,12 @@
-import {PromiseGraph} from "./PromiseGraph";
-import {PromiseNode} from "./PromiseNode";
-import {IncomingEdges} from "../types/PromiseGraph.type";
+import {PromiseGraph} from "../promise-graph/PromiseGraph";
+import {PromiseNode} from "../promise-graph/PromiseNode";
+import {IncomingEdges, PromiseFlagTypes} from "../../types/PromiseGraph.type";
 import {PromptGenerationStrategy} from "./PromptGenerationStrategy";
 import {RootNodePromptGenerationStrategy} from "./RootNodePromptGenerationStrategy";
 import {Prompt} from "./Prompt";
-import {CallGraph} from "./CallGraph";
-import {NodeId} from "../types/Graph.type";
+import {CallGraph} from "../call-graph/CallGraph";
+import {NodeId} from "../../types/Graph.type";
+import {Prompts} from "../../types/Prompt.type";
 
 export class PromptGenerator {
     callgraph: CallGraph;
@@ -17,13 +18,17 @@ export class PromptGenerator {
     public generatePrompts(promiseGraph: PromiseGraph) {
         const sortedNodes = promiseGraph.sortedNodes;
         if (!sortedNodes) throw new Error("No sorted nodes found.");
-        let prompts = new Map<NodeId, string>();
+        let prompts = new Map<NodeId, Prompts>();
 
         for (const pid of sortedNodes) {
-            const node = promiseGraph.getNode(pid);
+            const node = promiseGraph.getNode(pid) as PromiseNode;
             if (node) {
-                node.prompt = this.generatePrompt(node as PromiseNode);
-                prompts.set(pid, node.prompt.string)
+                Object.entries(node.flags).forEach(([key, flag]) => {
+                    if (flag) {
+                        node.prompts[key as PromiseFlagTypes] = this.generatePrompt(node as PromiseNode);
+                    }
+                });
+                prompts.set(pid, node.prompts);
             }
         }
         return prompts;
