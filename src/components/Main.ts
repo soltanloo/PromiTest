@@ -22,7 +22,7 @@ export class Main {
         let prompts = promptGenerator.generatePrompts(promiseGraph);
 
         const testGenerator = new TestGenerator();
-        let tests = await testGenerator.prompt(prompts);
-        testGenerator.augmentTestSuite(tests)
+        let tests = await testGenerator.generateTests(prompts);
+        // testGenerator.augmentTestSuite(tests)
     }
 }
