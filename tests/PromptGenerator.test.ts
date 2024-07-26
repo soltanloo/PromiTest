@@ -29,9 +29,9 @@ export function runUnitTest(testName: string): void {
 
 
             let expectedPrompts = await readJson(`./fixtures/expected-outputs/${testName}/expected-prompts.json`);
-            let actualPrompts = promptGenerator.generatePrompts(promiseGraph);
+            let actualPrompts = promptGenerator.getPromptsAsObject(promptGenerator.generatePrompts(promiseGraph))
 
-            assert.deepEqual(Object.fromEntries(actualPrompts), expectedPrompts);
+            assert.deepEqual(actualPrompts, expectedPrompts);
         });
     })
 }

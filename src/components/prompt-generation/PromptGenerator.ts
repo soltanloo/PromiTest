@@ -48,4 +48,18 @@ export class PromptGenerator {
 
         return strategy.generatePrompt(node, this.callgraph);
     }
+
+    public getPromptsAsObject(promptsMap: Map<NodeId, Prompts>) {
+        let promptsObject: { [promiseId: NodeId]: { [flag: string]: string } } = {};
+        for (const [promiseId, promisePrompts] of promptsMap.entries()) {
+            const promisePromptsFlat: { [flag: string]: string } = {};
+
+            for (const [flag, prompt] of Object.entries(promisePrompts)) {
+                promisePromptsFlat[flag] = prompt.string;
+            }
+
+            promptsObject[promiseId] = promisePromptsFlat;
+        }
+        return promptsObject;
+    }
 }
