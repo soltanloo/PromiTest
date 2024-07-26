@@ -1,0 +1,50 @@
+{
+  "74": {
+    "prompts": {},
+    "flags": {
+      "rejectable": true
+    },
+    "id": 74,
+    "promiseInfo": {
+      "identifier": 74,
+      "enclosingFunction": {
+        "location": "index.js:foo:3:0:14:1",
+        "name": "foo",
+        "start": {
+          "row": 3,
+          "column": 0
+        },
+        "end": {
+          "row": 14,
+          "column": 1
+        },
+        "file": "index.js",
+        "exported": true,
+        "sourceCode": "function foo(condition) {\n\tlet r1, r2;\n\tlet p = new Promise((resolve, reject) => {\n\t\tr1 = resolve;\n\t\tr2 = reject;\n\t})\n\n\tif (condition) r1(\"Hello World!\");\n\telse r2(\"Rejected\");\n\n\treturn p;\n}"
+      },
+      "location": {
+        "encoded": "index.js:5:10:8:4",
+        "file": "index.js",
+        "start": {
+          "row": 5,
+          "column": 10
+        },
+        "end": {
+          "row": 8,
+          "column": 4
+        }
+      },
+      "type": "NewPromise",
+      "warnings": {
+        "fulfillment": false,
+        "fulfillReactionRegistration": false,
+        "fulfillReactionExecution": false,
+        "rejection": true,
+        "rejectReactionRegistration": true,
+        "rejectReactionExecution": true
+      },
+      "code": "new Promise((resolve, reject) => {\n\t\tr1 = resolve;\n\t\tr2 = reject;\n\t})"
+    },
+    "incomingEdges": "NONE"
+  }
+}
