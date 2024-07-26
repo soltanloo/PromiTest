@@ -126,3 +126,90 @@ export function parseFunctionDefinitions(filePath: string): FunctionDefinition[]
 
     return functionDefinitions;
 }
+
+export function isPromiseCalling(code: string, functionName: string): boolean {
+    const ast = parse(code, {
+        ecmaVersion: 2021,
+        sourceType: 'module',
+        loc: true
+    });
+
+    let isUsingFunction = false;
+
+    estraverse.traverse(ast, {
+        enter(node: EspreeNode, parent: EspreeNode) {
+            if (node.type === 'NewExpression' && node.callee.name === 'Promise') {
+                let funcVariableNames = new Set();
+
+                estraverse.traverse(node, {
+                    enter(innerNode: EspreeNode, innerParent: EspreeNode) {
+                        if (innerNode.type === 'FunctionExpression' || innerNode.type === 'ArrowFunctionExpression') {
+                            estraverse.traverse(innerNode, {
+                                enter(nestedNode: EspreeNode, nestedParent: EspreeNode) {
+                                    // Track assignments of the function (resolve or reject)
+                                    if (nestedNode.type === 'AssignmentExpression' && nestedNode.right.type === 'Identifier' && nestedNode.right.name === functionName) {
+                                        if (nestedNode.left.type === 'Identifier') {
+                                            funcVariableNames.add(nestedNode.left.name);
+                                            isUsingFunction = true; //Because we just check the assignment and not if it's actually called later
+                                        } else if (nestedNode.left.type === 'MemberExpression' && nestedNode.left.object.type === 'ThisExpression') {
+                                            funcVariableNames.add(`this.${nestedNode.left.property.name}`);
+                                            isUsingFunction = true;
+                                        }
+                                    }
+
+                                    // Check for direct or deferred use of the function
+                                    if (nestedNode.type === 'CallExpression') {
+                                        const callee = nestedNode.callee;
+                                        if (callee.type === 'Identifier' && callee.name === functionName) {
+                                            isUsingFunction = true;
+                                        } else if (callee.type === 'MemberExpression' && funcVariableNames.has(`this.${callee.property.name}`)) {
+                                            isUsingFunction = true;
+                                        } else if (callee.type === 'Identifier' && funcVariableNames.has(callee.name)) {
+                                            isUsingFunction = true;
+                                        }
+                                    }
+
+                                    // Check for throw statements if the function is 'reject'
+                                    if (functionName === 'reject' && nestedNode.type === 'ThrowStatement') {
+                                        isUsingFunction = true;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                if (isUsingFunction) {
+                    return estraverse.VisitorOption.Break; // Stop traversal early if found
+                }
+            }
+        }
+    });
+
+    return isUsingFunction;
+}
+
+export function detectModuleSystem(filePath: string): string {
+    const data = fs.readFileSync(filePath, 'utf8');
+
+    const hasRequire = data.includes('require(');
+    const hasModuleExports = data.includes('module.exports');
+    const hasExports = data.includes('exports');
+    const hasImport = data.includes('import ');
+    const hasExport = data.includes('export ');
+    const hasDefine = data.includes('define(');
+    const hasSystemImport = data.includes('System.import');
+    const hasSystemRegister = data.includes('System.register');
+
+    if (hasRequire || hasModuleExports || hasExports) {
+        return 'CommonJS';
+    } else if (hasImport || hasExport) {
+        return 'ES Modules (ESM)';
+    } else if (hasDefine) {
+        return 'AMD';
+    } else if (hasSystemImport || hasSystemRegister) {
+        return 'SystemJS';
+    } else {
+        return 'Unknown or unsupported module system';
+    }
+}

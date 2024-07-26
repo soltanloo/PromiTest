@@ -5,6 +5,7 @@ If possible, generate a test that can cover this execution path of the promise.
 Only include the new test code in your response; no description or anything.
 Make sure to include the imports as well. I want the test to be runnable in a separate file.
 The current test suite uses {{testRunner}}.
+The module system used in the project is: {{moduleSystem}}.
 
 Location: {{location}}
 {{code}}
