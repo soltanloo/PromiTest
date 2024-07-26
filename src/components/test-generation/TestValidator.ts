@@ -14,7 +14,7 @@ export default class TestValidator {
 
     static validateSyntax(text: string): boolean {
         try {
-            parse(text, {ecmaVersion: 2019});
+            parse(text, {ecmaVersion: 2019, sourceType: 'module'});
             return true;
         } catch (e) {
             return false;
