@@ -1,71 +1,71 @@
 {
-  "index.js:bar:9:0:14:1": {
+  "test/test.js:anon:9:34:13:2": {
+    "id": "test/test.js:anon:9:34:13:2",
     "fileDetails": {
-      "end": {
-        "column": 1,
-        "row": 14
-      },
-      "exported": true,
-      "file": "index.js",
-      "location": "index.js:bar:9:0:14:1",
-      "label": "bar",
-      "name": "bar",
-      "range": {
-        "end": 209,
-        "start": 66
-      },
-      "sourceCode": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}",
+      "label": "anon",
+      "file": "test/test.js",
       "start": {
-        "column": 0,
-        "row": 9
-      }
-    },
-    "id": "index.js:bar:9:0:14:1"
+        "row": 9,
+        "column": 34
+      },
+      "end": {
+        "row": 13,
+        "column": 2
+      },
+      "range": {
+        "start": 177,
+        "end": 182
+      },
+      "location": "test/test.js:anonymous:9:34:13:2",
+      "name": "anonymous",
+      "exported": false,
+      "sourceCode": "function (done) {\n\t\tfoo().then(() => {\n\t\t\tdone()\n\t\t});\n\t}"
+    }
   },
   "index.js:foo:3:0:7:1": {
+    "id": "index.js:foo:3:0:7:1",
     "fileDetails": {
-      "end": {
-        "column": 1,
-        "row": 7
-      },
-      "exported": true,
-      "location": "index.js:foo:3:0:7:1",
-      "file": "index.js",
       "label": "foo",
-      "name": "foo",
-      "range": {
-        "end": 54,
-        "start": 45
-      },
-      "sourceCode": "function foo() {\n\t//...\n\treturn bar(true);\n\t//...\n}",
+      "file": "index.js",
       "start": {
-        "column": 0,
-        "row": 3
-      }
-    },
-    "id": "index.js:foo:3:0:7:1"
-  },
-  "test/test.js:anon:9:34:13:2": {
-    "fileDetails": {
+        "row": 3,
+        "column": 0
+      },
       "end": {
-        "column": 2,
-        "row": 13
+        "row": 7,
+        "column": 1
       },
-      "exported": false,
-      "location": "test/test.js:anonymous:9:34:13:2",
-      "file": "test/test.js",
-      "label": "anon",
-      "name": "anonymous",
       "range": {
-        "end": 182,
-        "start": 177
+        "start": 45,
+        "end": 54
       },
-      "sourceCode": "function (done) {\n\t\tfoo().then(() => {\n\t\t\tdone()\n\t\t});\n\t}",
+      "location": "index.js:foo:3:0:7:1",
+      "name": "foo",
+      "exported": true,
+      "sourceCode": "function foo() {\n\t//...\n\treturn bar(true);\n\t//...\n}"
+    }
+  },
+  "index.js:bar:9:0:14:1": {
+    "id": "index.js:bar:9:0:14:1",
+    "fileDetails": {
+      "label": "bar",
+      "file": "index.js",
       "start": {
-        "column": 34,
-        "row": 9
-      }
-    },
-    "id": "test/test.js:anon:9:34:13:2"
+        "row": 9,
+        "column": 0
+      },
+      "end": {
+        "row": 14,
+        "column": 1
+      },
+      "range": {
+        "start": 66,
+        "end": 209
+      },
+      "location": "index.js:bar:9:0:14:1",
+      "name": "bar",
+      "exported": true,
+      "sourceCode": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}"
+    }
   }
 }

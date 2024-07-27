@@ -1,6 +1,21 @@
 [
   {
     "identifier": 80,
+    "enclosingFunction": {
+      "location": "index.js:bar:9:0:14:1",
+      "name": "bar",
+      "start": {
+        "row": 9,
+        "column": 0
+      },
+      "end": {
+        "row": 14,
+        "column": 1
+      },
+      "file": "index.js",
+      "exported": true,
+      "sourceCode": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}"
+    },
     "location": {
       "encoded": "index.js:10:9:13:4",
       "file": "index.js",
@@ -15,28 +30,13 @@
     },
     "type": "NewPromise",
     "warnings": {
-      "rejection": true,
-      "rejectReactionRegistration": true,
-      "rejectReactionExecution": true,
       "fulfillment": false,
       "fulfillReactionRegistration": false,
-      "fulfillReactionExecution": false
+      "fulfillReactionExecution": false,
+      "rejection": true,
+      "rejectReactionRegistration": true,
+      "rejectReactionExecution": true
     },
-    "code": "new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})",
-    "enclosingFunction": {
-      "end": {
-        "column": 1,
-        "row": 14
-      },
-      "exported": true,
-      "file": "index.js",
-      "location": "index.js:bar:9:0:14:1",
-      "name": "bar",
-      "sourceCode": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}",
-      "start": {
-        "column": 0,
-        "row": 9
-      }
-    }
+    "code": "new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})"
   }
 ]
