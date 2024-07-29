@@ -15,17 +15,14 @@ export function runUnitTest(testName: string): void {
             let projectPath = path.resolve(__dirname, `fixtures/code/${testName}`);
             RuntimeConfig.getInstance(projectPath)
         })
-        it("should successfully read the raw coverage report", async function () {
-            let coverageAnalyzer = new CoverageAnalyzer();
-            let coverageReport = await coverageAnalyzer.readReport();
-            let expectedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-jscope-coverage-report.json`);
-            assert.deepEqual(coverageReport, expectedCoverageReport);
-        });
         it("should successfully refine the raw coverage report", async function () {
             let coverageAnalyzer = new CoverageAnalyzer();
-            let coverageReport = await coverageAnalyzer.analyze();
-            let expectedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`);
-            assert.deepEqual(coverageReport, expectedCoverageReport);
+            let refinedCoverageReport = await coverageAnalyzer.analyze();
+            let rawCoverageReport = await coverageAnalyzer.readReport();
+            let expectedRefinedCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-refined-coverage-report.json`);
+            let expectedRawCoverageReport = await readJson(`./fixtures/expected-outputs/${testName}/expected-jscope-coverage-report.json`);
+            assert.deepEqual(refinedCoverageReport, expectedRefinedCoverageReport);
+            assert.deepEqual(rawCoverageReport, expectedRawCoverageReport);
         });
     })
 }

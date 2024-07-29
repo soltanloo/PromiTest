@@ -18,5 +18,6 @@ describe("Pipeline", function () {
     describe("unit tests for the case", function () {
         runUnitTest("new-promise/nested-never-rejected-and-rejectable");
         runUnitTest("new-promise/deferred-never-rejected-and-rejectable");
+        runUnitTest("new-promise/deferred-never-resolved-and-resolvable");
     })
 });

@@ -7,7 +7,7 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         if (node.promiseInfo.warnings.rejection && this.isRejectable(node)) {
             node.flags.rejectable = true;
         }
-        if (node.promiseInfo.warnings.fulfillment) {
+        if (node.promiseInfo.warnings.fulfillment && this.isResolvable(node)) {
             node.flags.fulfillable = true;
         }
     }
