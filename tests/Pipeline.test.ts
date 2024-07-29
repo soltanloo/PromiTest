@@ -21,5 +21,6 @@ describe("Pipeline", function () {
         runUnitTest("new-promise/deferred-never-rejected-and-rejectable");
         runUnitTest("new-promise/deferred-never-resolved-and-resolvable");
         runUnitTest("new-promise/never-rejected-and-not-rejectable");
+        runUnitTest("new-promise/never-resolved-and-not-resolvable");
     })
 });
