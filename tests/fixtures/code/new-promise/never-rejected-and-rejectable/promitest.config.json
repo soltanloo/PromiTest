@@ -1,0 +1,4 @@
+{
+  "testDirectory": "test",
+  "testRunner": "mocha"
+}

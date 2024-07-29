@@ -1,0 +1,50 @@
+{
+  "74": {
+    "prompts": {},
+    "flags": {
+      "rejectable": true
+    },
+    "id": 74,
+    "promiseInfo": {
+      "identifier": 74,
+      "enclosingFunction": {
+        "location": "index.js:foo:3:0:8:1",
+        "name": "foo",
+        "start": {
+          "row": 3,
+          "column": 0
+        },
+        "end": {
+          "row": 8,
+          "column": 1
+        },
+        "file": "index.js",
+        "exported": true,
+        "sourceCode": "function foo(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}"
+      },
+      "location": {
+        "encoded": "index.js:4:9:7:4",
+        "file": "index.js",
+        "start": {
+          "row": 4,
+          "column": 9
+        },
+        "end": {
+          "row": 7,
+          "column": 4
+        }
+      },
+      "type": "NewPromise",
+      "warnings": {
+        "fulfillment": false,
+        "fulfillReactionRegistration": false,
+        "fulfillReactionExecution": false,
+        "rejection": true,
+        "rejectReactionRegistration": true,
+        "rejectReactionExecution": true
+      },
+      "code": "new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})"
+    },
+    "incomingEdges": "NONE"
+  }
+}
