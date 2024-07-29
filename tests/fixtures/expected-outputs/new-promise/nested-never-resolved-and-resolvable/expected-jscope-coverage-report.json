@@ -1,0 +1,88 @@
+{
+  "promiseMap": {
+    "80": {
+      "id": 80,
+      "location": "index.js:10:9:13:4",
+      "iid": 80,
+      "executorFids": [
+        "f15"
+      ],
+      "refs": [
+        {
+          "id": 75,
+          "location": "index.js:5:9:5:19"
+        }
+      ],
+      "pids": [
+        "p4"
+      ],
+      "links": [],
+      "parent": null,
+      "_parents": [
+        null
+      ],
+      "type": "NewPromise",
+      "_types": [
+        "NewPromise"
+      ],
+      "code": "new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})",
+      "settle": {
+        "fulfill": [],
+        "reject": [
+          {
+            "fid": "f17",
+            "tag": "settle",
+            "reaction": "reject",
+            "value": "N/A",
+            "path": "f17"
+          }
+        ]
+      },
+      "register": {
+        "fulfill": [],
+        "reject": [
+          {
+            "fid": "f20",
+            "wrapperFid": "f19",
+            "tag": "register",
+            "reaction": "reject",
+            "path": "f20"
+          }
+        ]
+      },
+      "execute": {
+        "fulfill": [],
+        "reject": [
+          {
+            "fid": "f20",
+            "wrapperFid": "f19",
+            "tag": "execute",
+            "reaction": "reject",
+            "path": "f20"
+          }
+        ]
+      },
+      "_logs": [],
+      "coverage": {
+        "settle_fulfill": false,
+        "settle_reject": true,
+        "register_fulfill": false,
+        "register_reject": true,
+        "execute_fulfill": false,
+        "execute_reject": true
+      }
+    }
+  },
+  "functionsMap": {
+    "f17": {
+      "iid": 85,
+      "location": "index.js:12:8:12:26",
+      "returnVal": "N/A"
+    },
+    "f15": {
+      "iid": 82,
+      "location": "index.js:10:21:13:3",
+      "returnVal": "N/A"
+    }
+  }
+}
