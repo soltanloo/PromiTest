@@ -26,12 +26,20 @@ function toPosition({line, column}: { line: number, column: number }): Position 
     };
 }
 
-function detectExports(ast: any): Set<string> {
+interface ExportInfo {
+    exports: Set<string>;
+    defaultExport: string | null;
+    renamedExports: Map<string, string>; // Mapping from local name to exported name
+}
+
+export function detectExports(ast: EspreeNode): ExportInfo {
     const exportedFunctions: Set<string> = new Set();
+    let defaultExport: string | null = null;
+    const renamedExports: Map<string, string> = new Map();
 
     estraverse.traverse(ast, {
         enter: (node: EspreeNode) => {
-            if (node.type === 'ExportNamedDeclaration' || node.type === 'ExportDefaultDeclaration') {
+            if (node.type === 'ExportNamedDeclaration') {
                 if (node.declaration && (node.declaration.type === 'FunctionDeclaration' || node.declaration.type === 'VariableDeclaration')) {
                     if (node.declaration.type === 'FunctionDeclaration') {
                         exportedFunctions.add(node.declaration.id.name);
@@ -45,7 +53,18 @@ function detectExports(ast: any): Set<string> {
                 } else if (node.specifiers) {
                     node.specifiers.forEach((specifier: any) => {
                         exportedFunctions.add(specifier.exported.name);
+                        if (specifier.exported.name !== specifier.local.name) {
+                            renamedExports.set(specifier.local.name, specifier.exported.name);
+                        }
                     });
+                }
+            } else if (node.type === 'ExportDefaultDeclaration') {
+                if (node.declaration.type === 'FunctionDeclaration') {
+                    defaultExport = node.declaration.id ? node.declaration.id.name : 'default';
+                } else if (node.declaration.type === 'Identifier') {
+                    defaultExport = node.declaration.name;
+                } else {
+                    defaultExport = 'default';
                 }
             } else if (node.type === 'AssignmentExpression' && node.left.type === 'MemberExpression' &&
                 node.left.object.type === 'Identifier' && node.left.object.name === 'module' &&
@@ -53,10 +72,32 @@ function detectExports(ast: any): Set<string> {
 
                 if (node.right.type === 'Identifier') {
                     exportedFunctions.add(node.right.name);
+                    defaultExport = node.right.name;
                 } else if (node.right.type === 'ObjectExpression') {
                     node.right.properties.forEach((property: any) => {
-                        if (property.value.type === 'Identifier') {
+                        if (property.key.type === 'Identifier' && property.value.type === 'Identifier') {
                             exportedFunctions.add(property.value.name);
+                            if (property.key.name !== property.value.name) {
+                                renamedExports.set(property.value.name, property.key.name);
+                            }
+                        }
+                    });
+                }
+            } else if (node.type === 'AssignmentExpression' && node.left.type === 'MemberExpression' &&
+                node.left.object.type === 'Identifier' && node.left.object.name === 'exports') {
+
+                if (node.left.property.type === 'Identifier' && node.right.type === 'Identifier') {
+                    exportedFunctions.add(node.right.name);
+                    renamedExports.set(node.right.name, node.left.property.name);
+                } else if (node.left.property.type === 'Identifier' && node.right.type === 'FunctionExpression') {
+                    exportedFunctions.add(node.left.property.name);
+                } else if (node.left.property.type === 'Identifier' && node.right.type === 'ObjectExpression') {
+                    node.right.properties.forEach((property: any) => {
+                        if (property.key.type === 'Identifier' && property.value.type === 'Identifier') {
+                            exportedFunctions.add(property.value.name);
+                            if (property.key.name !== property.value.name) {
+                                renamedExports.set(property.value.name, property.key.name);
+                            }
                         }
                     });
                 }
@@ -64,7 +105,11 @@ function detectExports(ast: any): Set<string> {
         }
     });
 
-    return exportedFunctions;
+    return {
+        exports: exportedFunctions,
+        defaultExport: defaultExport,
+        renamedExports: renamedExports
+    };
 }
 
 export function parseFunctionDefinitions(filePath: string): FunctionDefinition[] {
@@ -93,7 +138,15 @@ export function parseFunctionDefinitions(filePath: string): FunctionDefinition[]
                     name = parent!.id!.name;
                 }
 
-                const exported = exportedFunctions.has(name);
+                const exported = exportedFunctions.exports.has(name);
+                const defaultExport = exportedFunctions.defaultExport === name;
+                const exportedAs = exported ? (exportedFunctions.renamedExports.has(name) ? exportedFunctions.renamedExports.get(name) : name) : "";
+
+                const exportInfo = {
+                    exported,
+                    defaultExport,
+                    exportedAs,
+                }
 
                 // Extract the source code of the function
                 const start = functionNode.loc!.start;
@@ -116,7 +169,7 @@ export function parseFunctionDefinitions(filePath: string): FunctionDefinition[]
                     start: toPosition(node.loc!.start),
                     end: toPosition(node.loc!.end),
                     file: filePath,
-                    exported,
+                    exportInfo,
                     sourceCode: functionCode,
                 }
                 functionDefinitions.push(functionDefinition);

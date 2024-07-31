@@ -20,10 +20,12 @@ export class RootNodePrompt extends Prompt {
         for (const node of executionPath) {
             executionPathString += `Location: ${node.fileDetails.file}
             
-${node.fileDetails.sourceCode}
-
-exported: ${node.fileDetails.exported}
----`;
+            ${node.fileDetails.sourceCode}
+            
+            exported: ${node.fileDetails.exportInfo.exported}
+            isDefaultExport: ${node.fileDetails.exportInfo.defaultExport}
+            ${node.fileDetails.exportInfo.exportedAs ? "exportedAs: " + node.fileDetails.exportInfo.exportedAs : ""}
+            ---`;
         }
         return executionPathString;
     }

@@ -12,6 +12,6 @@ Location: {{location}}
 
 The execution path from the test to the mentioned function is included for you to better understand the context.
 Each function is separated by ---, and the location of each one is provided.
-Also, I have mentioned if they are exported or not, so that you can directly use them in the new test and avoid taking the whole execution path:
+Also, I have included export info about them, so that you can correctly write the imports and also possibly directly use them in the new test and avoid taking the whole execution path:
 
 {{executionPath}}`;

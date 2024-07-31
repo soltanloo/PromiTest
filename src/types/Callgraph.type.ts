@@ -22,6 +22,6 @@ export interface FunctionDefinition {
     file: string;
     start: Position;
     end: Position;
-    exported: boolean;
+    exportInfo: { exported: boolean, defaultExport: boolean, exportedAs: string | undefined };
     sourceCode: string;
 }
