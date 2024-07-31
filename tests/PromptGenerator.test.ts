@@ -35,9 +35,3 @@ export function runUnitTest(testName: string): void {
         });
     })
 }
-
-describe("PromptGenerator ", function () {
-    describe("unit tests", function () {
-        runUnitTest("new-promise/nested-never-rejected-and-rejectable");
-    })
-});

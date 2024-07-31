@@ -19,7 +19,11 @@
           "column": 1
         },
         "file": "index.js",
-        "exported": true,
+        "exportInfo": {
+          "exported": true,
+          "defaultExport": false,
+          "exportedAs": "foo"
+        },
         "sourceCode": "function foo(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}"
       },
       "location": {

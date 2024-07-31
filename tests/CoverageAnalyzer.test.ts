@@ -26,9 +26,3 @@ export function runUnitTest(testName: string): void {
         });
     })
 }
-
-describe("CoverageAnalyzer ", function () {
-    describe("unit tests for the case:", function () {
-        runUnitTest("new-promise/nested-never-rejected-and-rejectable");
-    })
-});

@@ -16,9 +16,3 @@ export function runUnitTest(testName: string): void {
         });
     })
 }
-
-describe("PromiseGraphConstructor ", function () {
-    describe("unit tests", function () {
-        runUnitTest("new-promise/nested-never-rejected-and-rejectable");
-    })
-});

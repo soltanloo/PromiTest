@@ -18,7 +18,11 @@
       },
       "location": "test/test.js:anonymous:9:30:13:2",
       "name": "anonymous",
-      "exported": false,
+      "exportInfo": {
+        "exported": false,
+        "defaultExport": false,
+        "exportedAs": ""
+      },
       "sourceCode": "function (done) {\n\t\tfoo(false).catch(() => {\n\t\t\tdone()\n\t\t});\n\t}"
     }
   },
@@ -41,7 +45,11 @@
       },
       "location": "index.js:foo:3:0:14:1",
       "name": "foo",
-      "exported": true,
+      "exportInfo": {
+        "exported": true,
+        "defaultExport": false,
+        "exportedAs": "foo"
+      },
       "sourceCode": "function foo(condition) {\n\tlet r1, r2;\n\tlet p = new Promise((resolve, reject) => {\n\t\tr1 = resolve;\n\t\tr2 = reject;\n\t})\n\n\tif (condition) r1(\"Hello World!\");\n\telse r2(\"Rejected\");\n\n\treturn p;\n}"
     }
   }
