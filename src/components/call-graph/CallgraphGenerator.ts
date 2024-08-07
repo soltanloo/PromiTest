@@ -1,6 +1,6 @@
 import {FileDetails, JSCallgraphOutput} from "../../types/Callgraph.type";
 // @ts-ignore
-import JCG from '@persper/js-callgraph';
+import JCG from 'jscg';
 import RuntimeConfig from "../configuration/RuntimeConfig";
 import {CallGraph} from "./CallGraph";
 import FileRepository from "../apis/FileRepository";
@@ -21,7 +21,7 @@ export default class CallgraphGenerator {
     }
 
     constructGraph(projectPath = this.RC.config.projectPath): CallGraph {
-        const args = {strategy: "DEMAND", output: null, cg: 'cg'};
+        const args = {strategy: "DEMAND", cg: 'cg'};
         JCG.setArgs(args);
         JCG.setFiles([projectPath]);
         JCG.setFilter(['+^.*\\.js$', '-^.*node_modules\\/.*\\.js$',]);
