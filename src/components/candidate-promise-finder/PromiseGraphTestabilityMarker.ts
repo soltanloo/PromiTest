@@ -3,6 +3,7 @@ import {PromiseNode} from "../promise-graph/PromiseNode";
 import {RootNodeMarkingStrategy} from "./RootNodeMarkingStrategy";
 import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
 import {PromiseGraph} from "../promise-graph/PromiseGraph";
+import {NoOpMarkingStrategy} from "./NoOpMarkingStrategy";
 
 export class PromiseGraphTestabilityMarker {
     public markGraph(promiseGraph: PromiseGraph) {
@@ -19,7 +20,7 @@ export class PromiseGraphTestabilityMarker {
     }
 
     public markNode(node: PromiseNode): void {
-        let strategy: NodeMarkingStrategy;
+        let strategy: NodeMarkingStrategy = new NoOpMarkingStrategy();
 
         switch (node.incomingEdges) {
             case IncomingEdges.NONE:
@@ -27,7 +28,8 @@ export class PromiseGraphTestabilityMarker {
                 break;
 
             default:
-                throw new Error("Unhandled node type");
+                // throw new Error("Unhandled node type"); //FIXME
+                break;
         }
 
         strategy.markNode(node);
