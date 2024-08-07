@@ -28,7 +28,7 @@ export class GPTController {
                     //     content: 'You are an expert JavaScript developer who can write tests to increase the coverage of the program.'
                     // },
                     {role: 'user', content: question}],
-                model: 'gpt-4o',
+                model: 'gpt-4o-mini',
                 max_tokens: GPTController.MAX_TOKENS
             };
 
