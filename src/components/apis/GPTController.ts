@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import logger from 'src/logging/logger';
 
 export class GPTController {
     private static instance: GPTController;
@@ -32,15 +33,20 @@ export class GPTController {
                 max_tokens: GPTController.MAX_TOKENS
             };
 
+            logger.debug('Sending question to GPT model:', question);
+
             GPTController.apiInstance.chat.completions.create(params)
                 .then((res) => {
                     if (!res.choices[0].message.content) {
+                        logger.error('No response received from GPT model');
                         reject(new Error('No response'));
                     } else {
+                        logger.info('Received response from GPT model:', res.choices[0].message.content);
                         resolve(res.choices[0].message.content);
                     }
                 })
                 .catch((err) => {
+                    logger.error('Error occurred while communicating with GPT model:', err);
                     throw err;
                 })
         });

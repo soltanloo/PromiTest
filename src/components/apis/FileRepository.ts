@@ -1,7 +1,7 @@
 import {FunctionDefinition} from "../../types/Callgraph.type";
 import {parseFunctionDefinitions} from "../../utils/AST";
 import {Position} from "../../types/File.type";
-
+import logger from "../../logging/logger";
 export default class FileRepository {
     private static readonly functionDefinitions: Map<string, FunctionDefinition[]> = new Map();
 
@@ -36,6 +36,8 @@ export default class FileRepository {
 
             }
         });
+
+        logger.debug("Enclosing function:", enclosingFunction);
 
         return enclosingFunction;
     }
