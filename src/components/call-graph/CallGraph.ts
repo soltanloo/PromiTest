@@ -2,7 +2,7 @@ import {Graph} from "../data-structures/Graph";
 import {NodeId} from "../../types/Graph.type";
 import {FileDetails, JSCallgraphOutput} from "../../types/Callgraph.type";
 import RuntimeConfig from "../configuration/RuntimeConfig";
-
+import logger from "src/logging/logger";
 export class CallGraph extends Graph {
     constructor(callgraphOutput?: JSCallgraphOutput) {
         super();
@@ -19,7 +19,9 @@ export class CallGraph extends Graph {
     }
 
     findShortestPathFromTestsTo(target: NodeId): NodeId[] {
-        return this.findPathsFromTestsTo(target).sort((a, b) => a.distance - b.distance)[0].path;
+        const shortestPath = this.findPathsFromTestsTo(target).sort((a, b) => a.distance - b.distance)[0].path;
+        logger.debug(`Shortest path from test to ${target}:`, shortestPath);
+        return shortestPath;
     }
 
     private loadCallgraph(callgraphOutput: JSCallgraphOutput) {
