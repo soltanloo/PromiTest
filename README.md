@@ -72,7 +72,9 @@ tests
 
 ### Running the Tool
 
-TODO
+```shell
+node ./dist/src/cli.js generate /path/to/project
+```
 
 ---
 
