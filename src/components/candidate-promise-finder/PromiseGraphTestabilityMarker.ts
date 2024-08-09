@@ -4,6 +4,7 @@ import {RootNodeMarkingStrategy} from "./RootNodeMarkingStrategy";
 import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
 import {PromiseGraph} from "../promise-graph/PromiseGraph";
 import {NoOpMarkingStrategy} from "./NoOpMarkingStrategy";
+import logger from "../../logging/logger";
 
 export class PromiseGraphTestabilityMarker {
     public markGraph(promiseGraph: PromiseGraph) {
@@ -21,14 +22,14 @@ export class PromiseGraphTestabilityMarker {
 
     public markNode(node: PromiseNode): void {
         let strategy: NodeMarkingStrategy = new NoOpMarkingStrategy();
-
+        logger.debug(`Marking node ${node.id}, incoming edges: ${node.incomingEdges}`);
         switch (node.incomingEdges) {
             case IncomingEdges.NONE:
                 strategy = new RootNodeMarkingStrategy();
                 break;
 
             default:
-                // throw new Error("Unhandled node type"); //FIXME
+                logger.error(`Unhandled incoming edges type: ${node.incomingEdges}`);
                 break;
         }
 

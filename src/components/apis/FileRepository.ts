@@ -36,8 +36,7 @@ export default class FileRepository {
 
             }
         });
-
-        logger.debug("Enclosing function:", enclosingFunction);
+        logger.debug("Enclosing function:", {message: enclosingFunction?.name});
 
         return enclosingFunction;
     }
