@@ -61,4 +61,9 @@ export default class RuntimeConfig {
             }
         }
     }
+
+    public setCoverageReportPath(coverageReportPath: string) {
+        logger.debug(`Setting coverageReportPath: ${coverageReportPath}`);
+        this.config.coverageReportPath = coverageReportPath;
+    }
 }

@@ -3,4 +3,5 @@ export interface Configuration {
     projectName: string;
     testDirectory: string;
     testRunner: "mocha" | "tap";
+    coverageReportPath?: string;
 }

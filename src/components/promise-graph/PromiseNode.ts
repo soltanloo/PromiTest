@@ -2,7 +2,7 @@ import {PromiseInfo} from "../../types/CoverageAnalyzer.type";
 import {IncomingEdges, PromiseFlags, PromiseNodeId} from "../../types/PromiseGraph.type";
 import {Node} from "../../types/Graph.type";
 import {Prompts} from "../../types/Prompt.type";
-import logger from "src/utils/logger";
+import logger from "../../utils/logger";
 
 //TODO: Define PromiseNode interface that extends Node and then define a new class that implements PromiseNode interface
 export class PromiseNode implements Node {

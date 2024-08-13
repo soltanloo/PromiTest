@@ -1,7 +1,7 @@
 import {PromiseNode} from "./PromiseNode";
 import {PromiseGraph} from "./PromiseGraph";
 import {PromiseCoverageReport, PromiseIdentifier} from "../../types/CoverageAnalyzer.type";
-import logger from "src/utils/logger";
+import logger from "../../utils/logger";
 
 export class PromiseGraphConstructor {
     promiseCoverageData: PromiseCoverageReport;
