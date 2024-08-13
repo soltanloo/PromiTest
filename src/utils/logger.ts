@@ -16,6 +16,7 @@ const logger = createLogger({
     }),
     new transports.File({
       filename: 'logs.log',
+      options: { flags: 'w' },
       level: 'debug', // will log errors, warnings, info and debug (if LOG_LEVEL is set to debug or lower)
       format: format.combine(
         format.timestamp(),

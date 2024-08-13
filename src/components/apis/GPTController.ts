@@ -34,7 +34,7 @@ export class GPTController {
                 max_tokens: GPTController.MAX_TOKENS
             };
 
-            logger.debug('Sending question to GPT model.', { question });
+            logger.debug(`Sending question to GPT model: \n ${question}`);
 
             GPTController.apiInstance.chat.completions.create(params)
                 .then((res) => {
@@ -44,12 +44,12 @@ export class GPTController {
                         logger.error('No response received from GPT model.');
                         reject(new Error('No response'));
                     } else {
-                        logger.info('Received response from GPT model.', { response: responseContent });
+                        logger.info(`Received response from GPT model: ${ responseContent }`);
                         resolve(responseContent);
                     }
                 })
                 .catch((err) => {
-                    logger.error('Error occurred while communicating with GPT model.', { error: err.message });
+                    logger.error(`Error occurred while communicating with GPT model. ${ err.message }`);
                     reject(err);
                 });
         });

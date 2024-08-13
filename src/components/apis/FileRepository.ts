@@ -11,10 +11,7 @@ export default class FileRepository {
         startPosition: Position,
         endPosition: Position
     }): FunctionDefinition | undefined {
-        logger.info(`Getting enclosing function in file: ${filePath}`, {
-            startPosition,
-            endPosition
-        });
+        logger.info(`Getting enclosing function in file: ${filePath}, from: ${JSON.stringify(startPosition)} to: ${JSON.stringify(endPosition)}`);
 
         FileRepository.parseFileForFunctions(filePath);
 
