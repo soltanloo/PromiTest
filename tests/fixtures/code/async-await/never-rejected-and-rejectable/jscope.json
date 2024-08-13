@@ -1,5 +1,5 @@
 {
     "test_framework": "mocha",
     "test_subdir": "test",
-    "test_regex": "*.js" 
+    "test_regex": "*.js"
 }

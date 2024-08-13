@@ -1,4 +1,4 @@
 {
-  "testDirectory": "test",
-  "testRunner": "mocha"
+    "testDirectory": "test",
+    "testRunner": "mocha"
 }

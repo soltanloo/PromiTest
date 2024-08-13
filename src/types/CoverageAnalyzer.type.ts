@@ -1,23 +1,23 @@
-import {Position} from "./File.type";
-import {FunctionDefinition} from "./Callgraph.type";
+import { Position } from './File.type';
+import { FunctionDefinition } from './Callgraph.type';
 
 export interface PromiseLocation {
-    encoded: string,
-    file: string,
-    start: Position,
-    end: Position,
+    encoded: string;
+    file: string;
+    start: Position;
+    end: Position;
 }
 
 export type PromiseType =
-    | "NewPromise"
-    | "AsyncFunction"
-    | "PromiseThen"
-    | "PromiseCatch"
-    | "PromiseResolve"
-    | "PromiseReject"
-    | "PromiseAll"
-    | "PromiseRace"
-    | "Await";
+    | 'NewPromise'
+    | 'AsyncFunction'
+    | 'PromiseThen'
+    | 'PromiseCatch'
+    | 'PromiseResolve'
+    | 'PromiseReject'
+    | 'PromiseAll'
+    | 'PromiseRace'
+    | 'Await';
 export type PromiseIdentifier = number;
 
 export interface PromiseCoverageWarnings {

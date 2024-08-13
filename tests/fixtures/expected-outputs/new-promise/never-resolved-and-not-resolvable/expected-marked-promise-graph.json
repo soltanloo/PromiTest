@@ -1,52 +1,52 @@
 {
-  "73": {
-    "prompts": {},
-    "flags": {},
-    "id": 73,
-    "promiseInfo": {
-      "identifier": 73,
-      "enclosingFunction": {
-        "location": "index.js:foo:3:0:7:1",
-        "name": "foo",
-        "start": {
-          "row": 3,
-          "column": 0
+    "73": {
+        "prompts": {},
+        "flags": {},
+        "id": 73,
+        "promiseInfo": {
+            "identifier": 73,
+            "enclosingFunction": {
+                "location": "index.js:foo:3:0:7:1",
+                "name": "foo",
+                "start": {
+                    "row": 3,
+                    "column": 0
+                },
+                "end": {
+                    "row": 7,
+                    "column": 1
+                },
+                "file": "index.js",
+                "exportInfo": {
+                    "exported": true,
+                    "defaultExport": false,
+                    "exportedAs": "foo"
+                },
+                "sourceCode": "function foo() {\n\treturn new Promise((resolve, reject) => {\n\t\treject(\"Rejected\");\n\t})\n}"
+            },
+            "location": {
+                "encoded": "index.js:4:9:6:4",
+                "file": "index.js",
+                "start": {
+                    "row": 4,
+                    "column": 9
+                },
+                "end": {
+                    "row": 6,
+                    "column": 4
+                }
+            },
+            "type": "NewPromise",
+            "warnings": {
+                "fulfillment": true,
+                "fulfillReactionRegistration": true,
+                "fulfillReactionExecution": true,
+                "rejection": false,
+                "rejectReactionRegistration": false,
+                "rejectReactionExecution": false
+            },
+            "code": "new Promise((resolve, reject) => {\n\t\treject(\"Rejected\");\n\t})"
         },
-        "end": {
-          "row": 7,
-          "column": 1
-        },
-        "file": "index.js",
-        "exportInfo": {
-          "exported": true,
-          "defaultExport": false,
-          "exportedAs": "foo"
-        },
-        "sourceCode": "function foo() {\n\treturn new Promise((resolve, reject) => {\n\t\treject(\"Rejected\");\n\t})\n}"
-      },
-      "location": {
-        "encoded": "index.js:4:9:6:4",
-        "file": "index.js",
-        "start": {
-          "row": 4,
-          "column": 9
-        },
-        "end": {
-          "row": 6,
-          "column": 4
-        }
-      },
-      "type": "NewPromise",
-      "warnings": {
-        "fulfillment": true,
-        "fulfillReactionRegistration": true,
-        "fulfillReactionExecution": true,
-        "rejection": false,
-        "rejectReactionRegistration": false,
-        "rejectReactionExecution": false
-      },
-      "code": "new Promise((resolve, reject) => {\n\t\treject(\"Rejected\");\n\t})"
-    },
-    "incomingEdges": "NONE"
-  }
+        "incomingEdges": "NONE"
+    }
 }

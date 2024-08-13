@@ -1,6 +1,6 @@
-import {PromiseNode} from "./PromiseNode";
-import {PromiseNodeId} from "../../types/PromiseGraph.type";
-import {Graph} from "../data-structures/Graph";
+import { PromiseNode } from './PromiseNode';
+import { PromiseNodeId } from '../../types/PromiseGraph.type';
+import { Graph } from '../data-structures/Graph';
 
 export class PromiseGraph extends Graph {
     constructor(nodes?: Map<PromiseNodeId, PromiseNode>) {
@@ -22,13 +22,11 @@ export class PromiseGraph extends Graph {
         const parents = [
             ...(chainedParentId ? [chainedParentId] : []),
             ...(linkedParentsIds ?? []),
-            ...(bundledParentsIds ?? [])
+            ...(bundledParentsIds ?? []),
         ];
 
         parents.forEach((parentId) => {
-            this.addEdge(parentId, newNode.id)
-        })
+            this.addEdge(parentId, newNode.id);
+        });
     }
-
-
 }

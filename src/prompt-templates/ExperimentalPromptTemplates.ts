@@ -1,5 +1,4 @@
-export const CondensedPromptTemplate = 
-    `Promise type: "{{promiseType}}" is not {{notStatus}} by the current test suite.
+export const CondensedPromptTemplate = `Promise type: "{{promiseType}}" is not {{notStatus}} by the current test suite.
 It’s potentially {{potentiallyStatus}} due to {{candidacyReason}}.
 Generate a test for this promise execution path.
 Include only the new test code with imports; no description or comments.
@@ -13,8 +12,7 @@ Functions separated by "---" with locations provided. Export status is mentioned
 
 {{executionPath}}`;
 
-export const YouAreApproachPromptTemplate =
-`You are a software testing engineer. 
+export const YouAreApproachPromptTemplate = `You are a software testing engineer. 
 There is a Promise of type "{{promiseType}}" 
 that is not {{notStatus}} by the current test suite 
 and is potentially {{potentiallyStatus}} due to {{candidacyReason}}.
@@ -29,8 +27,7 @@ Execution Path: {{executionPath}}
 Location: {{location}}
 {{code}}`;
 
-export const RewordedCondensedTemplate =
-`
+export const RewordedCondensedTemplate = `
 Location: {{location}}
 {{code}}
 
