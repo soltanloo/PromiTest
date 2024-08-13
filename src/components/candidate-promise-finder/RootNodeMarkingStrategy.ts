@@ -10,13 +10,13 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         let _isRejectable = this.isRejectable(node);
         let _isResolvable = this.isResolvable(node);
 
-        logger.debug(`Warnings: ${JSON.stringify(node.promiseInfo.warnings)}, isRejectable: ${_isRejectable}, isResolvable: ${_isResolvable}`);
+        logger.debug(`Warnings: ${JSON.stringify(node.promiseInfo.warnings)}`);
 
-        if (node.promiseInfo.warnings.rejection && this.isRejectable(node)) {
+        if (node.promiseInfo.warnings.rejection && _isRejectable) {
             logger.info(`Node ${node.id} is flagged as rejectable.`);
             node.flags.rejectable = true;
         }
-        if (node.promiseInfo.warnings.fulfillment && this.isResolvable(node)) {
+        if (node.promiseInfo.warnings.fulfillment && _isResolvable) {
             logger.info(`Node ${node.id} is flagged as resolvable.`);
             node.flags.fulfillable = true;
         }
