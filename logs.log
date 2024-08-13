@@ -174,3 +174,17 @@ describe('bar function', () => {
     });
 });
 ```
+2024-08-13T18:12:00.272Z [[32minfo[39m]: Project Name: nested-never-rejected-and-rejectable
+2024-08-13T18:12:00.274Z [[32minfo[39m]: Project Path: /home/lsa125/research/PromiTest/tests/fixtures/code/new-promise/nested-never-rejected-and-rejectable/
+2024-08-13T18:12:00.274Z [[32minfo[39m]: Config File: {
+  "testDirectory": "test",
+  "testRunner": "mocha"
+}
+2024-08-13T18:12:24.148Z [[34mdebug[39m]: Enclosing function: bar
+2024-08-13T18:12:24.150Z [[34mdebug[39m]: Marking node 78, incoming edges: NONE
+2024-08-13T18:12:24.271Z [[34mdebug[39m]: Enclosing function: anonymous
+2024-08-13T18:12:24.272Z [[34mdebug[39m]: Enclosing function: foo
+2024-08-13T18:12:24.275Z [[34mdebug[39m]: Enclosing function: anonymous
+2024-08-13T18:12:24.276Z [[34mdebug[39m]: Enclosing function: bar
+2024-08-13T18:12:24.276Z [[34mdebug[39m]: Enclosing function: foo
+2024-08-13T18:12:24.277Z [[34mdebug[39m]: Enclosing function: bar
