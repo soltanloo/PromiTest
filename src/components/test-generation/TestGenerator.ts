@@ -8,7 +8,7 @@ import {Prompts, Responses} from "../../types/Prompt.type";
 import {PromiseFlagTypes} from "../../types/PromiseGraph.type";
 import * as fs from "node:fs";
 import path from "path";
-import logger from "src/utils/logger";
+import logger from "../../utils/logger";
 
 export default class TestGenerator {
     private gptController = GPTController.getInstance();

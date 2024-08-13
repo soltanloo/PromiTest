@@ -4,7 +4,7 @@ import {NodeId} from "../../types/Graph.type";
 import path from "path";
 import Mocha from 'mocha';
 import TestGenerator from "./TestGenerator";
-import logger from 'src/utils/logger';
+import logger from '../../utils/logger';
 
 export default class TestValidator {
 
