@@ -17,14 +17,14 @@ export class CallGraph extends Graph {
         logger.debug(`Finding paths from tests to target: ${target}`);
         return this.entryPoints.map(start => {
             const { path, distance } = this.bfsShortestPath(start, target);
-            logger.debug(`Found path from ${start} to ${target} with distance ${distance}:`, { path });
+            logger.debug(`Found path from ${start} to ${target} with distance ${distance}:`, { message: path });
             return { start, path, distance };
         });
     }
 
     findShortestPathFromTestsTo(target: NodeId): NodeId[] {
         const shortestPath = this.findPathsFromTestsTo(target).sort((a, b) => a.distance - b.distance)[0].path;
-        logger.info(`Shortest path from test to ${target}:`, { path: shortestPath });
+        logger.info(`Shortest path from test to ${target}:`, { message: shortestPath });
         return shortestPath;
     }
 
