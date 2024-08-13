@@ -1,7 +1,7 @@
-import {NodeMarkingStrategy} from "./NodeMarkingStrategy";
-import {PromiseNode} from "../promise-graph/PromiseNode";
-import {isPromiseCalling} from "../../utils/AST";
-import logger from "../../utils/logger";
+import { NodeMarkingStrategy } from './NodeMarkingStrategy';
+import { PromiseNode } from '../promise-graph/PromiseNode';
+import { isPromiseCalling } from '../../utils/AST';
+import logger from '../../utils/logger';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     public markNode(node: PromiseNode): void {
@@ -23,8 +23,11 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private isRejectable(node: PromiseNode): boolean {
-        let isPromiseCallingResult = isPromiseCalling(node.promiseInfo.code, "reject")
-        logger.debug("isRejectable", {message: isPromiseCallingResult})
+        let isPromiseCallingResult = isPromiseCalling(
+            node.promiseInfo.code,
+            'reject',
+        );
+        logger.debug('isRejectable', { message: isPromiseCallingResult });
         return isPromiseCallingResult;
         // if (node.promiseInfo.type === "NewPromise") {
         //     const rejectablePatterns = [/reject\(/, /throw /];
@@ -36,10 +39,12 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         // return false;
     }
 
-
     private isResolvable(node: PromiseNode): boolean {
-        let isPromiseCallingResult = isPromiseCalling(node.promiseInfo.code, "resolve")
-        logger.debug("isResolvable", {message: isPromiseCallingResult})
+        let isPromiseCallingResult = isPromiseCalling(
+            node.promiseInfo.code,
+            'resolve',
+        );
+        logger.debug('isResolvable', { message: isPromiseCallingResult });
         return isPromiseCallingResult;
         // if (node.promiseInfo.type === "NewPromise") {
         //     const resolvablePatterns = [/resolve\(/];

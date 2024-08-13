@@ -1,4 +1,4 @@
-import {Position, Range} from "./File.type";
+import { Position, Range } from './File.type';
 
 export interface FileDetails {
     label: string;
@@ -22,6 +22,10 @@ export interface FunctionDefinition {
     file: string;
     start: Position;
     end: Position;
-    exportInfo: { exported: boolean, defaultExport: boolean, exportedAs: string | undefined };
+    exportInfo: {
+        exported: boolean;
+        defaultExport: boolean;
+        exportedAs: string | undefined;
+    };
     sourceCode: string;
 }

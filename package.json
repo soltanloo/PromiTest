@@ -1,34 +1,44 @@
 {
-  "name": "promitest",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "pretest": "cd tests/fixtures/code && npm install",
-    "test": "mocha --import=tsx tests/**/*.test.ts",
-    "start": "tsx index.ts",
-    "build": "tsc",
-    "clean": "rm -rf ./dist tests/fixtures/code/node_modules"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/chai": "^4.3.16",
-    "@types/expect": "^24.3.0",
-    "@types/mocha": "^10.0.7",
-    "@types/node": "^20.14.13",
-    "chai": "^5.1.1",
-    "mocha": "^10.7.0",
-    "typescript": "^5.5.4"
-  },
-  "dependencies": {
-    "commander": "^12.1.0",
-    "dotenv": "^16.4.5",
-    "espree": "^10.1.0",
-    "estraverse": "^5.3.0",
-    "jscg": "^2.2.0",
-    "winston": "^3.14.1",
-    "npm": "^10.8.2",
-    "openai": "^4.53.2",
-    "tsx": "^4.16.2"
-  }
+    "name": "promitest",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "pretest": "cd tests/fixtures/code && npm install",
+        "test": "mocha --import=tsx tests/**/*.test.ts",
+        "start": "tsx index.ts",
+        "build": "tsc",
+        "clean": "rm -rf ./dist tests/fixtures/code/node_modules",
+        "prepare": "husky",
+        "format": "prettier --write ."
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/chai": "^4.3.16",
+        "@types/expect": "^24.3.0",
+        "@types/mocha": "^10.0.7",
+        "@types/node": "^20.14.13",
+        "chai": "^5.1.1",
+        "husky": "^9.1.4",
+        "lint-staged": "^15.2.9",
+        "mocha": "^10.7.0",
+        "prettier": "^3.3.3",
+        "typescript": "^5.5.4"
+    },
+    "dependencies": {
+        "commander": "^12.1.0",
+        "dotenv": "^16.4.5",
+        "espree": "^10.1.0",
+        "estraverse": "^5.3.0",
+        "jscg": "^2.2.0",
+        "npm": "^10.8.2",
+        "openai": "^4.53.2",
+        "tsx": "^4.16.2",
+        "winston": "^3.14.1"
+    },
+    "lint-staged": {
+        "*.{json,ts}": [
+            "prettier --write"
+        ]
+    }
 }

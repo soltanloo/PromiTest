@@ -1,56 +1,56 @@
 {
-  "test/test.js:anon:9:30:13:2": {
-    "id": "test/test.js:anon:9:30:13:2",
-    "fileDetails": {
-      "label": "anon",
-      "file": "test/test.js",
-      "start": {
-        "row": 9,
-        "column": 30
-      },
-      "end": {
-        "row": 13,
-        "column": 2
-      },
-      "range": {
-        "start": 173,
-        "end": 178
-      },
-      "location": "test/test.js:anonymous:9:30:13:2",
-      "name": "anonymous",
-      "exportInfo": {
-        "exported": false,
-        "defaultExport": false,
-        "exportedAs": ""
-      },
-      "sourceCode": "function (done) {\n\t\tfoo().then(() => {\n\t\t\tdone()\n\t\t});\n\t}"
+    "test/test.js:anon:9:30:13:2": {
+        "id": "test/test.js:anon:9:30:13:2",
+        "fileDetails": {
+            "label": "anon",
+            "file": "test/test.js",
+            "start": {
+                "row": 9,
+                "column": 30
+            },
+            "end": {
+                "row": 13,
+                "column": 2
+            },
+            "range": {
+                "start": 173,
+                "end": 178
+            },
+            "location": "test/test.js:anonymous:9:30:13:2",
+            "name": "anonymous",
+            "exportInfo": {
+                "exported": false,
+                "defaultExport": false,
+                "exportedAs": ""
+            },
+            "sourceCode": "function (done) {\n\t\tfoo().then(() => {\n\t\t\tdone()\n\t\t});\n\t}"
+        }
+    },
+    "index.js:foo:3:0:7:1": {
+        "id": "index.js:foo:3:0:7:1",
+        "fileDetails": {
+            "label": "foo",
+            "file": "index.js",
+            "start": {
+                "row": 3,
+                "column": 0
+            },
+            "end": {
+                "row": 7,
+                "column": 1
+            },
+            "range": {
+                "start": 13,
+                "end": 105
+            },
+            "location": "index.js:foo:3:0:7:1",
+            "name": "foo",
+            "exportInfo": {
+                "exported": true,
+                "defaultExport": false,
+                "exportedAs": "foo"
+            },
+            "sourceCode": "function foo() {\n\treturn new Promise((resolve, reject) => {\n\t\tresolve(\"Hello World!\");\n\t})\n}"
+        }
     }
-  },
-  "index.js:foo:3:0:7:1": {
-    "id": "index.js:foo:3:0:7:1",
-    "fileDetails": {
-      "label": "foo",
-      "file": "index.js",
-      "start": {
-        "row": 3,
-        "column": 0
-      },
-      "end": {
-        "row": 7,
-        "column": 1
-      },
-      "range": {
-        "start": 13,
-        "end": 105
-      },
-      "location": "index.js:foo:3:0:7:1",
-      "name": "foo",
-      "exportInfo": {
-        "exported": true,
-        "defaultExport": false,
-        "exportedAs": "foo"
-      },
-      "sourceCode": "function foo() {\n\treturn new Promise((resolve, reject) => {\n\t\tresolve(\"Hello World!\");\n\t})\n}"
-    }
-  }
 }

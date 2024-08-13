@@ -1,8 +1,12 @@
-import {PromiseInfo} from "../../types/CoverageAnalyzer.type";
-import {IncomingEdges, PromiseFlags, PromiseNodeId} from "../../types/PromiseGraph.type";
-import {Node} from "../../types/Graph.type";
-import {Prompts} from "../../types/Prompt.type";
-import logger from "../../utils/logger";
+import { PromiseInfo } from '../../types/CoverageAnalyzer.type';
+import {
+    IncomingEdges,
+    PromiseFlags,
+    PromiseNodeId,
+} from '../../types/PromiseGraph.type';
+import { Node } from '../../types/Graph.type';
+import { Prompts } from '../../types/Prompt.type';
+import logger from '../../utils/logger';
 
 //TODO: Define PromiseNode interface that extends Node and then define a new class that implements PromiseNode interface
 export class PromiseNode implements Node {
@@ -16,7 +20,6 @@ export class PromiseNode implements Node {
     prompts: Prompts = {};
 
     flags: PromiseFlags = {};
-
 
     constructor(id: PromiseNodeId, info: PromiseInfo) {
         this.id = id;
@@ -48,16 +51,13 @@ export class PromiseNode implements Node {
         let incomingEdges: IncomingEdges = IncomingEdges.NONE;
         if (hasBundledInputs) {
             incomingEdges = IncomingEdges.MULTIPLE_BUNDLE;
-        }
-        else if (hasChainedParent && hasLinkedParent) {
+        } else if (hasChainedParent && hasLinkedParent) {
             incomingEdges = IncomingEdges.LINK_AND_CHAIN;
-        }
-        else if (hasChainedParent) {
+        } else if (hasChainedParent) {
             incomingEdges = IncomingEdges.ONE_CHAIN;
-        }
-        else if (hasLinkedParent) {
+        } else if (hasLinkedParent) {
             incomingEdges = IncomingEdges.ONE_LINK;
-        }else{
+        } else {
             incomingEdges = IncomingEdges.NONE;
         }
         logger.debug(`Incoming edges for node ${this.id}: ${incomingEdges}`);

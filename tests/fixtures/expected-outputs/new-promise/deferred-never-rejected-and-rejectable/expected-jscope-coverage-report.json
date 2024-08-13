@@ -1,83 +1,75 @@
 {
-  "promiseMap": {
-    "74": {
-      "id": 74,
-      "location": "index.js:5:10:8:4",
-      "iid": 74,
-      "executorFids": [
-        "f15"
-      ],
-      "refs": [],
-      "pids": [
-        "p4"
-      ],
-      "links": [],
-      "parent": null,
-      "_parents": [
-        null
-      ],
-      "type": "NewPromise",
-      "_types": [
-        "NewPromise"
-      ],
-      "code": "new Promise((resolve, reject) => {\n\t\tr1 = resolve;\n\t\tr2 = reject;\n\t})",
-      "settle": {
-        "fulfill": [
-          {
-            "fid": "f16",
-            "tag": "settle",
-            "reaction": "fulfill",
-            "value": "N/A",
-            "path": "f16"
-          }
-        ],
-        "reject": []
-      },
-      "register": {
-        "fulfill": [
-          {
-            "fid": "f20",
-            "wrapperFid": "f18",
-            "tag": "register",
-            "reaction": "fulfill",
-            "path": "f20"
-          }
-        ],
-        "reject": []
-      },
-      "execute": {
-        "fulfill": [
-          {
-            "fid": "f20",
-            "wrapperFid": "f18",
-            "tag": "execute",
-            "reaction": "fulfill",
-            "path": "f20"
-          }
-        ],
-        "reject": []
-      },
-      "_logs": [],
-      "coverage": {
-        "settle_fulfill": true,
-        "settle_reject": false,
-        "register_fulfill": true,
-        "register_reject": false,
-        "execute_fulfill": true,
-        "execute_reject": false
-      }
-    }
-  },
-  "functionsMap": {
-    "f15": {
-      "iid": 76,
-      "location": "index.js:5:22:8:3",
-      "returnVal": "N/A"
+    "promiseMap": {
+        "74": {
+            "id": 74,
+            "location": "index.js:5:10:8:4",
+            "iid": 74,
+            "executorFids": ["f15"],
+            "refs": [],
+            "pids": ["p4"],
+            "links": [],
+            "parent": null,
+            "_parents": [null],
+            "type": "NewPromise",
+            "_types": ["NewPromise"],
+            "code": "new Promise((resolve, reject) => {\n\t\tr1 = resolve;\n\t\tr2 = reject;\n\t})",
+            "settle": {
+                "fulfill": [
+                    {
+                        "fid": "f16",
+                        "tag": "settle",
+                        "reaction": "fulfill",
+                        "value": "N/A",
+                        "path": "f16"
+                    }
+                ],
+                "reject": []
+            },
+            "register": {
+                "fulfill": [
+                    {
+                        "fid": "f20",
+                        "wrapperFid": "f18",
+                        "tag": "register",
+                        "reaction": "fulfill",
+                        "path": "f20"
+                    }
+                ],
+                "reject": []
+            },
+            "execute": {
+                "fulfill": [
+                    {
+                        "fid": "f20",
+                        "wrapperFid": "f18",
+                        "tag": "execute",
+                        "reaction": "fulfill",
+                        "path": "f20"
+                    }
+                ],
+                "reject": []
+            },
+            "_logs": [],
+            "coverage": {
+                "settle_fulfill": true,
+                "settle_reject": false,
+                "register_fulfill": true,
+                "register_reject": false,
+                "execute_fulfill": true,
+                "execute_reject": false
+            }
+        }
     },
-    "f16": {
-      "iid": 84,
-      "location": "index.js:10:17:10:35",
-      "returnVal": "N/A"
+    "functionsMap": {
+        "f15": {
+            "iid": 76,
+            "location": "index.js:5:22:8:3",
+            "returnVal": "N/A"
+        },
+        "f16": {
+            "iid": 84,
+            "location": "index.js:10:17:10:35",
+            "returnVal": "N/A"
+        }
     }
-  }
 }

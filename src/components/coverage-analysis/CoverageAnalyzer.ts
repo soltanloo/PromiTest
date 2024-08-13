@@ -3,16 +3,16 @@ import {
     PromiseIdentifier,
     PromiseInfo,
     PromiseLocation,
-    PromiseType
-} from "../../types/CoverageAnalyzer.type";
-import RuntimeConfig from "../configuration/RuntimeConfig";
-import {Configuration} from "../../types/Configuration.type";
-import * as process from "node:process";
-import {sh} from "../../utils/sh";
-import {JScopeCoverageReport, Pid} from "../../types/JScope.type";
-import FileRepository from "../apis/FileRepository";
-import path from "path";
-import logger from "../../utils/logger"; // Import logger
+    PromiseType,
+} from '../../types/CoverageAnalyzer.type';
+import RuntimeConfig from '../configuration/RuntimeConfig';
+import { Configuration } from '../../types/Configuration.type';
+import * as process from 'node:process';
+import { sh } from '../../utils/sh';
+import { JScopeCoverageReport, Pid } from '../../types/JScope.type';
+import FileRepository from '../apis/FileRepository';
+import path from 'path';
+import logger from '../../utils/logger'; // Import logger
 
 export class CoverageAnalyzer {
     coverageData?: PromiseCoverageReport;
@@ -23,64 +23,82 @@ export class CoverageAnalyzer {
     readonly JSCOPE_PATH = process.env.JSCOPE_PATH;
 
     constructor() {
-        logger.debug("Initializing CoverageAnalyzer");
+        logger.debug('Initializing CoverageAnalyzer');
         this.RC = RuntimeConfig.getInstance().config;
         this.projectName = this.RC.projectName;
         this.projectPath = this.RC.projectPath;
-        logger.info(`Initialized CoverageAnalyzer for project: ${this.projectName}, path: ${this.projectPath}`);
+        logger.info(
+            `Initialized CoverageAnalyzer for project: ${this.projectName}, path: ${this.projectPath}`,
+        );
     }
 
     public async analyze(): Promise<PromiseCoverageReport> {
-        let coverageReportPath = RuntimeConfig.getInstance().config.coverageReportPath;
-        let filePath:string;
-        if(coverageReportPath) {
-            logger.info("Using provided coverage report path");
+        let coverageReportPath =
+            RuntimeConfig.getInstance().config.coverageReportPath;
+        let filePath: string;
+        if (coverageReportPath) {
+            logger.info('Using provided coverage report path');
             filePath = coverageReportPath;
-        }else{
-            logger.info("Starting analysis with JScope");
+        } else {
+            logger.info('Starting analysis with JScope');
             await this.runJScope();
-            logger.debug("JScope execution completed");
+            logger.debug('JScope execution completed');
             filePath = `${this.projectPath}/async-coverage-report.json`;
         }
         this.rawCoverageReport = await this.readReport(filePath);
-        logger.debug("Coverage report read successfully");
+        logger.debug('Coverage report read successfully');
 
         this.coverageData = this.refineReport();
-        logger.info("Refined coverage report generated");
+        logger.info('Refined coverage report generated');
 
         return this.coverageData;
     }
 
-    refineReport(report: JScopeCoverageReport = this.rawCoverageReport): PromiseCoverageReport {
-        logger.debug("Refining coverage report");
+    refineReport(
+        report: JScopeCoverageReport = this.rawCoverageReport,
+    ): PromiseCoverageReport {
+        logger.debug('Refining coverage report');
         let promiseMap = report.promiseMap;
         let functionsMap = report.functionsMap;
         let refinedCoverageReport: PromiseCoverageReport = [];
 
         Object.entries(promiseMap).forEach(([key, value]) => {
             let decodedLocation = this.decodeLocation(value.location);
-            logger.debug(`Decoded location for promise ${key}: ${JSON.stringify(decodedLocation)}`);
+            logger.debug(
+                `Decoded location for promise ${key}: ${JSON.stringify(decodedLocation)}`,
+            );
 
-            let enclosingFunction = FileRepository.getEnclosingFunction(path.join(this.projectPath, decodedLocation.file), {
-                startPosition: decodedLocation.start,
-                endPosition: decodedLocation.end
-            });
+            let enclosingFunction = FileRepository.getEnclosingFunction(
+                path.join(this.projectPath, decodedLocation.file),
+                {
+                    startPosition: decodedLocation.start,
+                    endPosition: decodedLocation.end,
+                },
+            );
 
             if (enclosingFunction) {
-                logger.debug(`Enclosing function found for promise ${key}: ${enclosingFunction.name}`);
+                logger.debug(
+                    `Enclosing function found for promise ${key}: ${enclosingFunction.name}`,
+                );
             } else {
                 logger.warn(`No enclosing function found for promise ${key}`);
             }
 
             let warnings = {
-                fulfillment: (value.coverage.settle_fulfill === false),
-                fulfillReactionRegistration: (value.coverage.register_fulfill === false),
-                fulfillReactionExecution: (value.coverage.execute_fulfill === false),
-                rejection: (value.coverage.settle_reject === false),
-                rejectReactionRegistration: (value.coverage.register_reject === false),
-                rejectReactionExecution: (value.coverage.execute_reject === false),
+                fulfillment: value.coverage.settle_fulfill === false,
+                fulfillReactionRegistration:
+                    value.coverage.register_fulfill === false,
+                fulfillReactionExecution:
+                    value.coverage.execute_fulfill === false,
+                rejection: value.coverage.settle_reject === false,
+                rejectReactionRegistration:
+                    value.coverage.register_reject === false,
+                rejectReactionExecution:
+                    value.coverage.execute_reject === false,
             };
-            logger.debug(`Warnings for promise ${key}: ${JSON.stringify(warnings)}`);
+            logger.debug(
+                `Warnings for promise ${key}: ${JSON.stringify(warnings)}`,
+            );
 
             let refinedPromiseInfo: PromiseInfo = {
                 identifier: Number(key),
@@ -92,8 +110,12 @@ export class CoverageAnalyzer {
             };
 
             if (value.parent) {
-                refinedPromiseInfo.parent = this.extractPromiseIdFromString(value.parent);
-                logger.debug(`Parent promise id for ${key}: ${refinedPromiseInfo.parent}`);
+                refinedPromiseInfo.parent = this.extractPromiseIdFromString(
+                    value.parent,
+                );
+                logger.debug(
+                    `Parent promise id for ${key}: ${refinedPromiseInfo.parent}`,
+                );
             }
 
             refinedCoverageReport.push(refinedPromiseInfo);
@@ -107,11 +129,13 @@ export class CoverageAnalyzer {
         logger.debug(`Reading coverage report from ${filePath}`);
         try {
             let { default: rawCoverageReport } = await import(filePath);
-            logger.info("Coverage report loaded successfully");
+            logger.info('Coverage report loaded successfully');
             return rawCoverageReport as JScopeCoverageReport;
         } catch (error) {
-            logger.error("Error occurred while fetching Coverage Report:", { message: error });
-            throw new Error("Error occurred while fetching Coverage Report");
+            logger.error('Error occurred while fetching Coverage Report:', {
+                message: error,
+            });
+            throw new Error('Error occurred while fetching Coverage Report');
         }
     }
 
@@ -120,10 +144,15 @@ export class CoverageAnalyzer {
         logger.debug(`Running JScope with command: ${cmd}`);
         try {
             await sh(cmd);
-            logger.info("JScope run completed successfully");
+            logger.info('JScope run completed successfully');
         } catch (error) {
-            logger.error("Error occurred while running JScope on the project:", { message: error });
-            throw new Error("Error occurred while running JScope on the project");
+            logger.error(
+                'Error occurred while running JScope on the project:',
+                { message: error },
+            );
+            throw new Error(
+                'Error occurred while running JScope on the project',
+            );
         }
     }
 
@@ -141,13 +170,17 @@ export class CoverageAnalyzer {
             end: {
                 row: parseInt(parts[3], 10),
                 column: parseInt(parts[4], 10),
-            }
+            },
         };
     }
 
-    private extractPromiseIdFromString(pid: Pid | null): PromiseIdentifier | undefined {
+    private extractPromiseIdFromString(
+        pid: Pid | null,
+    ): PromiseIdentifier | undefined {
         if (pid === null || pid === undefined) {
-            logger.debug("Promise ID is null or undefined, skipping extraction");
+            logger.debug(
+                'Promise ID is null or undefined, skipping extraction',
+            );
             return;
         }
         const match = pid.match(/\d+/);

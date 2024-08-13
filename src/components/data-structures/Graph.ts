@@ -1,4 +1,4 @@
-import {AdjacencyList, Node, NodeId} from "../../types/Graph.type";
+import { AdjacencyList, Node, NodeId } from '../../types/Graph.type';
 
 export class Graph {
     private _inDegrees: Map<NodeId, number> = new Map();
@@ -48,8 +48,8 @@ export class Graph {
     }
 
     addNodes(nodes: Map<NodeId, Node>) {
-        nodes.forEach(node => {
-            this.addNode(node)
+        nodes.forEach((node) => {
+            this.addNode(node);
         });
     }
 
@@ -57,20 +57,18 @@ export class Graph {
     addEdge(from: NodeId, to: NodeId) {
         let destinationNode = this._nodes.get(to);
 
-
         if (destinationNode) {
-            if (!this._adjacencyList.get(from)) this._adjacencyList.set(from, []);
+            if (!this._adjacencyList.get(from))
+                this._adjacencyList.set(from, []);
             this._adjacencyList.get(from)?.push(destinationNode);
             this._inDegrees.set(to, (this._inDegrees.get(to) || 0) + 1);
             this._entryPoints.delete(to);
         } else throw new Error('destination node does not exist');
     }
 
-
     getNode(id: NodeId): Node | undefined {
         return this._nodes.get(id);
     }
-
 
     getEdges(id: NodeId): Node[] {
         return this._adjacencyList.get(id) || [];
@@ -95,7 +93,7 @@ export class Graph {
                 inStack.add(pid);
 
                 const edges = nodesAdjacencyList.get(pid) || [];
-                edges.forEach(node => visit(node.identifier));
+                edges.forEach((node) => visit(node.identifier));
 
                 inStack.delete(pid);
                 stack.push(pid);
@@ -108,7 +106,7 @@ export class Graph {
             }
         });
 
-        this._sortedNodes = stack.reverse()
+        this._sortedNodes = stack.reverse();
         return this._sortedNodes;
     }
 
@@ -117,31 +115,38 @@ export class Graph {
     }
 
     getNodesAsObject(): Object {
-        return Object.fromEntries(this._nodes)
+        return Object.fromEntries(this._nodes);
     }
 
-    bfsShortestPath(start: NodeId, end: NodeId): { path: NodeId[], distance: number } {
-        let queue: { node: NodeId, path: NodeId[], distance: number }[] = [];
+    bfsShortestPath(
+        start: NodeId,
+        end: NodeId,
+    ): { path: NodeId[]; distance: number } {
+        let queue: { node: NodeId; path: NodeId[]; distance: number }[] = [];
         let visited = new Set<NodeId>();
 
-        queue.push({node: start, path: [start], distance: 0});
+        queue.push({ node: start, path: [start], distance: 0 });
         visited.add(start);
 
         while (queue.length > 0) {
-            let {node, path, distance} = queue.shift()!;
+            let { node, path, distance } = queue.shift()!;
 
             if (node === end) {
-                return {path, distance};
+                return { path, distance };
             }
 
-            this.getEdges(node).forEach(neighbor => {
+            this.getEdges(node).forEach((neighbor) => {
                 if (!visited.has(neighbor.id)) {
                     visited.add(neighbor.id);
-                    queue.push({node: neighbor.id, path: [...path, neighbor.id], distance: distance + 1});
+                    queue.push({
+                        node: neighbor.id,
+                        path: [...path, neighbor.id],
+                        distance: distance + 1,
+                    });
                 }
             });
         }
 
-        return {path: [], distance: Infinity}; // No path found
+        return { path: [], distance: Infinity }; // No path found
     }
 }
