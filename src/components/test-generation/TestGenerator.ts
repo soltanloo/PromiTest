@@ -8,6 +8,7 @@ import {Prompts, Responses} from "../../types/Prompt.type";
 import {PromiseFlagTypes} from "../../types/PromiseGraph.type";
 import * as fs from "node:fs";
 import path from "path";
+import logger from "src/utils/logger";
 
 export default class TestGenerator {
     private gptController = GPTController.getInstance();
@@ -58,13 +59,17 @@ export default class TestGenerator {
     }
 
     writePromiseTestToFile(promiseId: NodeId, flag: string, testString: string) {
+        logger.debug(`Writing test for promise ${promiseId} with flag ${flag}`);
         let filePath = TestGenerator.getTestFilePathForPromise(promiseId, flag);
         fs.writeFileSync(filePath, testString);
+        logger.info(`Test written to ${filePath}`);
     }
 
     deleteTestFile(promiseId: NodeId, flag: string) {
+        logger.debug(`Deleting test file for promise ${promiseId} with flag ${flag}`);
         let filePath = TestGenerator.getTestFilePathForPromise(promiseId, flag);
         fs.unlinkSync(filePath);
+        logger.info(`Test file deleted at ${filePath}`);
     }
 
     private async processPrompt(promiseId: NodeId, flag: string, prompt: string, retry: boolean = true): Promise<string | null> {
@@ -77,31 +82,35 @@ export default class TestGenerator {
                 this.writePromiseTestToFile(promiseId, flag, response);
                 let validRuntime = await TestValidator.validateRuntime(promiseId, flag);
                 if (!validRuntime) {
+                    logger.error("Test failed.");
                     throw new Error("Test failed.") //FIXME
                 }
                 return response;
             } else {
-                console.log("Syntax error", response);
+                
                 if (retry) {
+                    logger.warn("Syntax error in response, retrying...");
                     let newPrompt = "This prompt that I gave you before (separated by $$$) generated a response that had syntactic issues:\n" +
                         "$$$\n" + prompt + "\n$$$\n" +
                         "Now give me a new response that has this issue fixed. Your old response was:\n" +
                         response;
                     return await this.processPrompt(promiseId, flag, newPrompt, false);
                 } else {
+                    logger.error("Syntax error in response, skipping...");
                     return null;
                 }
             }
         } catch (error) {
-            console.error("Error processing prompt", error);
             this.deleteTestFile(promiseId, flag);
             if (retry) {
+                logger.warn("Runtime error in response, retrying...");
                 let newPrompt = "This prompt that I gave you before (separated by $$$) generated a response that had runtime issues:\n" +
                     "$$$\n" + prompt + "\n$$$\n" +
                     "Now give me a new response that has this issue fixed. Your old response was:\n" +
                     response + "\nThe error is:\n" + error;
                 return await this.processPrompt(promiseId, flag, newPrompt, false);
             } else {
+                logger.error("Runtime error in response, skipping...");
                 return null;
             }
         }
