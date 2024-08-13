@@ -31,11 +31,18 @@ export class CoverageAnalyzer {
     }
 
     public async analyze(): Promise<PromiseCoverageReport> {
-        logger.info("Starting analysis with JScope");
-        await this.runJScope();
-        logger.debug("JScope execution completed");
-
-        this.rawCoverageReport = await this.readReport();
+        let coverageReportPath = RuntimeConfig.getInstance().config.coverageReportPath;
+        let filePath:string;
+        if(coverageReportPath) {
+            logger.info("Using provided coverage report path");
+            filePath = coverageReportPath;
+        }else{
+            logger.info("Starting analysis with JScope");
+            await this.runJScope();
+            logger.debug("JScope execution completed");
+            filePath = `${this.projectPath}/async-coverage-report.json`;
+        }
+        this.rawCoverageReport = await this.readReport(filePath);
         logger.debug("Coverage report read successfully");
 
         this.coverageData = this.refineReport();
@@ -96,7 +103,7 @@ export class CoverageAnalyzer {
         return refinedCoverageReport;
     }
 
-    async readReport(filePath: string = RuntimeConfig.getInstance().config.coverageReportPath ?? `${this.projectPath}/async-coverage-report.json`): Promise<JScopeCoverageReport> {
+    async readReport(filePath: string): Promise<JScopeCoverageReport> {
         logger.debug(`Reading coverage report from ${filePath}`);
         try {
             let { default: rawCoverageReport } = await import(filePath);
