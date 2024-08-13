@@ -1,14 +1,13 @@
 import { createLogger, format, transports } from 'winston';
-
 const logger = createLogger({
-  level: 'debug', // Global level, processes all logs down to debug
+  level: process.env.LOG_LEVEL,
   format: format.combine(
     format.timestamp(),
     format.printf((info) => `${info.timestamp} [${info.level}]: ${info.message}`)
   ),
   transports: [
     new transports.Console({
-      level: 'info', // Console will log 'info' and higher (info, warn, error)
+      level: 'info', // will log errors, warnings and info
       format: format.combine(
         format.colorize(),
         format.timestamp(),
@@ -17,7 +16,7 @@ const logger = createLogger({
     }),
     new transports.File({
       filename: 'logs.log',
-      level: 'debug', // File will log all levels including 'debug'
+      level: 'debug', // will log errors, warnings, info and debug (if LOG_LEVEL is set to debug or lower)
       format: format.combine(
         format.timestamp(),
         format.printf((info) => `${info.timestamp} [${info.level}]: ${info.message}`)

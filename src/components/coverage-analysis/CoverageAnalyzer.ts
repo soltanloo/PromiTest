@@ -96,7 +96,7 @@ export class CoverageAnalyzer {
         return refinedCoverageReport;
     }
 
-    async readReport(filePath: string = `${this.projectPath}/async-coverage-report.json`): Promise<JScopeCoverageReport> {
+    async readReport(filePath: string = RuntimeConfig.getInstance().config.coverageReportPath ?? `${this.projectPath}/async-coverage-report.json`): Promise<JScopeCoverageReport> {
         logger.debug(`Reading coverage report from ${filePath}`);
         try {
             let { default: rawCoverageReport } = await import(filePath);
