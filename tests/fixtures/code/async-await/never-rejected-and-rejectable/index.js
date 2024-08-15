@@ -2,7 +2,6 @@
 
 async function foo() {
     //...
-    await bar(false);
     return await bar(true);
     //...
 }

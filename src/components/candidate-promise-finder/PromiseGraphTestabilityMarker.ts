@@ -5,6 +5,7 @@ import { NodeMarkingStrategy } from './NodeMarkingStrategy';
 import { PromiseGraph } from '../promise-graph/PromiseGraph';
 import { NoOpMarkingStrategy } from './NoOpMarkingStrategy';
 import logger from '../../utils/logger';
+import { P_TYPE } from '../../types/JScope.type';
 
 export class PromiseGraphTestabilityMarker {
     public markGraph(promiseGraph: PromiseGraph) {
@@ -47,6 +48,10 @@ export class PromiseGraphTestabilityMarker {
                 );
                 break;
         }
+
+        // switch (node.promiseInfo.type) {
+        //     case P_TYPE.AsyncFunction:
+        // }
 
         strategy.markNode(node);
         logger.debug(

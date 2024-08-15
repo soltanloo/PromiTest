@@ -2,6 +2,7 @@ import { FunctionDefinition } from '../../types/Callgraph.type';
 import { parseFunctionDefinitions } from '../../utils/AST';
 import { Position } from '../../types/File.type';
 import logger from '../../utils/logger';
+import { Location } from '../../types/JScope.type';
 
 export default class FileRepository {
     private static readonly functionDefinitions: Map<
@@ -70,6 +71,31 @@ export default class FileRepository {
         );
 
         return enclosingFunction;
+    }
+
+    public static getFunctionDefinition(
+        filePath: string,
+        {
+            startPosition,
+            endPosition,
+        }: {
+            startPosition: Position;
+            endPosition: Position;
+        },
+    ): FunctionDefinition | undefined {
+        FileRepository.parseFileForFunctions(filePath);
+
+        const functions =
+            FileRepository.functionDefinitions.get(filePath) || [];
+
+        return functions.find((func) => {
+            return (
+                func.start.row === startPosition.row &&
+                func.start.column === startPosition.column &&
+                func.end.row === endPosition.row &&
+                func.end.column === endPosition.column
+            );
+        });
     }
 
     private static parseFileForFunctions(filePath: string) {

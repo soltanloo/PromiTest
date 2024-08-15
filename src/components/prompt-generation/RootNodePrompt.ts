@@ -5,6 +5,7 @@ import { Node } from '../../types/Graph.type';
 import { detectModuleSystem } from '../../utils/AST';
 import path from 'path';
 import RuntimeConfig from '../configuration/RuntimeConfig';
+import { P_TYPE } from '../../types/JScope.type';
 
 export class RootNodePrompt extends Prompt {
     executionPathString: string;
@@ -42,6 +43,10 @@ export class RootNodePrompt extends Prompt {
             code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,
             testRunner: this.rc.testRunner,
             executionPath: this.executionPathString,
+            asyncFunctionDefinition: `Here is the definition of the async function that returns the promise:\n${
+                this.promiseNode.promiseInfo.asyncFunctionDefinition
+                    ?.sourceCode || ''
+            }`,
             moduleSystem: detectModuleSystem(
                 path.join(
                     RuntimeConfig.getInstance().config.projectPath,

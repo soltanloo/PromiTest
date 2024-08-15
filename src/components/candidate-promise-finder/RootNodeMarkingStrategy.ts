@@ -2,6 +2,7 @@ import { NodeMarkingStrategy } from './NodeMarkingStrategy';
 import { PromiseNode } from '../promise-graph/PromiseNode';
 import { isPromiseCalling } from '../../utils/AST';
 import logger from '../../utils/logger';
+import { P_TYPE } from '../../types/JScope.type';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     public markNode(node: PromiseNode): void {
@@ -23,20 +24,13 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private isRejectable(node: PromiseNode): boolean {
-        let isPromiseCallingResult = isPromiseCalling(
-            node.promiseInfo.code,
-            'reject',
-        );
+        let sourceCode =
+            node.promiseInfo.type === P_TYPE.AsyncFunction
+                ? node.promiseInfo.asyncFunctionDefinition!.sourceCode
+                : node.promiseInfo.code;
+        let isPromiseCallingResult = isPromiseCalling(sourceCode, 'reject');
         logger.debug('isRejectable', { message: isPromiseCallingResult });
         return isPromiseCallingResult;
-        // if (node.promiseInfo.type === "NewPromise") {
-        //     const rejectablePatterns = [/reject\(/, /throw /];
-        //     return rejectablePatterns.some(pattern => pattern.test(node.promiseInfo.code));
-        // } else if (node.promiseInfo.type === "AsyncFunction") {
-        //     return /throw /.test(node.promiseInfo.code);
-        // }
-        //
-        // return false;
     }
 
     private isResolvable(node: PromiseNode): boolean {
@@ -46,13 +40,5 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         );
         logger.debug('isResolvable', { message: isPromiseCallingResult });
         return isPromiseCallingResult;
-        // if (node.promiseInfo.type === "NewPromise") {
-        //     const resolvablePatterns = [/resolve\(/];
-        //     return resolvablePatterns.some(pattern => pattern.test(node.promiseInfo.code));
-        // } else if (node.promiseInfo.type === "AsyncFunction") {
-        //     return /return /.test(node.promiseInfo.code);
-        // }
-        //
-        // return false;
     }
 }
