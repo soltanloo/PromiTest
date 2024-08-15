@@ -9,10 +9,17 @@ import RuntimeConfig from '../configuration/RuntimeConfig';
 import { Configuration } from '../../types/Configuration.type';
 import * as process from 'node:process';
 import { sh } from '../../utils/sh';
-import { JScopeCoverageReport, Pid } from '../../types/JScope.type';
+import {
+    JScopeCoverageReport,
+    Location,
+    P_TYPE,
+    Pid,
+} from '../../types/JScope.type';
 import FileRepository from '../apis/FileRepository';
 import path from 'path';
-import logger from '../../utils/logger'; // Import logger
+import logger from '../../utils/logger';
+import OpenAI from 'openai';
+import FunctionDefinition = OpenAI.FunctionDefinition; // Import logger
 
 export class CoverageAnalyzer {
     coverageData?: PromiseCoverageReport;
@@ -100,10 +107,45 @@ export class CoverageAnalyzer {
                 `Warnings for promise ${key}: ${JSON.stringify(warnings)}`,
             );
 
+            let asyncFunctionDefinition;
+
+            if (value.type === P_TYPE.AsyncFunction) {
+                let asyncFunctionLocation: Location;
+
+                if (value.settle.fulfill.length) {
+                    asyncFunctionLocation = value.settle.fulfill.find(
+                        (func) => func.tag === 'settle',
+                    ).location;
+                }
+                if (value.settle.reject.length) {
+                    asyncFunctionLocation = value.settle.reject.find(
+                        (func) => func.tag === 'settle',
+                    ).location;
+                }
+
+                let decodedAsyncFunctionLocation = this.decodeLocation(
+                    asyncFunctionLocation!,
+                );
+                decodedAsyncFunctionLocation.start.column--;
+                decodedAsyncFunctionLocation.end.column--;
+
+                asyncFunctionDefinition = FileRepository.getFunctionDefinition(
+                    path.join(
+                        this.projectPath,
+                        decodedAsyncFunctionLocation.file,
+                    ),
+                    {
+                        startPosition: decodedAsyncFunctionLocation.start,
+                        endPosition: decodedAsyncFunctionLocation.end,
+                    },
+                );
+            }
+
             let refinedPromiseInfo: PromiseInfo = {
                 identifier: Number(key),
                 enclosingFunction: enclosingFunction!,
                 location: decodedLocation,
+                asyncFunctionDefinition,
                 type: value.type as PromiseType,
                 warnings,
                 code: value.code ?? '',

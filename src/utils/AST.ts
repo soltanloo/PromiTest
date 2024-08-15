@@ -343,6 +343,28 @@ export function isPromiseCalling(code: string, functionName: string): boolean {
                     return estraverse.VisitorOption.Break; // Stop traversal early if found
                 }
             }
+            if (
+                (node.type === 'FunctionDeclaration' ||
+                    node.type === 'FunctionExpression' ||
+                    node.type === 'ArrowFunctionExpression') &&
+                node.async
+            ) {
+                estraverse.traverse(node, {
+                    enter(nestedNode: EspreeNode) {
+                        // Check for throw statements if the function is 'reject'
+                        if (
+                            functionName === 'reject' &&
+                            nestedNode.type === 'ThrowStatement'
+                        ) {
+                            isUsingFunction = true;
+                        }
+                    },
+                });
+
+                if (isUsingFunction) {
+                    return estraverse.VisitorOption.Break; // Stop traversal early if found
+                }
+            }
         },
     });
 

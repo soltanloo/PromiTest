@@ -33,6 +33,7 @@ export interface PromiseInfo {
     identifier: PromiseIdentifier;
     location: PromiseLocation;
     enclosingFunction: FunctionDefinition;
+    asyncFunctionDefinition?: FunctionDefinition;
     type: PromiseType;
     warnings: PromiseCoverageWarnings;
     parent?: PromiseIdentifier;

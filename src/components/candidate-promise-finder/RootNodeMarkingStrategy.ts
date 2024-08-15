@@ -3,6 +3,7 @@ import { PromiseNode } from '../promise-graph/PromiseNode';
 import { isPromiseCalling } from '../../utils/AST';
 import { GPTController } from '../apis/GPTController';
 import logger from '../../utils/logger';
+import { P_TYPE } from '../../types/JScope.type';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     public async markNode(node: PromiseNode): Promise<void> {
@@ -24,20 +25,13 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private isRejectable(node: PromiseNode): boolean {
-        let isPromiseCallingResult = isPromiseCalling(
-            node.promiseInfo.code,
-            'reject',
-        );
+        let sourceCode =
+            node.promiseInfo.type === P_TYPE.AsyncFunction
+                ? node.promiseInfo.asyncFunctionDefinition!.sourceCode
+                : node.promiseInfo.code;
+        let isPromiseCallingResult = isPromiseCalling(sourceCode, 'reject');
         logger.debug('isRejectable', { message: isPromiseCallingResult });
         return isPromiseCallingResult;
-        // if (node.promiseInfo.type === "NewPromise") {
-        //     const rejectablePatterns = [/reject\(/, /throw /];
-        //     return rejectablePatterns.some(pattern => pattern.test(node.promiseInfo.code));
-        // } else if (node.promiseInfo.type === "AsyncFunction") {
-        //     return /throw /.test(node.promiseInfo.code);
-        // }
-        //
-        // return false;
     }
 
     private async isResolvable(node: PromiseNode): Promise<boolean> {
