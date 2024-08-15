@@ -7,7 +7,7 @@ import { NoOpMarkingStrategy } from './NoOpMarkingStrategy';
 import logger from '../../utils/logger';
 
 export class PromiseGraphTestabilityMarker {
-    public markGraph(promiseGraph: PromiseGraph) {
+    public async markGraph(promiseGraph: PromiseGraph) : Promise<PromiseGraph> {
         logger.info('Starting to mark the promise graph.');
         const sortedNodes = promiseGraph.topologicalSort();
 
@@ -27,7 +27,7 @@ export class PromiseGraphTestabilityMarker {
         return promiseGraph;
     }
 
-    public markNode(node: PromiseNode): void {
+    public async markNode(node: PromiseNode): Promise<void> {
         let strategy: NodeMarkingStrategy = new NoOpMarkingStrategy();
         logger.debug(
             `Marking node ${node.id}, incoming edges: ${node.incomingEdges}`,

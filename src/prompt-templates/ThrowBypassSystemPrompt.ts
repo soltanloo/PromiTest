@@ -1,0 +1,1 @@
+export const systemPrompt = "You will receive an asynchronous typescript function. Reply 'T' if the error throwing of this function can be bypassed only by changing the arguments of the function. Reply 'F' if it cannot.";

@@ -39,6 +39,7 @@ export class RootNodePrompt extends Prompt {
                 : 'Resolvable',
             candidacyReason: this.candidacyReason || '',
             location: this.promiseNode.promiseInfo.enclosingFunction.file,
+            line: (this.promiseNode.promiseInfo.location.start.row - this.promiseNode.promiseInfo.enclosingFunction.start.row + 1).toString(),
             code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,
             testRunner: this.rc.testRunner,
             executionPath: this.executionPathString,
