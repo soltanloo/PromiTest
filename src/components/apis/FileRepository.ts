@@ -77,10 +77,8 @@ export default class FileRepository {
         filePath: string,
         {
             startPosition,
-            endPosition,
         }: {
             startPosition: Position;
-            endPosition: Position;
         },
     ): FunctionDefinition | undefined {
         FileRepository.parseFileForFunctions(filePath);
@@ -91,9 +89,7 @@ export default class FileRepository {
         return functions.find((func) => {
             return (
                 func.start.row === startPosition.row &&
-                func.start.column === startPosition.column &&
-                func.end.row === endPosition.row &&
-                func.end.column === endPosition.column
+                func.start.column === startPosition.column
             );
         });
     }

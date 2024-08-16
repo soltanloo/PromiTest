@@ -136,7 +136,6 @@ export class CoverageAnalyzer {
                     ),
                     {
                         startPosition: decodedAsyncFunctionLocation.start,
-                        endPosition: decodedAsyncFunctionLocation.end,
                     },
                 );
             }
