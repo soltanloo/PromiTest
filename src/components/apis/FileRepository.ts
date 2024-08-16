@@ -21,7 +21,7 @@ export default class FileRepository {
             endPosition: Position;
         },
     ): FunctionDefinition | undefined {
-        logger.info(
+        logger.debug(
             `Getting enclosing function in file: ${filePath}, from: ${JSON.stringify(startPosition)} to: ${JSON.stringify(endPosition)}`,
         );
 
