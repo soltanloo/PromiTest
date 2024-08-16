@@ -7,6 +7,7 @@ import { Prompt } from './Prompt';
 import { CallGraph } from '../call-graph/CallGraph';
 import { NodeId } from '../../types/Graph.type';
 import { Prompts } from '../../types/Prompt.type';
+import logger from '../../utils/logger';
 
 export class PromptGenerator {
     callgraph: CallGraph;
@@ -25,6 +26,9 @@ export class PromptGenerator {
             if (node) {
                 Object.entries(node.flags).forEach(([key, flag]) => {
                     if (flag) {
+                        logger.debug(
+                            `Generating a prompt for node ${node.id} that is ${key}`,
+                        );
                         node.prompts[key as PromiseFlagTypes] =
                             this.generatePrompt(node as PromiseNode);
                     }

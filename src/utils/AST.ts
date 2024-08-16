@@ -217,6 +217,9 @@ export function parseFunctionDefinitions(
                     .split('\n')
                     .slice(start.line - 1, end.line)
                     .map((line, index) => {
+                        if (end.line === start.line) {
+                            return line.slice(start.column, end.column);
+                        }
                         if (index === 0) {
                             return line.slice(start.column);
                         } else if (index === end.line - start.line) {
