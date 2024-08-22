@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import logger from '../../utils/logger';
-import { systemPrompt } from 'src/prompt-templates/ThrowBypassSystemPrompt';
+import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
 
 export class GPTController {
     private static instance: GPTController;
@@ -63,14 +63,14 @@ export class GPTController {
             
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
                 messages: [
-                    { role: 'system', content: systemPrompt },
+                    { role: 'system', content: ThrowBypassSystemPrompt },
                     { role: 'user', content: functionCode }
                 ],
                 model: 'gpt-4o-mini',
                 max_tokens: GPTController.MAX_TOKENS,
             };
 
-            logger.debug('Sending the following message to GPT model:\nsystem:\n ${systemPrompt}\nuser:\n ${functionCode}');
+            logger.debug(`Sending the following message to GPT model:\nsystem:\n ${ThrowBypassSystemPrompt}\nuser:\n ${functionCode}`);
 
             GPTController.apiInstance.chat.completions.create(params)
                 .then((res) => {
@@ -80,7 +80,7 @@ export class GPTController {
                         logger.error('No response received from GPT model.');
                         reject(new Error('No response'));
                     } else {
-                        logger.info('Received response from GPT model.', { response: responseContent });
+                        logger.info(`Received response from GPT model. Response: ${responseContent}`);
                         resolve(responseContent === 'T');
                     }
                 })
