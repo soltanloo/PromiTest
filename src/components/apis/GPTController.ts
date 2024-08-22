@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import logger from '../../utils/logger';
-import { systemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
+import { systemPrompt } from 'src/prompt-templates/ThrowBypassSystemPrompt';
+
 export class GPTController {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
@@ -63,33 +64,28 @@ export class GPTController {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
                 messages: [
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: functionCode },
+                    { role: 'user', content: functionCode }
                 ],
                 model: 'gpt-4o-mini',
                 max_tokens: GPTController.MAX_TOKENS,
             };
-    
-            logger.debug(`Sending function code to GPT model for verification: \n ${functionCode}`);
-    
-            GPTController.apiInstance.chat.completions
-                .create(params)
+
+            logger.debug('Sending the following message to GPT model:\nsystem:\n ${systemPrompt}\nuser:\n ${functionCode}');
+
+            GPTController.apiInstance.chat.completions.create(params)
                 .then((res) => {
                     const responseContent = res.choices[0]?.message?.content;
-    
+
                     if (!responseContent) {
                         logger.error('No response received from GPT model.');
                         reject(new Error('No response'));
                     } else {
-                        logger.info(
-                            `Received response from GPT model: ${responseContent}`,
-                        );
-                        resolve(responseContent === "T");
+                        logger.info('Received response from GPT model.', { response: responseContent });
+                        resolve(responseContent === 'T');
                     }
                 })
                 .catch((err) => {
-                    logger.error(
-                        `Error occurred while communicating with GPT model. ${err.message}`,
-                    );
+                    logger.error('Error occurred while communicating with GPT model.', { error: err.message });
                     reject(err);
                 });
         });
