@@ -111,7 +111,7 @@ export class CoverageAnalyzer {
 
             if (value.type === P_TYPE.AsyncFunction) {
                 let asyncFunctionLocation: Location;
-
+                logger.debug(`value: ${JSON.stringify(value)}`);
                 if (value.settle.fulfill.length) {
                     asyncFunctionLocation = value.settle.fulfill.find(
                         (func) => func.tag === 'settle',

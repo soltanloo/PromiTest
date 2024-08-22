@@ -1,11 +1,13 @@
 import OpenAI from 'openai';
 import logger from '../../utils/logger';
 import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
+import { LLMControllerInterface } from './LLMControllerInterface';
+export class GPTController implements LLMControllerInterface {
 
-export class GPTController {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
     private static readonly MAX_TOKENS = 1000;
+    private static model: GPTController.Models; //default model set in constructor
 
     constructor() {
         GPTController.apiInstance = new OpenAI({
@@ -14,10 +16,11 @@ export class GPTController {
         logger.info('GPTController initialized with OpenAI API.');
     }
 
-    public static getInstance(): GPTController {
+    public static getInstance(): LLMControllerInterface {
         if (!GPTController.instance) {
             logger.debug('Creating new instance of GPTController.');
             GPTController.instance = new GPTController();
+            this.model = GPTController.Models.gpt4omini;
         } else {
             logger.debug('Returning existing instance of GPTController.');
         }
@@ -25,11 +28,15 @@ export class GPTController {
         return GPTController.instance;
     }
 
+    public static setModel(model: GPTController.Models) {
+        this.model = model;
+    }
+
     public ask(question: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
                 messages: [{ role: 'user', content: question }],
-                model: 'gpt-4o-mini',
+                model: GPTController.model,
                 max_tokens: GPTController.MAX_TOKENS,
             };
 
@@ -66,7 +73,7 @@ export class GPTController {
                     { role: 'system', content: ThrowBypassSystemPrompt },
                     { role: 'user', content: functionCode }
                 ],
-                model: 'gpt-4o-mini',
+                model: GPTController.model,
                 max_tokens: GPTController.MAX_TOKENS,
             };
 
@@ -89,5 +96,14 @@ export class GPTController {
                     reject(err);
                 });
         });
+    }
+}
+export namespace GPTController {
+    export enum Models {
+        gpt4omini = 'gpt-4o-mini',
+        gpt4o = 'gpt-4o',
+        gpt4turbo = 'gpt-4-turbo',
+        gpt4 = 'gpt-4',
+        gpt35turbo = 'gpt-3.5-turbo'
     }
 }
