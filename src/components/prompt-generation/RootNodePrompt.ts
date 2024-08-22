@@ -43,10 +43,13 @@ export class RootNodePrompt extends Prompt {
             code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,
             testRunner: this.rc.testRunner,
             executionPath: this.executionPathString,
-            asyncFunctionDefinition: `Here is the definition of the async function that returns the promise:\n${
-                this.promiseNode.promiseInfo.asyncFunctionDefinition
-                    ?.sourceCode || ''
-            }`,
+            asyncFunctionDefinition: this.promiseNode.promiseInfo
+                .asyncFunctionDefinition
+                ? `Here is the definition of the async function that returns the promise:\n${
+                      this.promiseNode.promiseInfo.asyncFunctionDefinition
+                          .sourceCode
+                  }`
+                : '',
             moduleSystem: detectModuleSystem(
                 path.join(
                     RuntimeConfig.getInstance().config.projectPath,

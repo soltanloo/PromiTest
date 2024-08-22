@@ -113,14 +113,21 @@ export class CoverageAnalyzer {
                 let asyncFunctionLocation: Location;
 
                 if (value.settle.fulfill.length) {
-                    asyncFunctionLocation = value.settle.fulfill.find(
-                        (func) => func.tag === 'settle',
-                    ).location;
-                }
-                if (value.settle.reject.length) {
-                    asyncFunctionLocation = value.settle.reject.find(
-                        (func) => func.tag === 'settle',
-                    ).location;
+                    let settlementFunction = value.settle.fulfill.find(
+                        (func) => func.tag === 'settle' && !!func?.location,
+                    );
+
+                    if (settlementFunction) {
+                        asyncFunctionLocation = settlementFunction.location;
+                    }
+                } else if (value.settle.reject.length) {
+                    let settlementFunction = value.settle.reject.find(
+                        (func) => func.tag === 'settle' && !!func?.location,
+                    );
+
+                    if (settlementFunction) {
+                        asyncFunctionLocation = settlementFunction.location;
+                    }
                 }
 
                 let decodedAsyncFunctionLocation = this.decodeLocation(
