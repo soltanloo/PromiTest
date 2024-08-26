@@ -11,15 +11,14 @@ import * as process from 'node:process';
 import { sh } from '../../utils/sh';
 import {
     JScopeCoverageReport,
-    Location,
     P_TYPE,
     Pid,
+    PInfo,
 } from '../../types/JScope.type';
 import FileRepository from '../apis/FileRepository';
 import path from 'path';
 import logger from '../../utils/logger';
-import OpenAI from 'openai';
-import FunctionDefinition = OpenAI.FunctionDefinition; // Import logger
+import { FunctionDefinition } from '../../types/Callgraph.type';
 
 export class CoverageAnalyzer {
     coverageData?: PromiseCoverageReport;
@@ -69,105 +68,14 @@ export class CoverageAnalyzer {
         let functionsMap = report.functionsMap;
         let refinedCoverageReport: PromiseCoverageReport = [];
 
-        Object.entries(promiseMap).forEach(([key, value]) => {
-            let decodedLocation = this.decodeLocation(value.location);
-            logger.debug(
-                `Decoded location for promise ${key}: ${JSON.stringify(decodedLocation)}`,
+        Object.entries(promiseMap).forEach(([promiseId, promiseObject]) => {
+            let refinedPromiseInfo = this.refinePromiseObject(
+                promiseObject,
+                promiseId,
             );
-
-            let enclosingFunction = FileRepository.getEnclosingFunction(
-                path.join(this.projectPath, decodedLocation.file),
-                {
-                    startPosition: decodedLocation.start,
-                    endPosition: decodedLocation.end,
-                },
-            );
-
-            if (enclosingFunction) {
-                logger.debug(
-                    `Enclosing function found for promise ${key}: ${enclosingFunction.name}`,
-                );
-            } else {
-                logger.warn(`No enclosing function found for promise ${key}`);
-            }
-
-            let warnings = {
-                fulfillment: value.coverage.settle_fulfill === false,
-                fulfillReactionRegistration:
-                    value.coverage.register_fulfill === false,
-                fulfillReactionExecution:
-                    value.coverage.execute_fulfill === false,
-                rejection: value.coverage.settle_reject === false,
-                rejectReactionRegistration:
-                    value.coverage.register_reject === false,
-                rejectReactionExecution:
-                    value.coverage.execute_reject === false,
-            };
-            logger.debug(
-                `Warnings for promise ${key}: ${JSON.stringify(warnings)}`,
-            );
-
-            let asyncFunctionDefinition;
-
-            if (value.type === P_TYPE.AsyncFunction) {
-                let asyncFunctionLocation: Location;
-
-                if (value.settle.fulfill.length) {
-                    let settlementFunction = value.settle.fulfill.find(
-                        (func) => func.tag === 'settle' && !!func?.location,
-                    );
-
-                    if (settlementFunction) {
-                        asyncFunctionLocation = settlementFunction.location;
-                    }
-                } else if (value.settle.reject.length) {
-                    let settlementFunction = value.settle.reject.find(
-                        (func) => func.tag === 'settle' && !!func?.location,
-                    );
-
-                    if (settlementFunction) {
-                        asyncFunctionLocation = settlementFunction.location;
-                    }
-                }
-
-                let decodedAsyncFunctionLocation = this.decodeLocation(
-                    asyncFunctionLocation!,
-                );
-                decodedAsyncFunctionLocation.start.column--;
-                decodedAsyncFunctionLocation.end.column--;
-
-                asyncFunctionDefinition = FileRepository.getFunctionDefinition(
-                    path.join(
-                        this.projectPath,
-                        decodedAsyncFunctionLocation.file,
-                    ),
-                    {
-                        startPosition: decodedAsyncFunctionLocation.start,
-                    },
-                );
-            }
-
-            let refinedPromiseInfo: PromiseInfo = {
-                identifier: Number(key),
-                enclosingFunction: enclosingFunction!,
-                location: decodedLocation,
-                asyncFunctionDefinition,
-                type: value.type as PromiseType,
-                warnings,
-                code: value.code ?? '',
-            };
-
-            if (value.parent) {
-                refinedPromiseInfo.parent = this.extractPromiseIdFromString(
-                    value.parent,
-                );
-                logger.debug(
-                    `Parent promise id for ${key}: ${refinedPromiseInfo.parent}`,
-                );
-            }
 
             refinedCoverageReport.push(refinedPromiseInfo);
-            logger.info(`Promise ${key} refined and added to the report`);
+            logger.info(`Promise ${promiseId} refined and added to the report`);
         });
 
         return refinedCoverageReport;
@@ -185,6 +93,117 @@ export class CoverageAnalyzer {
             });
             throw new Error('Error occurred while fetching Coverage Report');
         }
+    }
+
+    private refinePromiseObject(promiseObject: PInfo, promiseId: string) {
+        let decodedLocation = this.decodeLocation(promiseObject.location);
+        logger.debug(
+            `Decoded location for promise ${promiseId}: ${JSON.stringify(decodedLocation)}`,
+        );
+
+        let enclosingFunctionOfPromiseObject =
+            FileRepository.getEnclosingFunction(
+                path.join(this.projectPath, decodedLocation.file),
+                {
+                    startPosition: decodedLocation.start,
+                    endPosition: decodedLocation.end,
+                },
+            );
+        if (enclosingFunctionOfPromiseObject) {
+            logger.debug(
+                `Enclosing function found for promise ${promiseId}: ${enclosingFunctionOfPromiseObject.name}`,
+            );
+        } else {
+            logger.warn(`No enclosing function found for promise ${promiseId}`);
+        }
+
+        let warnings = this.getWarningsOfPromise(promiseObject);
+        logger.debug(
+            `Warnings for promise ${promiseId}: ${JSON.stringify(warnings)}`,
+        );
+
+        let asyncFunctionDefinition =
+            this.extractAsyncFunctionDefinition(promiseObject);
+
+        let refinedPromiseInfo: PromiseInfo = {
+            identifier: Number(promiseId),
+            enclosingFunction: enclosingFunctionOfPromiseObject!,
+            location: decodedLocation,
+            asyncFunctionDefinition,
+            isApiCall: this.isPromiseReturnedByApi(promiseObject),
+            type: promiseObject.type as PromiseType,
+            warnings,
+            code: promiseObject.code ?? '',
+        };
+
+        if (promiseObject.parent) {
+            refinedPromiseInfo.parent = this.extractPromiseIdFromString(
+                promiseObject.parent,
+            );
+            logger.debug(
+                `Parent promise id for ${promiseId}: ${refinedPromiseInfo.parent}`,
+            );
+        }
+        return refinedPromiseInfo;
+    }
+
+    private isPromiseReturnedByApi(promiseObject: PInfo): boolean {
+        const nativePromiseRegex =
+            /\b(Promise\.(resolve|reject|all|race|allSettled|any)|new\s+Promise)|\.\s*(then|catch|finally)\s*\(/;
+        return !!(
+            promiseObject.type === P_TYPE.NewPromise &&
+            !promiseObject._types.includes(P_TYPE.AsyncFunction) &&
+            (promiseObject.settle.fulfill.length ||
+                promiseObject.settle.reject.length) &&
+            promiseObject.code &&
+            !nativePromiseRegex.test(promiseObject.code)
+        );
+    }
+
+    private extractAsyncFunctionDefinition(
+        promiseObject: PInfo,
+    ): FunctionDefinition | undefined {
+        let isAsync = false;
+        let settlementFunction;
+        if (
+            promiseObject.type === P_TYPE.AsyncFunction ||
+            (promiseObject.type === P_TYPE.NewPromise &&
+                promiseObject._types.includes(P_TYPE.AsyncFunction))
+        ) {
+            settlementFunction = [
+                ...promiseObject.settle.fulfill,
+                ...promiseObject.settle.reject,
+            ].find((func) => func.tag === 'settle' && !!func?.location);
+        }
+        if (settlementFunction) {
+            let decodedAsyncFunctionLocation = this.decodeLocation(
+                settlementFunction.location,
+            );
+            decodedAsyncFunctionLocation.start.column--;
+            decodedAsyncFunctionLocation.end.column--;
+
+            return FileRepository.getFunctionDefinition(
+                path.join(this.projectPath, decodedAsyncFunctionLocation.file),
+                {
+                    startPosition: decodedAsyncFunctionLocation.start,
+                },
+            );
+        }
+    }
+
+    private getWarningsOfPromise(promiseObject: PInfo) {
+        return {
+            fulfillment: promiseObject.coverage.settle_fulfill === false,
+            fulfillReactionRegistration:
+                promiseObject.coverage.register_fulfill === false,
+            fulfillReactionExecution:
+                promiseObject.coverage.execute_fulfill === false,
+            rejection: promiseObject.coverage.settle_reject === false,
+            rejectReactionRegistration:
+                promiseObject.coverage.register_reject === false,
+            rejectReactionExecution:
+                promiseObject.coverage.execute_reject === false,
+        };
     }
 
     private async runJScope(): Promise<void> {
