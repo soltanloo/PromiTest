@@ -20,7 +20,7 @@ export class GPTController implements LLMControllerInterface {
         if (!GPTController.instance) {
             logger.debug('Creating new instance of GPTController.');
             GPTController.instance = new GPTController();
-            this.model = GPTController.Models.gpt4omini;
+            this.model = GPTController.Models.GPT4OMINI;
         } else {
             logger.debug('Returning existing instance of GPTController.');
         }
@@ -100,10 +100,10 @@ export class GPTController implements LLMControllerInterface {
 }
 export namespace GPTController {
     export enum Models {
-        gpt4omini = 'gpt-4o-mini',
-        gpt4o = 'gpt-4o',
-        gpt4turbo = 'gpt-4-turbo',
-        gpt4 = 'gpt-4',
-        gpt35turbo = 'gpt-3.5-turbo'
+        GPT4OMINI = 'gpt-4o-mini',
+        GPT4O = 'gpt-4o',
+        GPT4TURBO = 'gpt-4-turbo',
+        GPT4 = 'gpt-4',
+        GPT35TURBO = 'gpt-3.5-turbo'
     }
 }
