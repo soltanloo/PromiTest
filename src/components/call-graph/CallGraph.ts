@@ -106,7 +106,9 @@ export class CallGraph extends Graph {
             `Pruning graph to include only reachable nodes from test cases. Test nodes found: ${testNodes.length}`,
         );
 
-        logger.info(`Pruning graph to include only reachable nodes from test cases. Test nodes found: ${testNodes.length}`);
+        logger.info(
+            `Pruning graph to include only reachable nodes from test cases. Test nodes found: ${testNodes.length}`,
+        );
 
         const visited = new Set<NodeId>();
 

@@ -40,7 +40,8 @@ export class RootNodePrompt extends Prompt {
                 : 'Resolvable',
             candidacyReason: this.candidacyReason || '',
             location: this.promiseNode.promiseInfo.enclosingFunction.file,
-            relativeLineNumber: this.promiseNode.promiseInfo.relativeLineNumber.toString(),
+            relativeLineNumber:
+                this.promiseNode.promiseInfo.relativeLineNumber.toString(),
             code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,
             statement: this.promiseNode.promiseInfo.code,
             testRunner: this.rc.testRunner,

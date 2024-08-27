@@ -17,19 +17,21 @@ export class Main {
 
         const promiseGraphTestabilityMarker =
             new PromiseGraphTestabilityMarker();
-        promiseGraphTestabilityMarker.markGraph(promiseGraph).then((promiseGraph) => {;
+        promiseGraphTestabilityMarker
+            .markGraph(promiseGraph)
+            .then((promiseGraph) => {
+                const callGraph = new CallgraphGenerator().callgraph;
 
-            const callGraph = new CallgraphGenerator().callgraph;
+                let promptGenerator = new PromptGenerator(callGraph);
+                let prompts = promptGenerator.generatePrompts(promiseGraph);
 
-            let promptGenerator = new PromptGenerator(callGraph);
-            let prompts = promptGenerator.generatePrompts(promiseGraph);
-
-            return prompts;
-            // testGenerator.augmentTestSuite(tests)
-        }).then((prompts) => {
-            const testGenerator = new TestGenerator();
-            let tests = testGenerator.generateTests(prompts);
-            // testGenerator.augmentTestSuite(tests)
-        });
+                return prompts;
+                // testGenerator.augmentTestSuite(tests)
+            })
+            .then((prompts) => {
+                const testGenerator = new TestGenerator();
+                let tests = testGenerator.generateTests(prompts);
+                // testGenerator.augmentTestSuite(tests)
+            });
     }
 }

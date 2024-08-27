@@ -114,9 +114,10 @@ async function clearAll(directoryPath: string) {
         .option(
             `-${CLI_ARGS.coverageReportShort}, --${CLI_ARGS.coverageReport} <coverageReportPath>`,
             'read coverage report from file',
-        ).option(
+        )
+        .option(
             `-${CLI_ARGS.useAvailableCoverageReportShort}, --${CLI_ARGS.useAvailableCoverageReport}`,
-            'look for async-coverage-report.json in each directory'
+            'look for async-coverage-report.json in each directory',
         )
         .option(
             `-${CLI_ARGS.useAvailableCoverageReportShort}, --${CLI_ARGS.useAvailableCoverageReport}`,
@@ -198,14 +199,20 @@ async function clearAll(directoryPath: string) {
 
     program
         .command('batch')
-        .argument(`<${CLI_ARGS.directoryPath}>`, 'path to directory containing projects')
+        .argument(
+            `<${CLI_ARGS.directoryPath}>`,
+            'path to directory containing projects',
+        )
         .option(
             `-${CLI_ARGS.useAvailableCoverageReportShort},--${CLI_ARGS.useAvailableCoverageReport}`,
             'look for async-coverage-report.json in each directory',
         )
         .action(async (directoryPath, options) => {
             try {
-                await batchRun(directoryPath, options.useAvailableCoverageReport);
+                await batchRun(
+                    directoryPath,
+                    options.useAvailableCoverageReport,
+                );
             } catch (err) {
                 logger.error('Error in running batch command:');
                 logger.error(err);

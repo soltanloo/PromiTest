@@ -8,12 +8,12 @@ import { P_TYPE } from '../../types/JScope.type';
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     public async markNode(node: PromiseNode): Promise<void> {
         logger.info(`Marking node ${node.id} as root node.`);
-    
+
         const _isRejectable = this.isRejectable(node);
         const _isResolvable = await this.isResolvable(node);
-    
+
         logger.debug(`Warnings: ${JSON.stringify(node.promiseInfo.warnings)}`);
-    
+
         if (node.promiseInfo.warnings.rejection && _isRejectable) {
             logger.info(`Node ${node.id} is flagged as rejectable.`);
             node.flags.rejectable = true;
@@ -35,15 +35,16 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private async isResolvable(node: PromiseNode): Promise<boolean> {
-        if (node.promiseInfo.type === "NewPromise") {
+        if (node.promiseInfo.type === 'NewPromise') {
             const isPromiseCallingResult = isPromiseCalling(
                 node.promiseInfo.code,
                 'resolve',
             );
             logger.debug('isResolvable', { message: isPromiseCallingResult });
             return isPromiseCallingResult;
-        } else if (node.promiseInfo.type === "AsyncFunction") {
-            const canThrowBeBypassedResult = await this.canThrowBeBypassed(node);
+        } else if (node.promiseInfo.type === 'AsyncFunction') {
+            const canThrowBeBypassedResult =
+                await this.canThrowBeBypassed(node);
             logger.debug('isResolvable', { message: canThrowBeBypassedResult });
             return canThrowBeBypassedResult;
         }
@@ -51,7 +52,10 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     //TODO: Implement this
-    private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> { // should be some aync node type
-        return await GPTController.getInstance().verifyThrowCanBeBypassed(node.promiseInfo.code);
+    private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
+        // should be some aync node type
+        return await GPTController.getInstance().verifyThrowCanBeBypassed(
+            node.promiseInfo.code,
+        );
     }
 }

@@ -8,7 +8,7 @@ import logger from '../../utils/logger';
 import { P_TYPE } from '../../types/JScope.type';
 
 export class PromiseGraphTestabilityMarker {
-    public async markGraph(promiseGraph: PromiseGraph) : Promise<PromiseGraph> {
+    public async markGraph(promiseGraph: PromiseGraph): Promise<PromiseGraph> {
         logger.info('Starting to mark the promise graph.');
         const sortedNodes = promiseGraph.topologicalSort();
 

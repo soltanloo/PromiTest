@@ -1,0 +1,4 @@
+{
+    "testDirectory": "research/PromiTest/tests/fixtures/code/new-promise",
+    "testRunner": "mocha|tap"
+}
