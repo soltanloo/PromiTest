@@ -1,4 +1,4 @@
-import { CLI_ARGS } from './constants/constants';
+import { asyncCoverageReport, CLI_ARGS } from './constants/constants';
 import { Command } from 'commander';
 import RuntimeConfig from './components/configuration/RuntimeConfig';
 import { Main } from './components/Main';
@@ -11,21 +11,37 @@ async function cli(projectPath: string, coverageReportPath?: string) {
     dotenv.config();
     const runtimeConfig = RuntimeConfig.getInstance(projectPath);
 
+<<<<<<< Updated upstream
     if (coverageReportPath) {
         runtimeConfig.setCoverageReportPath(coverageReportPath);
     }else{
         runtimeConfig.setCoverageReportPath(undefined);
     }
+=======
+    runtimeConfig.setCoverageReportPath(coverageReportPath);
+>>>>>>> Stashed changes
 
     await Main.run();
 }
 
 async function clearTestFiles(projectPath: string) {
     try {
-        const testFolderPath = path.join(projectPath, 'test');
+        //in projectPath, import promitest.config.json
+        const configPath = path.join(projectPath, 'promitest.config.json');
+        if (!fs.existsSync(configPath)) {
+            logger.warn(
+                'promitest.config.json not found in project directory.',
+            );
+            return;
+        }
+        const promitestConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        const testFolderPath = path.join(
+            projectPath,
+            promitestConfig.testDirectory,
+        );
         const files = fs.readdirSync(testFolderPath);
 
-        files.forEach(file => {
+        files.forEach((file) => {
             if (/^promise-\w+-\w+-test\.js$/.test(file)) {
                 const filePath = path.join(testFolderPath, file);
                 fs.unlinkSync(filePath);
@@ -42,6 +58,7 @@ async function clearTestFiles(projectPath: string) {
 
 async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
     try {
+<<<<<<< Updated upstream
         const directories = fs.readdirSync(directoryPath, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
             .map(dirent => path.join(directoryPath, dirent.name));
@@ -55,6 +72,26 @@ async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
                     logger.info(`Found coverage report at: ${coverageReportPath}`);
                 } else {
                     logger.warn(`Coverage report not found in directory: ${dir}`);
+=======
+        const directories = fs
+            .readdirSync(directoryPath, { withFileTypes: true })
+            .filter((dirent) => dirent.isDirectory())
+            .map((dirent) => path.join(directoryPath, dirent.name));
+        logger.debug(`Directories found: ${directories}`);
+        for (const dir of directories) {
+            let coverageReportPath: string | undefined;
+            if (lookForCoverageReport) {
+                const potentialReportPath = path.join(dir, asyncCoverageReport);
+                if (fs.existsSync(potentialReportPath)) {
+                    coverageReportPath = potentialReportPath;
+                    logger.info(
+                        `Found coverage report at: ${coverageReportPath}`,
+                    );
+                } else {
+                    logger.warn(
+                        `Coverage report not found in directory: ${dir}`,
+                    );
+>>>>>>> Stashed changes
                 }
             }
 
@@ -71,9 +108,16 @@ async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
 
 async function clearAll(directoryPath: string) {
     try {
+<<<<<<< Updated upstream
         const directories = fs.readdirSync(directoryPath, { withFileTypes: true })
             .filter(dirent => dirent.isDirectory())
             .map(dirent => path.join(directoryPath, dirent.name));
+=======
+        const directories = fs
+            .readdirSync(directoryPath, { withFileTypes: true })
+            .filter((dirent) => dirent.isDirectory())
+            .map((dirent) => path.join(directoryPath, dirent.name));
+>>>>>>> Stashed changes
 
         for (const dir of directories) {
             logger.info(`Running clear command for directory: ${dir}`);
@@ -104,9 +148,18 @@ async function clearAll(directoryPath: string) {
             `-${CLI_ARGS.useAvailableCoverageReportShort}, --${CLI_ARGS.useAvailableCoverageReport}`,
             'look for async-coverage-report.json in each directory'
         )
+        .option(
+            `-${CLI_ARGS.useAvailableCoverageReportShort}, --${CLI_ARGS.useAvailableCoverageReport}`,
+            'look for async-coverage-report.json in each directory',
+        )
+        .option(
+            `-${CLI_ARGS.batchShort}, --${CLI_ARGS.batch}`,
+            'run generate command for each project in directory',
+        )
         .action(async (projectPath, options) => {
             try {
                 let coverageReportPath: string | undefined;
+<<<<<<< Updated upstream
 
                 // Check if the user provided a coverage report with -c
                 if (options.coverageReport) {
@@ -130,6 +183,48 @@ async function clearAll(directoryPath: string) {
                 }
 
                 await cli(projectPath, coverageReportPath);
+=======
+                // Check if the user provided a coverage report with -c
+                if (!options.batch) {
+                    if (options.coverageReport) {
+                        if (fs.existsSync(options.coverageReport)) {
+                            coverageReportPath = options.coverageReport;
+                            logger.info(
+                                `Using coverage report from provided path: ${coverageReportPath}`,
+                            );
+                        } else {
+                            logger.warn(
+                                `Provided coverage report not found at: ${options.coverageReport}`,
+                            );
+                        }
+                    }
+
+                    // If no valid coverage report was provided and -u was used, look for the async-coverage-report.json
+                    if (
+                        !coverageReportPath &&
+                        options.useAvailableCoverageReport
+                    ) {
+                        const potentialReportPath = path.join(
+                            projectPath,
+                            asyncCoverageReport,
+                        );
+                        if (fs.existsSync(potentialReportPath)) {
+                            coverageReportPath = potentialReportPath;
+                            logger.info(
+                                `Using available coverage report at: ${coverageReportPath}`,
+                            );
+                        } else {
+                            logger.warn(
+                                'No async-coverage-report.json file found in the project directory.',
+                            );
+                        }
+                    }
+                    await cli(projectPath, coverageReportPath);
+                } else {
+                    logger.info('Batch mode enabled');
+                    batchRun(projectPath, options.useAvailableCoverageReport);
+                }
+>>>>>>> Stashed changes
             } catch (err) {
                 logger.error('Error in running cli():');
                 logger.error(err);
@@ -139,9 +234,18 @@ async function clearAll(directoryPath: string) {
     program
         .command('clear')
         .argument(`<${CLI_ARGS.projectPath}>`, 'path to project')
-        .action(async (projectPath) => {
+        .option(
+            `-${CLI_ARGS.batchShort}, --${CLI_ARGS.batch}`,
+            'run clear command for each project in directory',
+        )
+        .action(async (projectPath, options) => {
             try {
-                await clearTestFiles(projectPath);
+                if (options.batch) {
+                    logger.info('Batch mode enabled');
+                    await clearAll(projectPath);
+                } else {
+                    await clearTestFiles(projectPath);
+                }
             } catch (err) {
                 logger.error('Error in running clear command:');
                 logger.error(err);
