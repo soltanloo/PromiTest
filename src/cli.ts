@@ -196,40 +196,5 @@ async function clearAll(directoryPath: string) {
                 logger.error(err);
             }
         });
-
-    program
-        .command('batch')
-        .argument(
-            `<${CLI_ARGS.directoryPath}>`,
-            'path to directory containing projects',
-        )
-        .option(
-            `-${CLI_ARGS.useAvailableCoverageReportShort},--${CLI_ARGS.useAvailableCoverageReport}`,
-            'look for async-coverage-report.json in each directory',
-        )
-        .action(async (directoryPath, options) => {
-            try {
-                await batchRun(
-                    directoryPath,
-                    options.useAvailableCoverageReport,
-                );
-            } catch (err) {
-                logger.error('Error in running batch command:');
-                logger.error(err);
-            }
-        });
-
-    program
-        .command('clear-all')
-        .argument('<directoryPath>', 'path to directory containing projects')
-        .action(async (directoryPath) => {
-            try {
-                await clearAll(directoryPath);
-            } catch (err) {
-                logger.error('Error in running clear-all command:');
-                logger.error(err);
-            }
-        });
-
     program.parse(process.argv);
 })();
