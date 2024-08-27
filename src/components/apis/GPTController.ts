@@ -30,7 +30,39 @@ export class GPTController implements LLMControllerInterface {
     public static setModel(model: GPTController.Models) {
         this.model = model;
     }
+    public askWithMessages(userMessages: any): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const params: OpenAI.Chat.ChatCompletionCreateParams = {
+                messages: userMessages,
+                model: GPTController.model,
+                max_tokens: GPTController.MAX_TOKENS,
+            };
 
+            logger.debug(`Sending message to GPT model: \n ${userMessages}`);
+
+            GPTController.apiInstance.chat.completions
+                .create(params)
+                .then((res) => {
+                    const responseContent = res.choices[0]?.message?.content;
+
+                    if (!responseContent) {
+                        logger.error('No response received from GPT model.');
+                        reject(new Error('No response'));
+                    } else {
+                        logger.info(
+                            `Received response from GPT model: ${responseContent}`,
+                        );
+                        resolve(responseContent);
+                    }
+                })
+                .catch((err) => {
+                    logger.error(
+                        `Error occurred while communicating with GPT model. ${err.message}`,
+                    );
+                    reject(err);
+                });
+        });
+    }
     public ask(question: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
