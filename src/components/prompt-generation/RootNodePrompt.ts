@@ -40,8 +40,9 @@ export class RootNodePrompt extends Prompt {
                 : 'Resolvable',
             candidacyReason: this.candidacyReason || '',
             location: this.promiseNode.promiseInfo.enclosingFunction.file,
-            line: (this.promiseNode.promiseInfo.location.start.row - this.promiseNode.promiseInfo.enclosingFunction.start.row + 1).toString(),
+            relativeLineNumber: this.promiseNode.promiseInfo.relativeLineNumber.toString(),
             code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,
+            statement: this.promiseNode.promiseInfo.code,
             testRunner: this.rc.testRunner,
             executionPath: this.executionPathString,
             asyncFunctionDefinition: `Here is the definition of the async function that returns the promise:\n${
