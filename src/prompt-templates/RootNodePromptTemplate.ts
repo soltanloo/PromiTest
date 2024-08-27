@@ -1,5 +1,4 @@
-export const rootNodePromptTemplate =
-    `At line {{line}} there is a promise of type "{{promiseType}}", which is not {{notStatus}} by the current test suite.
+export const rootNodePromptTemplate = `In the statement: "{{statement}}" At line {{relativeLineNumber}} there is a promise of type "{{promiseType}}", which is not {{notStatus}} by the current test suite.
 It's potentially {{potentiallyStatus}} because {{candidacyReason}}.
 If possible, generate a test that can cover this execution path of the promise.
 Only include the new test code in your response; no description or anything.

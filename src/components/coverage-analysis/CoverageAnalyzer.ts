@@ -111,7 +111,6 @@ export class CoverageAnalyzer {
 
             if (value.type === P_TYPE.AsyncFunction) {
                 let asyncFunctionLocation: Location;
-                logger.debug(`value: ${JSON.stringify(value)}`);
                 if (value.settle.fulfill.length) {
                     asyncFunctionLocation = value.settle.fulfill.find(
                         (func) => func.tag === 'settle',
@@ -139,11 +138,14 @@ export class CoverageAnalyzer {
                     },
                 );
             }
-
             let refinedPromiseInfo: PromiseInfo = {
                 identifier: Number(key),
                 enclosingFunction: enclosingFunction!,
                 location: decodedLocation,
+                relativeLineNumber:
+                    decodedLocation.start.row -
+                    enclosingFunction!.start.row +
+                    1,
                 asyncFunctionDefinition,
                 type: value.type as PromiseType,
                 warnings,

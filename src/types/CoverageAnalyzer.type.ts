@@ -32,6 +32,7 @@ export interface PromiseCoverageWarnings {
 export interface PromiseInfo {
     identifier: PromiseIdentifier;
     location: PromiseLocation;
+    relativeLineNumber: number;
     enclosingFunction: FunctionDefinition;
     asyncFunctionDefinition?: FunctionDefinition;
     type: PromiseType;
