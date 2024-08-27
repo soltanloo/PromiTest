@@ -1,5 +1,3 @@
-import { use } from "chai";
-
 export const PROMITEST_CONFIG_FILE_NAME = 'promitest.config.json';
 
 export const CLI_ARGS = {
@@ -9,4 +7,8 @@ export const CLI_ARGS = {
     useAvailableCoverageReport: 'useAvailableCoverageReport',
     useAvailableCoverageReportShort: 'u',
     directoryPath: 'directoryPath',
+    batch: 'batch',
+    batchShort: 'b',
 };
+
+export const asyncCoverageReport = 'async-coverage-report.json';
