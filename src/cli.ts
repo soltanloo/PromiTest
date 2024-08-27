@@ -11,15 +11,7 @@ async function cli(projectPath: string, coverageReportPath?: string) {
     dotenv.config();
     const runtimeConfig = RuntimeConfig.getInstance(projectPath);
 
-<<<<<<< Updated upstream
-    if (coverageReportPath) {
-        runtimeConfig.setCoverageReportPath(coverageReportPath);
-    }else{
-        runtimeConfig.setCoverageReportPath(undefined);
-    }
-=======
     runtimeConfig.setCoverageReportPath(coverageReportPath);
->>>>>>> Stashed changes
 
     await Main.run();
 }
@@ -58,21 +50,6 @@ async function clearTestFiles(projectPath: string) {
 
 async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
     try {
-<<<<<<< Updated upstream
-        const directories = fs.readdirSync(directoryPath, { withFileTypes: true })
-            .filter(dirent => dirent.isDirectory())
-            .map(dirent => path.join(directoryPath, dirent.name));
-
-        for (const dir of directories) {
-            let coverageReportPath: string | undefined;
-            if (lookForCoverageReport) {
-                const potentialReportPath = path.join(dir, 'async-coverage-report.json');
-                if (fs.existsSync(potentialReportPath)) {
-                    coverageReportPath = potentialReportPath;
-                    logger.info(`Found coverage report at: ${coverageReportPath}`);
-                } else {
-                    logger.warn(`Coverage report not found in directory: ${dir}`);
-=======
         const directories = fs
             .readdirSync(directoryPath, { withFileTypes: true })
             .filter((dirent) => dirent.isDirectory())
@@ -91,7 +68,6 @@ async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
                     logger.warn(
                         `Coverage report not found in directory: ${dir}`,
                     );
->>>>>>> Stashed changes
                 }
             }
 
@@ -108,16 +84,10 @@ async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
 
 async function clearAll(directoryPath: string) {
     try {
-<<<<<<< Updated upstream
-        const directories = fs.readdirSync(directoryPath, { withFileTypes: true })
-            .filter(dirent => dirent.isDirectory())
-            .map(dirent => path.join(directoryPath, dirent.name));
-=======
         const directories = fs
             .readdirSync(directoryPath, { withFileTypes: true })
             .filter((dirent) => dirent.isDirectory())
             .map((dirent) => path.join(directoryPath, dirent.name));
->>>>>>> Stashed changes
 
         for (const dir of directories) {
             logger.info(`Running clear command for directory: ${dir}`);
@@ -159,31 +129,6 @@ async function clearAll(directoryPath: string) {
         .action(async (projectPath, options) => {
             try {
                 let coverageReportPath: string | undefined;
-<<<<<<< Updated upstream
-
-                // Check if the user provided a coverage report with -c
-                if (options.coverageReport) {
-                    if (fs.existsSync(options.coverageReport)) {
-                        coverageReportPath = options.coverageReport;
-                        logger.info(`Using coverage report from provided path: ${coverageReportPath}`);
-                    } else {
-                        logger.warn(`Provided coverage report not found at: ${options.coverageReport}`);
-                    }
-                }
-    
-                // If no valid coverage report was provided and -u was used, look for the async-coverage-report.json
-                if (!coverageReportPath && options.useAvailableCoverageReport) {
-                    const potentialReportPath = path.join(projectPath, 'async-coverage-report.json');
-                    if (fs.existsSync(potentialReportPath)) {
-                        coverageReportPath = potentialReportPath;
-                        logger.info(`Using available coverage report at: ${coverageReportPath}`);
-                    } else {
-                        logger.warn('No async-coverage-report.json file found in the project directory.');
-                    }
-                }
-
-                await cli(projectPath, coverageReportPath);
-=======
                 // Check if the user provided a coverage report with -c
                 if (!options.batch) {
                     if (options.coverageReport) {
@@ -224,7 +169,6 @@ async function clearAll(directoryPath: string) {
                     logger.info('Batch mode enabled');
                     batchRun(projectPath, options.useAvailableCoverageReport);
                 }
->>>>>>> Stashed changes
             } catch (err) {
                 logger.error('Error in running cli():');
                 logger.error(err);
