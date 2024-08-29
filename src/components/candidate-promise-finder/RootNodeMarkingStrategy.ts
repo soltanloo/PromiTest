@@ -4,6 +4,8 @@ import { isPromiseCalling } from '../../utils/AST';
 import { GPTController } from '../apis/GPTController';
 import logger from '../../utils/logger';
 import { P_TYPE } from '../../types/JScope.type';
+import { GPT } from '../../types/GPT.type';
+import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     public async markNode(node: PromiseNode): Promise<void> {
@@ -51,11 +53,8 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         return false;
     }
 
-    //TODO: Implement this
     private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
-        // should be some aync node type
-        return await GPTController.getInstance().verifyThrowCanBeBypassed(
-            node.promiseInfo.code,
-        );
+        let messages: GPT.Message[] = [{role: GPT.Role.SYSTEM, content: ThrowBypassSystemPrompt}, {role: GPT.Role.USER, content: node.promiseInfo.code}];
+        return await GPTController.getInstance().ask(messages) === 'T';
     }
 }

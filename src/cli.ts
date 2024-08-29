@@ -120,10 +120,6 @@ async function clearAll(directoryPath: string) {
             'look for async-coverage-report.json in each directory',
         )
         .option(
-            `-${CLI_ARGS.useAvailableCoverageReportShort}, --${CLI_ARGS.useAvailableCoverageReport}`,
-            'look for async-coverage-report.json in each directory',
-        )
-        .option(
             `-${CLI_ARGS.batchShort}, --${CLI_ARGS.batch}`,
             'run generate command for each project in directory',
         )

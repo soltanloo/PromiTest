@@ -15,23 +15,14 @@ export class Main {
         );
         let promiseGraph = promiseGraphConstructor.constructGraph();
 
-        const promiseGraphTestabilityMarker =
-            new PromiseGraphTestabilityMarker();
-        promiseGraphTestabilityMarker
-            .markGraph(promiseGraph)
-            .then((promiseGraph) => {
-                const callGraph = new CallgraphGenerator().callgraph;
+        const promiseGraphTestabilityMarker = new PromiseGraphTestabilityMarker();
+        const markedGraph = await promiseGraphTestabilityMarker.markGraph(promiseGraph)
 
-                let promptGenerator = new PromptGenerator(callGraph);
-                let prompts = promptGenerator.generatePrompts(promiseGraph);
-
-                return prompts;
-                // testGenerator.augmentTestSuite(tests)
-            })
-            .then((prompts) => {
-                const testGenerator = new TestGenerator();
-                let tests = testGenerator.generateTests(prompts);
-                // testGenerator.augmentTestSuite(tests)
-            });
+        const callGraph = new CallgraphGenerator().callgraph;
+        let promptGenerator = new PromptGenerator(callGraph);
+        let prompts = promptGenerator.generatePrompts(markedGraph);
+        const testGenerator = new TestGenerator();
+        let tests = testGenerator.generateTests(prompts);
+        // testGenerator.augmentTestSuite(tests)
     }
 }
