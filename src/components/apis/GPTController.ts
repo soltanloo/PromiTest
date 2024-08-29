@@ -21,7 +21,7 @@ export class GPTController implements LLMControllerInterface {
         if (!GPTController.instance) {
             logger.debug('Creating new instance of GPTController.');
             GPTController.instance = new GPTController();
-            this.model = GPT.Model.GPT4OMINI;
+            this.model = GPT.Model.GPT35TURBO;
         } else {
             logger.debug('Returning existing instance of GPTController.');
         }

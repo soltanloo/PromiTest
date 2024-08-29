@@ -6,6 +6,7 @@ import { detectModuleSystem } from '../../utils/AST';
 import path from 'path';
 import RuntimeConfig from '../configuration/RuntimeConfig';
 import { P_TYPE } from '../../types/JScope.type';
+import { UserMessageIncomplete } from '../../prompt-templates/ExperimentalPromptTemplates';
 
 export class RootNodePrompt extends Prompt {
     executionPathString: string;
@@ -58,6 +59,6 @@ export class RootNodePrompt extends Prompt {
             ),
         };
 
-        return Prompt.replacePlaceholders(rootNodePromptTemplate, placeholders);
+        return Prompt.replacePlaceholders(UserMessageIncomplete, placeholders);
     }
 }
