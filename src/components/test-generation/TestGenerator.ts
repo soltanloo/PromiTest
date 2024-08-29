@@ -94,7 +94,9 @@ export default class TestGenerator {
         prompt: string,
         retry: boolean = true,
     ): Promise<string | null> {
-        let messages:GPT.Message[] = [{role: GPT.Role.USER, content: prompt}];
+        let messages: GPT.Message[] = [
+            { role: GPT.Role.USER, content: prompt },
+        ];
         let response = await this.gptController.ask(messages);
 
         try {

@@ -15,8 +15,10 @@ export class Main {
         );
         let promiseGraph = promiseGraphConstructor.constructGraph();
 
-        const promiseGraphTestabilityMarker = new PromiseGraphTestabilityMarker();
-        const markedGraph = await promiseGraphTestabilityMarker.markGraph(promiseGraph)
+        const promiseGraphTestabilityMarker =
+            new PromiseGraphTestabilityMarker();
+        const markedGraph =
+            await promiseGraphTestabilityMarker.markGraph(promiseGraph);
 
         const callGraph = new CallgraphGenerator().callgraph;
         let promptGenerator = new PromptGenerator(callGraph);

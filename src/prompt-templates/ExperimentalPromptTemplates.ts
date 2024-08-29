@@ -1,5 +1,4 @@
-export const systemPromisePrompt = 
-`
+export const systemPromisePrompt = `
     You are an expert javascript developer. You have been tasked with writing a test for a promise or asynchronous function that is not sufficiently tested by the current test suite.
     You will receive a prompt including all necessary information to write the test.
     You must
@@ -7,11 +6,9 @@ export const systemPromisePrompt =
     2: identify the test suite and syntax to create the test.
     3: generate a test that covers the missing execution path of the promise or asynchronous function.
     Do not include any additional information in your response.
-`
+`;
 
-
-export const UserMessageComplete =
-`
+export const UserMessageComplete = `
 line number: {{line}}
 promise type: {{promiseType}}
 promise status: not {{notStatus}}
@@ -24,13 +21,11 @@ code: {{code}}
 {{asyncFunctionDefinition}}
 `;
 
-export const assistantCorrectResponse =
-`
+export const assistantCorrectResponse = `
 
-`
+`;
 
-export const UserMessageIncomplete =
-`
+export const UserMessageIncomplete = `
 line number: {{line}}
 promise type: {{promiseType}}
 promise status: not {{notStatus}}
@@ -41,4 +36,4 @@ location: {{location}}
 execution path: {{executionPath}}
 code: {{code}} 
 {{asyncFunctionDefinition}}
-`
+`;

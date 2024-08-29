@@ -5,7 +5,6 @@ import { LLMControllerInterface } from './LLMControllerInterface';
 import { GPT } from '../../types/GPT.type';
 import { use } from 'chai';
 export class GPTController implements LLMControllerInterface {
-
     private static instance: GPTController;
     private static apiInstance: OpenAI;
     private static readonly MAX_TOKENS = 1000;
@@ -42,7 +41,9 @@ export class GPTController implements LLMControllerInterface {
                 max_tokens: GPTController.MAX_TOKENS,
             };
 
-            logger.debug(`Sending question to GPT model: \n ${userMessages}`);
+            logger.debug(
+                `Sending question to GPT model: \n ${JSON.stringify(userMessages)}`,
+            );
 
             GPTController.apiInstance.chat.completions
                 .create(params)

@@ -54,7 +54,10 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
-        let messages: GPT.Message[] = [{role: GPT.Role.SYSTEM, content: ThrowBypassSystemPrompt}, {role: GPT.Role.USER, content: node.promiseInfo.code}];
-        return await GPTController.getInstance().ask(messages) === 'T';
+        let messages: GPT.Message[] = [
+            { role: GPT.Role.SYSTEM, content: ThrowBypassSystemPrompt },
+            { role: GPT.Role.USER, content: node.promiseInfo.code },
+        ];
+        return (await GPTController.getInstance().ask(messages)) === 'T';
     }
 }
