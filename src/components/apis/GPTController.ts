@@ -42,7 +42,14 @@ export class GPTController implements LLMControllerInterface {
             };
 
             logger.debug(
-                `Sending question to GPT model: \n ${JSON.stringify(userMessages)}`,
+                `Sending question to GPT model:\n${JSON.stringify(
+                    userMessages.map((message) => ({
+                        ...message,
+                        content: message.content,
+                    })),
+                    null,
+                    2, // Adds indentation for better readability
+                ).replace(/\\n/g, '\n')}`, // Replace \n in the JSON output itself
             );
 
             GPTController.apiInstance.chat.completions
