@@ -1,10 +1,10 @@
 import { NodeMarkingStrategy } from './NodeMarkingStrategy';
 import { PromiseNode } from '../promise-graph/PromiseNode';
 import { isPromiseCalling } from '../../utils/AST';
-import { GPTController } from '../apis/GPTController';
+import LLMController from '../apis/LLMController';
 import logger from '../../utils/logger';
 import { P_TYPE } from '../../types/JScope.type';
-import { GPT } from '../../types/GPT.type';
+import { LLM } from '../../types/GPT.type';
 import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
@@ -54,10 +54,10 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
-        let messages: GPT.Message[] = [
-            { role: GPT.Role.SYSTEM, content: ThrowBypassSystemPrompt },
-            { role: GPT.Role.USER, content: node.promiseInfo.code },
+        let messages: LLM.Message[] = [
+            { role: LLM.Role.SYSTEM, content: ThrowBypassSystemPrompt },
+            { role: LLM.Role.USER, content: node.promiseInfo.code },
         ];
-        return (await GPTController.getInstance().ask(messages)) === 'T';
+        return (await LLMController.ask(messages)) === 'T';
     }
 }
