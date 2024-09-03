@@ -1,10 +1,10 @@
 import { NodeMarkingStrategy } from './NodeMarkingStrategy';
 import { PromiseNode } from '../promise-graph/PromiseNode';
 import { isPromiseCalling } from '../../utils/AST';
-import { GPTController } from '../apis/GPTController';
+import LLMController from '../apis/LLMController';
 import logger from '../../utils/logger';
 import { P_TYPE } from '../../types/JScope.type';
-import { GPT } from '../../types/GPT.type';
+import { LLM } from '../../types/GPT.type';
 import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
@@ -55,7 +55,7 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
             return isPromiseCallingResult;
         } else if (node.promiseInfo.type === P_TYPE.AsyncFunction) {
             const canThrowBeBypassedResult = await this.canThrowBeBypassed(
-                node.promiseInfo.asyncFunctionDefinition!.sourceCode,
+                node,
             );
             logger.debug('isResolvable', { message: canThrowBeBypassedResult });
             return canThrowBeBypassedResult;
@@ -63,11 +63,11 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         return false;
     }
 
-    private async canThrowBeBypassed(code: string): Promise<boolean> {
-        let messages: GPT.Message[] = [
-            { role: GPT.Role.SYSTEM, content: ThrowBypassSystemPrompt },
-            { role: GPT.Role.USER, content: code },
+    private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
+        let messages: LLM.Message[] = [
+            { role: LLM.Role.SYSTEM, content: ThrowBypassSystemPrompt },
+            { role: LLM.Role.USER, content: node.promiseInfo.asyncFunctionDefinition!.sourceCode },
         ];
-        return (await GPTController.getInstance().ask(messages)) === 'T';
+        return (await LLMController.ask(messages)) === 'T';
     }
 }

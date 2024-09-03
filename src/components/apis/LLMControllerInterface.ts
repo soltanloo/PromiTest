@@ -1,5 +1,5 @@
-import { GPT } from '../../types/GPT.type';
+import { LLM } from '../../types/GPT.type';
 
 export interface LLMControllerInterface {
-    ask(userMessages: GPT.Message[]): Promise<string>;
+    ask(userMessages: LLM.Message[]): Promise<string>;
 }

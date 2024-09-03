@@ -1,14 +1,12 @@
 import OpenAI from 'openai';
 import logger from '../../utils/logger';
-import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
 import { LLMControllerInterface } from './LLMControllerInterface';
-import { GPT } from '../../types/GPT.type';
-import { use } from 'chai';
+import { LLM } from '../../types/GPT.type';
 export class GPTController implements LLMControllerInterface {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
     private static readonly MAX_TOKENS = 1000;
-    private static model: GPT.Model; //default model set in constructor
+    private static model: LLM.GPTModel; //default model set in constructor
 
     constructor() {
         GPTController.apiInstance = new OpenAI({
@@ -21,7 +19,7 @@ export class GPTController implements LLMControllerInterface {
         if (!GPTController.instance) {
             logger.debug('Creating new instance of GPTController.');
             GPTController.instance = new GPTController();
-            this.model = GPT.Model.GPT35TURBO;
+            this.model = LLM.GPTModel.GPT35TURBO;
         } else {
             logger.debug('Returning existing instance of GPTController.');
         }
@@ -29,11 +27,11 @@ export class GPTController implements LLMControllerInterface {
         return GPTController.instance;
     }
 
-    public static setModel(model: GPT.Model) {
+    public static setModel(model: LLM.GPTModel) {
         this.model = model;
     }
 
-    public ask(userMessages: GPT.Message[]): Promise<string> {
+    public ask(userMessages: LLM.Message[]): Promise<string> {
         return new Promise((resolve, reject) => {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
                 messages: userMessages,
