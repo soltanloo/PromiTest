@@ -9,7 +9,7 @@ import { PromiseFlagTypes } from '../../types/PromiseGraph.type';
 import * as fs from 'node:fs';
 import path from 'path';
 import logger from '../../utils/logger';
-import { LLM } from '../../types/GPT.type';
+import { LLM } from '../../types/LLM.type';
 import {
     assistantCorrectResponse,
     systemPromisePrompt,

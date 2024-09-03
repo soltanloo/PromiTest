@@ -1,7 +1,9 @@
 import OpenAI from 'openai';
 import logger from '../../utils/logger';
 import { LLMControllerInterface } from './LLMControllerInterface';
-import { LLM } from '../../types/GPT.type';
+import { LLM } from '../../types/LLM.type';
+import dotenv from 'dotenv';
+dotenv.config();
 export class GPTController implements LLMControllerInterface {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
