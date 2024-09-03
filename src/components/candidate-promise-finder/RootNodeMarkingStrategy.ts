@@ -4,7 +4,7 @@ import { isPromiseCalling } from '../../utils/AST';
 import LLMController from '../apis/LLMController';
 import logger from '../../utils/logger';
 import { P_TYPE } from '../../types/JScope.type';
-import { LLM } from '../../types/GPT.type';
+import { LLM } from '../../types/LLM.type';
 import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
