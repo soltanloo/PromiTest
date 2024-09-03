@@ -1,8 +1,9 @@
 import { HfInference } from '@huggingface/inference';
-import { LLM } from '../../types/GPT.type';
+import { LLM } from '../../types/LLM.type';
 import logger from '../../utils/logger';
 import { LLMControllerInterface } from './LLMControllerInterface';
-
+import dotenv from 'dotenv';
+dotenv.config();
 export class HfInferenceController implements LLMControllerInterface {
     private static instance: HfInferenceController;
     private static apiInstance: HfInference;
