@@ -8,7 +8,7 @@ export class HfInferenceController implements LLMControllerInterface {
     private static instance: HfInferenceController;
     private static apiInstance: HfInference;
     private static readonly MAX_TOKENS = 1000;
-    private static model: LLM.HFModel; //default model set in constructor
+    private static model: LLM.Model; //default model set in constructor
     private static temperature: number = 0.1;
     private static seed: number = 0;
 
@@ -25,7 +25,7 @@ export class HfInferenceController implements LLMControllerInterface {
         if (!HfInferenceController.instance) {
             logger.debug('Creating new instance of HfInferenceController.');
             HfInferenceController.instance = new HfInferenceController();
-            this.model = LLM.HFModel.PHI_3_MINI_4k;
+            this.model = LLM.Model.PHI_3_MINI_4k;
         } else {
             logger.debug(
                 'Returning existing instance of HfInferenceController.',
@@ -35,7 +35,7 @@ export class HfInferenceController implements LLMControllerInterface {
         return HfInferenceController.instance;
     }
 
-    public static setModel(model: LLM.HFModel) {
+    public static setModel(model: LLM.Model) {
         this.model = model;
     }
 

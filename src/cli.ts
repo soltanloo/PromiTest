@@ -7,7 +7,11 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 
-async function cli(projectPath: string, coverageReportPath?: string) {
+async function cli(
+    projectPath: string,
+    reportGeneration: boolean,
+    coverageReportPath?: string,
+) {
     dotenv.config();
     const runtimeConfig = RuntimeConfig.getInstance(projectPath);
 
@@ -72,7 +76,7 @@ async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
             }
 
             logger.info(`Running generate command for directory: ${dir}`);
-            await cli(dir, coverageReportPath);
+            await cli(dir, false, coverageReportPath);
         }
 
         logger.info('Batch command completed.');
@@ -123,10 +127,21 @@ async function clearAll(directoryPath: string) {
             `-${CLI_ARGS.batchShort}, --${CLI_ARGS.batch}`,
             'run generate command for each project in directory',
         )
+        .option(
+            `-${CLI_ARGS.reportShort}, --${CLI_ARGS.report}`,
+            'generate report after running tests',
+        )
+        .option(
+            `-${CLI_ARGS.cycleLLMsShort}, --${CLI_ARGS.cycleLLMs}`,
+            'cycle through each LLM for report generation',
+        )
         .action(async (projectPath, options) => {
             try {
                 let coverageReportPath: string | undefined;
                 // Check if the user provided a coverage report with -c
+                if (options.report) {
+                    RuntimeConfig;
+                }
                 if (!options.batch) {
                     if (options.coverageReport) {
                         if (fs.existsSync(options.coverageReport)) {
@@ -161,7 +176,7 @@ async function clearAll(directoryPath: string) {
                             );
                         }
                     }
-                    await cli(projectPath, coverageReportPath);
+                    await cli(projectPath, false, coverageReportPath);
                 } else {
                     logger.info('Batch mode enabled');
                     batchRun(projectPath, options.useAvailableCoverageReport);
