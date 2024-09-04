@@ -1,5 +1,5 @@
 import { NodeId } from '../../types/Graph.type';
-import LLMController from '../apis/LLMController';
+import { LLMController } from '../apis/LLMController';
 import dotenv from 'dotenv';
 import RuntimeConfig from '../configuration/RuntimeConfig';
 import TestValidator from './TestValidator';
@@ -103,7 +103,7 @@ export default class TestGenerator {
             { role: LLM.Role.ASSISTANT, content: assistantCorrectResponse },
             { role: LLM.Role.USER, content: prompt },
         ];
-        let response = await LLMController.ask(messages);
+        let response = await LLMController.getInstance().ask(messages);
 
         try {
             response = TestValidator.cleanCodeBlocks(response);

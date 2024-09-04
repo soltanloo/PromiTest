@@ -8,7 +8,7 @@ export class GPTController implements LLMControllerInterface {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
     private static readonly MAX_TOKENS = 1000;
-    private static model: LLM.GPTModel; //default model set in constructor
+    private static model: LLM.Model; //default model set in constructor
 
     constructor() {
         GPTController.apiInstance = new OpenAI({
@@ -21,7 +21,7 @@ export class GPTController implements LLMControllerInterface {
         if (!GPTController.instance) {
             logger.debug('Creating new instance of GPTController.');
             GPTController.instance = new GPTController();
-            this.model = LLM.GPTModel.GPT35TURBO;
+            this.model = LLM.Model.GPT35TURBO;
         } else {
             logger.debug('Returning existing instance of GPTController.');
         }
@@ -29,7 +29,7 @@ export class GPTController implements LLMControllerInterface {
         return GPTController.instance;
     }
 
-    public static setModel(model: LLM.GPTModel) {
+    public static setModel(model: LLM.Model) {
         this.model = model;
     }
 

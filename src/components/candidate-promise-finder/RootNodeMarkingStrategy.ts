@@ -1,7 +1,7 @@
 import { NodeMarkingStrategy } from './NodeMarkingStrategy';
 import { PromiseNode } from '../promise-graph/PromiseNode';
 import { isPromiseCalling } from '../../utils/AST';
-import LLMController from '../apis/LLMController';
+import { LLMController } from '../apis/LLMController';
 import logger from '../../utils/logger';
 import { P_TYPE } from '../../types/JScope.type';
 import { LLM } from '../../types/LLM.type';
@@ -58,6 +58,6 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
             { role: LLM.Role.SYSTEM, content: ThrowBypassSystemPrompt },
             { role: LLM.Role.USER, content: node.promiseInfo.code },
         ];
-        return (await LLMController.ask(messages)) === 'T';
+        return (await LLMController.getInstance().ask(messages)) === 'T';
     }
 }
