@@ -1,4 +1,4 @@
-import { HfInference } from '@huggingface/inference';
+import { HfInference, HfInferenceEndpoint } from '@huggingface/inference';
 import { LLM } from '../../types/LLM.type';
 import logger from '../../utils/logger';
 import { LLMControllerInterface } from './LLMControllerInterface';
@@ -25,7 +25,7 @@ export class HfInferenceController implements LLMControllerInterface {
         if (!HfInferenceController.instance) {
             logger.debug('Creating new instance of HfInferenceController.');
             HfInferenceController.instance = new HfInferenceController();
-            this.model = LLM.HFModel.GPT2;
+            this.model = LLM.HFModel.PHI_3_MINI_4k;
         } else {
             logger.debug(
                 'Returning existing instance of HfInferenceController.',
@@ -40,17 +40,23 @@ export class HfInferenceController implements LLMControllerInterface {
     }
 
     public ask(userMessages: LLM.Message[]): Promise<string> {
+        logger.debug(`Using model: ${HfInferenceController.model}`);
+        if (LLM.chatCompletionModels.has(HfInferenceController.model)) {
+            return this.chatCompletionQuery(userMessages);
+        }
+        if (LLM.apiPlaintextModels.has(HfInferenceController.model)) {
+            return this.apiPlaintextQuery(userMessages);
+        }
+        return new Promise((resolve, reject) => {
+            reject(new Error('Model not supported'));
+        });
+    }
+
+    private chatCompletionQuery(userMessages: LLM.Message[]): Promise<string> {
         return new Promise((resolve, reject) => {
             logger.debug(`Using model: ${HfInferenceController.model}`);
             logger.debug(
-                `Sending question to HF model:\n${JSON.stringify(
-                    userMessages.map((message) => ({
-                        ...message,
-                        content: message.content,
-                    })),
-                    null,
-                    2, // Adds indentation for better readability
-                ).replace(/\\n/g, '\n')}`, // Replace \n in the JSON output itself
+                `Sending question to HF model:\n${LLM.messagesToString(userMessages)}`, // Replace \n in the JSON output itself
             );
 
             HfInferenceController.apiInstance
@@ -72,6 +78,57 @@ export class HfInferenceController implements LLMControllerInterface {
                         );
                         resolve(responseContent);
                     }
+                });
+        });
+    }
+
+    private apiPlaintextQuery(userMessages: LLM.Message[]): Promise<string> {
+        return new Promise((resolve, reject) => {
+            async function query(userQuery: any) {
+                return fetch(
+                    'https://api-inference.huggingface.co/models/' +
+                        HfInferenceController.model,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${process.env.HF_INFERENCE_TOKEN}`,
+                            'Content-Type': 'application/json',
+                        },
+                        method: 'POST',
+                        body: JSON.stringify(userQuery),
+                    },
+                ).then(async (response) => {
+                    const jsonResponse = await response.json(); // Store the response body
+                    logger.info(
+                        `Received response from HF model:\n${JSON.stringify(jsonResponse)}`,
+                    );
+                    return jsonResponse; // Return the stored response
+                });
+            }
+
+            query({ inputs: LLM.messagesToString(userMessages) })
+                .then((result: any) => {
+                    if (
+                        result.error &&
+                        result.error.includes('currently loading')
+                    ) {
+                        logger.warn(
+                            'Model is currently loading, waiting for it to be ready',
+                        );
+                        query({
+                            inputs: LLM.messagesToString(userMessages),
+                            options: { wait_for_model: true },
+                        }).then((result: any) => {
+                            if (result.error) {
+                                reject(new Error(result.error));
+                            }
+                            resolve(result);
+                        });
+                    } else {
+                        resolve(result);
+                    }
+                })
+                .catch((error) => {
+                    reject(error);
                 });
         });
     }
