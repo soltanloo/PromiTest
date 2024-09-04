@@ -9,7 +9,7 @@ let LLMController: LLMControllerInterface;
 if (controllerType === 'GPT') {
     LLMController = GPTController.getInstance();
 } else if (controllerType === 'HF') {
-    LLMController = new HfInferenceController();
+    LLMController = HfInferenceController.getInstance();
 } else {
     throw new Error('Unsupported LLM Controller');
 }
