@@ -85,4 +85,9 @@ export default class RuntimeConfig {
         logger.debug(`Setting coverageReportPath: ${coverageReportPath}`);
         this.config.coverageReportPath = coverageReportPath;
     }
+
+    public setGenerateReport(generateReport: boolean): void {
+        logger.debug(`Setting generateReport: ${generateReport}`);
+        this.config.generateReport = generateReport;
+    }
 }

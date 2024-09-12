@@ -1,4 +1,8 @@
-import { asyncCoverageReport, CLI_ARGS } from './constants/constants';
+import {
+    asyncCoverageReport,
+    CLI_ARGS,
+    LLMS_FOR_CYCLE,
+} from './constants/constants';
 import { Command } from 'commander';
 import RuntimeConfig from './components/configuration/RuntimeConfig';
 import { Main } from './components/Main';
@@ -6,17 +10,18 @@ import logger from './utils/logger';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { LLMController } from './components/apis/LLMController';
 
 async function cli(
     projectPath: string,
-    reportGeneration: boolean,
+    generateReport: boolean,
     coverageReportPath?: string,
 ) {
     dotenv.config();
     const runtimeConfig = RuntimeConfig.getInstance(projectPath);
 
     runtimeConfig.setCoverageReportPath(coverageReportPath);
-
+    runtimeConfig.setGenerateReport(generateReport);
     await Main.run();
 }
 
@@ -52,7 +57,55 @@ async function clearTestFiles(projectPath: string) {
     }
 }
 
-async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
+async function singleRun(
+    projectPath: string,
+    generateReport = false,
+    useAvailableCoverageReport = false,
+    coverageReportPath?: string,
+) {
+    try {
+        if (coverageReportPath) {
+            if (fs.existsSync(coverageReportPath)) {
+                logger.info(
+                    `Using coverage report from provided path: ${coverageReportPath}`,
+                );
+            } else {
+                logger.warn(
+                    `Provided coverage report not found at: ${coverageReportPath}`,
+                );
+                coverageReportPath = undefined;
+            }
+        }
+
+        // If no valid coverage report was provided and -u was used, look for the async-coverage-report.json
+        if (!coverageReportPath && useAvailableCoverageReport) {
+            const potentialReportPath = path.join(
+                projectPath,
+                asyncCoverageReport,
+            );
+            if (fs.existsSync(potentialReportPath)) {
+                coverageReportPath = potentialReportPath;
+                logger.info(
+                    `Using available coverage report at: ${coverageReportPath}`,
+                );
+            } else {
+                logger.warn(
+                    'No async-coverage-report.json file found in the project directory.',
+                );
+            }
+        }
+        await cli(projectPath, generateReport, coverageReportPath);
+    } catch (err) {
+        logger.error('Error in singleRun():');
+        logger.error(err);
+    }
+}
+
+async function batchRun(
+    directoryPath: string,
+    generateReport: boolean,
+    lookForCoverageReport: boolean,
+) {
     try {
         const directories = fs
             .readdirSync(directoryPath, { withFileTypes: true })
@@ -76,7 +129,7 @@ async function batchRun(directoryPath: string, lookForCoverageReport: boolean) {
             }
 
             logger.info(`Running generate command for directory: ${dir}`);
-            await cli(dir, false, coverageReportPath);
+            await cli(dir, generateReport, coverageReportPath);
         }
 
         logger.info('Batch command completed.');
@@ -137,49 +190,51 @@ async function clearAll(directoryPath: string) {
         )
         .action(async (projectPath, options) => {
             try {
-                let coverageReportPath: string | undefined;
-                // Check if the user provided a coverage report with -c
                 if (options.report) {
                     RuntimeConfig;
                 }
                 if (!options.batch) {
-                    if (options.coverageReport) {
-                        if (fs.existsSync(options.coverageReport)) {
-                            coverageReportPath = options.coverageReport;
-                            logger.info(
-                                `Using coverage report from provided path: ${coverageReportPath}`,
-                            );
-                        } else {
-                            logger.warn(
-                                `Provided coverage report not found at: ${options.coverageReport}`,
+                    logger.info('Single mode enabled');
+                    if (options.cycleLLMs) {
+                        logger.info('Cycling through LLMs');
+                        for (const llm of LLMS_FOR_CYCLE) {
+                            logger.info(`Running for ${llm}`);
+                            LLMController.getInstance().setModel(llm);
+                            await singleRun(
+                                projectPath,
+                                options.report,
+                                options.useAvailableCoverageReport,
+                                options.coverageReport,
                             );
                         }
-                    }
-
-                    // If no valid coverage report was provided and -u was used, look for the async-coverage-report.json
-                    if (
-                        !coverageReportPath &&
-                        options.useAvailableCoverageReport
-                    ) {
-                        const potentialReportPath = path.join(
+                    } else {
+                        await singleRun(
                             projectPath,
-                            asyncCoverageReport,
+                            options.report,
+                            options.useAvailableCoverageReport,
+                            options.coverageReport,
                         );
-                        if (fs.existsSync(potentialReportPath)) {
-                            coverageReportPath = potentialReportPath;
-                            logger.info(
-                                `Using available coverage report at: ${coverageReportPath}`,
-                            );
-                        } else {
-                            logger.warn(
-                                'No async-coverage-report.json file found in the project directory.',
-                            );
-                        }
                     }
-                    await cli(projectPath, false, coverageReportPath);
                 } else {
                     logger.info('Batch mode enabled');
-                    batchRun(projectPath, options.useAvailableCoverageReport);
+                    if (options.cycleLLMs) {
+                        logger.info('Cycling through LLMs');
+                        for (const llm of LLMS_FOR_CYCLE) {
+                            logger.info(`Running for ${llm}`);
+                            LLMController.getInstance().setModel(llm);
+                            await batchRun(
+                                projectPath,
+                                options.report,
+                                options.useAvailableCoverageReport,
+                            );
+                        }
+                    } else {
+                        await batchRun(
+                            projectPath,
+                            options.report,
+                            options.useAvailableCoverageReport,
+                        );
+                    }
                 }
             } catch (err) {
                 logger.error('Error in running cli():');
