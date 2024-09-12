@@ -35,8 +35,8 @@ export class HfInferenceController implements LLMControllerInterface {
         return HfInferenceController.instance;
     }
 
-    public static setModel(model: LLM.Model) {
-        this.model = model;
+    public setModel(model: LLM.Model) {
+        HfInferenceController.model = model;
     }
 
     public ask(userMessages: LLM.Message[]): Promise<string> {

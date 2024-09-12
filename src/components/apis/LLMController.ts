@@ -34,20 +34,20 @@ export class LLMController implements LLMControllerInterface {
         return LLMController.instance;
     }
 
-    setModel(model: LLM.Model) {
+    public setModel(model: LLM.Model) {
         LLMController.model = model;
         if (LLM.GPTModels.has(model)) {
-            GPTController.setModel(model);
+            GPTController.getInstance().setModel(model);
             LLMController.instance = GPTController.getInstance();
         } else if (LLM.HFModels.has(model)) {
-            HfInferenceController.setModel(model);
+            HfInferenceController.getInstance().setModel(model);
             LLMController.instance = HfInferenceController.getInstance();
         } else {
             throw new Error('Unsupported Model');
         }
     }
 
-    ask(userMessages: LLM.Message[]): Promise<string> {
+    public ask(userMessages: LLM.Message[]): Promise<string> {
         return LLMController.instance.ask(userMessages);
     }
 }

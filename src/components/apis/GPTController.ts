@@ -29,8 +29,8 @@ export class GPTController implements LLMControllerInterface {
         return GPTController.instance;
     }
 
-    public static setModel(model: LLM.Model) {
-        this.model = model;
+    public setModel(model: LLM.Model) {
+        GPTController.model = model;
     }
 
     public ask(userMessages: LLM.Message[]): Promise<string> {
