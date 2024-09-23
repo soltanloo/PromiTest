@@ -25,6 +25,11 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
 
     private isRejectable(node: PromiseNode): boolean {
         if (node.promiseInfo.isApiCall) return true;
+        if (
+            node.promiseInfo.type === P_TYPE.AsyncFunction &&
+            !node.promiseInfo.asyncFunctionDefinition?.sourceCode
+        )
+            return false;
 
         let sourceCode =
             node.promiseInfo.type === P_TYPE.AsyncFunction
@@ -37,11 +42,18 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
 
     private isResolvable(node: PromiseNode): boolean {
         if (node.promiseInfo.isApiCall) return true;
+        if (
+            node.promiseInfo.type === P_TYPE.AsyncFunction &&
+            !node.promiseInfo.asyncFunctionDefinition?.sourceCode
+        )
+            return false;
 
-        let isPromiseCallingResult = isPromiseCalling(
-            node.promiseInfo.code,
-            'resolve',
-        );
+        let sourceCode =
+            node.promiseInfo.type === P_TYPE.AsyncFunction
+                ? node.promiseInfo.asyncFunctionDefinition!.sourceCode
+                : node.promiseInfo.code;
+
+        let isPromiseCallingResult = isPromiseCalling(sourceCode, 'resolve');
         logger.debug('isResolvable', { message: isPromiseCallingResult });
         return isPromiseCallingResult;
     }
