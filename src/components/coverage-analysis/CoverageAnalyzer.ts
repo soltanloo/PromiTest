@@ -14,6 +14,7 @@ import {
     P_TYPE,
     Pid,
     PInfo,
+    PMap,
 } from '../../types/JScope.type';
 import FileRepository from '../apis/FileRepository';
 import path from 'path';
@@ -27,6 +28,7 @@ export class CoverageAnalyzer {
     rawCoverageReport!: JScopeCoverageReport;
     RC: Configuration;
     readonly JSCOPE_PATH = process.env.JSCOPE_PATH;
+    private _pidToIdMap: Map<number, number> = new Map();
 
     constructor() {
         logger.debug('Initializing CoverageAnalyzer');
@@ -68,6 +70,8 @@ export class CoverageAnalyzer {
         let functionsMap = report.functionsMap;
         let refinedCoverageReport: PromiseCoverageReport = [];
 
+        this.populatePidToIdMap(promiseMap);
+
         Object.entries(promiseMap).forEach(([promiseId, promiseObject]) => {
             let refinedPromiseInfo = this.refinePromiseObject(
                 promiseObject,
@@ -79,6 +83,17 @@ export class CoverageAnalyzer {
         });
 
         return refinedCoverageReport;
+    }
+
+    // pid is the id of an instance, id or promiseId is the iid that is location-based
+    populatePidToIdMap(promiseMap: PMap) {
+        Object.entries(promiseMap).forEach(([promiseId, promiseObject]) => {
+            promiseObject.pids.forEach((id) => {
+                const pidNumber = this.extractPromiseIdFromString(id);
+                if (pidNumber)
+                    this._pidToIdMap.set(pidNumber, Number(promiseId));
+            });
+        });
     }
 
     async readReport(filePath: string): Promise<JScopeCoverageReport> {
@@ -134,15 +149,20 @@ export class CoverageAnalyzer {
             type: promiseObject.type as PromiseType,
             warnings,
             code: promiseObject.code ?? '',
+            links: promiseObject.links.map((link) => Number(link.id)),
         };
 
         if (promiseObject.parent) {
-            refinedPromiseInfo.parent = this.extractPromiseIdFromString(
+            const parentPidNumber = this.extractPromiseIdFromString(
                 promiseObject.parent,
             );
-            logger.debug(
-                `Parent promise id for ${promiseId}: ${refinedPromiseInfo.parent}`,
-            );
+            if (parentPidNumber) {
+                refinedPromiseInfo.parent =
+                    this._pidToIdMap.get(parentPidNumber);
+                logger.debug(
+                    `Parent promise id for ${promiseId}: ${refinedPromiseInfo.parent}`,
+                );
+            }
         }
         return refinedPromiseInfo;
     }
@@ -251,8 +271,6 @@ export class CoverageAnalyzer {
             return;
         }
         const match = pid.match(/\d+/);
-        const extractedId = match ? parseInt(match[0], 10) : undefined;
-        logger.debug(`Extracted Promise ID: ${extractedId}`);
-        return extractedId;
+        return match ? parseInt(match[0], 10) : undefined;
     }
 }

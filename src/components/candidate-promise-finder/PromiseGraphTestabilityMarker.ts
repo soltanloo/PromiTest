@@ -42,6 +42,9 @@ export class PromiseGraphTestabilityMarker {
                 );
                 break;
 
+            // case IncomingEdges.ONE_LINK:
+            // case IncomingEdges.ONE_CHAIN:
+
             default:
                 logger.error(
                     `Unhandled incoming edges type for node ${node.id}: ${node.incomingEdges}`,
