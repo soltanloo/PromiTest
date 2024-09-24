@@ -1,15 +1,18 @@
 import { NodeMarkingStrategy } from './NodeMarkingStrategy';
 import { PromiseNode } from '../promise-graph/PromiseNode';
 import { isPromiseCalling } from '../../utils/AST';
+import { GPTController } from '../apis/GPTController';
 import logger from '../../utils/logger';
 import { P_TYPE } from '../../types/JScope.type';
+import { GPT } from '../../types/GPT.type';
+import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
 
 export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
-    public markNode(node: PromiseNode): void {
+    public async markNode(node: PromiseNode): Promise<void> {
         logger.info(`Marking node ${node.id} as root node.`);
 
-        let _isRejectable = this.isRejectable(node);
-        let _isResolvable = this.isResolvable(node);
+        const _isRejectable = this.isRejectable(node);
+        const _isResolvable = await this.isResolvable(node);
 
         logger.debug(`Warnings: ${JSON.stringify(node.promiseInfo.warnings)}`);
 
@@ -40,21 +43,31 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         return isPromiseCallingResult;
     }
 
-    private isResolvable(node: PromiseNode): boolean {
+    private async isResolvable(node: PromiseNode): Promise<boolean> {
         if (node.promiseInfo.isApiCall) return true;
-        if (
-            node.promiseInfo.type === P_TYPE.AsyncFunction &&
-            !node.promiseInfo.asyncFunctionDefinition?.sourceCode
-        )
-            return false;
 
-        let sourceCode =
-            node.promiseInfo.type === P_TYPE.AsyncFunction
-                ? node.promiseInfo.asyncFunctionDefinition!.sourceCode
-                : node.promiseInfo.code;
+        if (node.promiseInfo.type === P_TYPE.NewPromise) {
+            const isPromiseCallingResult = isPromiseCalling(
+                node.promiseInfo.code,
+                'resolve',
+            );
+            logger.debug('isResolvable', { message: isPromiseCallingResult });
+            return isPromiseCallingResult;
+        } else if (node.promiseInfo.type === P_TYPE.AsyncFunction) {
+            const canThrowBeBypassedResult = await this.canThrowBeBypassed(
+                node.promiseInfo.asyncFunctionDefinition!.sourceCode,
+            );
+            logger.debug('isResolvable', { message: canThrowBeBypassedResult });
+            return canThrowBeBypassedResult;
+        }
+        return false;
+    }
 
-        let isPromiseCallingResult = isPromiseCalling(sourceCode, 'resolve');
-        logger.debug('isResolvable', { message: isPromiseCallingResult });
-        return isPromiseCallingResult;
+    private async canThrowBeBypassed(code: string): Promise<boolean> {
+        let messages: GPT.Message[] = [
+            { role: GPT.Role.SYSTEM, content: ThrowBypassSystemPrompt },
+            { role: GPT.Role.USER, content: code },
+        ];
+        return (await GPTController.getInstance().ask(messages)) === 'T';
     }
 }

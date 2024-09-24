@@ -1,10 +1,14 @@
 import OpenAI from 'openai';
 import logger from '../../utils/logger';
-
-export class GPTController {
+import { ThrowBypassSystemPrompt } from '../../prompt-templates/ThrowBypassSystemPrompt';
+import { LLMControllerInterface } from './LLMControllerInterface';
+import { GPT } from '../../types/GPT.type';
+import { use } from 'chai';
+export class GPTController implements LLMControllerInterface {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
     private static readonly MAX_TOKENS = 1000;
+    private static model: GPT.Model; //default model set in constructor
 
     constructor() {
         GPTController.apiInstance = new OpenAI({
@@ -17,6 +21,7 @@ export class GPTController {
         if (!GPTController.instance) {
             logger.debug('Creating new instance of GPTController.');
             GPTController.instance = new GPTController();
+            this.model = GPT.Model.GPT35TURBO;
         } else {
             logger.debug('Returning existing instance of GPTController.');
         }
@@ -24,15 +29,28 @@ export class GPTController {
         return GPTController.instance;
     }
 
-    public ask(question: string): Promise<string> {
+    public static setModel(model: GPT.Model) {
+        this.model = model;
+    }
+
+    public ask(userMessages: GPT.Message[]): Promise<string> {
         return new Promise((resolve, reject) => {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {
-                messages: [{ role: 'user', content: question }],
-                model: 'gpt-4o-mini',
+                messages: userMessages,
+                model: GPTController.model,
                 max_tokens: GPTController.MAX_TOKENS,
             };
 
-            logger.debug(`Sending question to GPT model: \n ${question}`);
+            logger.debug(
+                `Sending question to GPT model:\n${JSON.stringify(
+                    userMessages.map((message) => ({
+                        ...message,
+                        content: message.content,
+                    })),
+                    null,
+                    2, // Adds indentation for better readability
+                ).replace(/\\n/g, '\n')}`, // Replace \n in the JSON output itself
+            );
 
             GPTController.apiInstance.chat.completions
                 .create(params)

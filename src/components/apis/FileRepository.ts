@@ -2,7 +2,6 @@ import { FunctionDefinition } from '../../types/Callgraph.type';
 import { parseFunctionDefinitions } from '../../utils/AST';
 import { Position } from '../../types/File.type';
 import logger from '../../utils/logger';
-import { Location } from '../../types/JScope.type';
 
 export default class FileRepository {
     private static readonly functionDefinitions: Map<
@@ -21,9 +20,10 @@ export default class FileRepository {
             endPosition: Position;
         },
     ): FunctionDefinition | undefined {
-        logger.debug(
-            `Getting enclosing function in file: ${filePath}, from: ${JSON.stringify(startPosition)} to: ${JSON.stringify(endPosition)}`,
-        );
+        logger.info(`Getting enclosing function in file: ${filePath}`, {
+            startPosition,
+            endPosition,
+        });
 
         FileRepository.parseFileForFunctions(filePath);
 

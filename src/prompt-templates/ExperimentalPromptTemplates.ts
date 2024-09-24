@@ -1,42 +1,77 @@
-export const CondensedPromptTemplate = `Promise type: "{{promiseType}}" is not {{notStatus}} by the current test suite.
-It’s potentially {{potentiallyStatus}} due to {{candidacyReason}}.
-Generate a test for this promise execution path.
-Include only the new test code with imports; no description or comments.
-Ensure the test is runnable in a separate file using {{testRunner}}.
+export const systemPromisePrompt = `
+    You are an expert javascript developer. You have been tasked with writing a test for a promise or asynchronous function that is not sufficiently tested by the current test suite.
+    You will receive a prompt including all necessary information to write the test.
+    You must
+    1: identify and include all necessary imports
+    2: identify the test suite and syntax to create the test.
+    3: generate a test that covers the missing execution path of the promise or asynchronous function.
+    Do not include any additional information in your response.
+`;
 
-Location: {{location}}
-{{code}}
+export const UserMessageComplete = `
+line number: 2
+promise type: NewPromise
+promise status: not Resolved
+potential status: Resolvable due to contains a call to resolve() function
+test runner used by test suite: mocha
+module system used in project: CommonJS
+location: index.js
+execution path: Location: test/test.js
+            
+            function (done) {
+        foo(false).catch(() => {
+            done();
+        });
+    }
+            
+            exported: false
+            isDefaultExport: false
+            
+            ---Location: index.js
+            
+            function foo(condition) {
+    return new Promise((resolve, reject) => {
+        if (condition) resolve('Hello World!');
+        else reject('Rejected');
+    });
+}
+            
+            exported: true
+            isDefaultExport: false
+            exportedAs: foo
+            ---
+code: function foo(condition) {
+    return new Promise((resolve, reject) => {
+        if (condition) resolve('Hello World!');
+        else reject('Rejected');
+    });
+} 
+Here is the definition of the async function that returns the promise:
+`;
 
-Execution path for context:
-Functions separated by "---" with locations provided. Export status is mentioned for direct use in the new test:
+export const assistantCorrectResponse = `
+const { expect } = require('chai');
+const foo = require('../index').foo; // Adjust the path as necessary
 
-{{executionPath}}`;
+describe('foo function', function() {
+    it('should resolve with "Hello World!" when condition is true', function(done) {
+        foo(true).then(result => {
+            expect(result).to.equal('Hello World!');
+            done();
+        }).catch(done); // Ensure that if it fails, the done callback is called
+    });
+});
+`;
 
-export const YouAreApproachPromptTemplate = `You are a software testing engineer. 
-There is a Promise of type "{{promiseType}}" 
-that is not {{notStatus}} by the current test suite 
-and is potentially {{potentiallyStatus}} due to {{candidacyReason}}.
-Create a test for this promise execution path using {{testRunner}}. 
-Include only the test code with imports, no description or comments.
-Use the following execution path for context:
-Functions are separated by "---" with locations provided. 
-Export status is noted for direct use in the test.
-
-Execution Path: {{executionPath}}
-
-Location: {{location}}
-{{code}}`;
-
-export const RewordedCondensedTemplate = `
-Location: {{location}}
-{{code}}
-
-Promise type "{{promiseType}}" is {{notStatus}} by the current test suite.
-It's potentially {{potentiallyStatus}} due to {{candidacyReason}}.
-Please generate a runnable test for this execution path using {{testRunner}}.
-Include only the test code with necessary imports; no additional description.
-
-Execution path context:
-Functions are separated by "---" with locations provided. Export status is mentioned for direct use in the new test:
-
-{{executionPath}}`;
+export const UserMessageIncomplete = `
+line number: {{relativeLineNumber}}
+promise type: {{promiseType}}
+promise status: not {{notStatus}}
+potential status: {{potentiallyStatus}} due to {{candidacyReason}}
+test runner used by test suite: {{testRunner}}
+module system used in project: {{moduleSystem}}
+location: {{location}}
+execution path: {{executionPath}}
+code: {{code}} 
+{{asyncFunctionDefinition}}
+`;

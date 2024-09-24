@@ -9,6 +9,12 @@ import { PromiseFlagTypes } from '../../types/PromiseGraph.type';
 import * as fs from 'node:fs';
 import path from 'path';
 import logger from '../../utils/logger';
+import { GPT } from '../../types/GPT.type';
+import {
+    assistantCorrectResponse,
+    systemPromisePrompt,
+    UserMessageComplete,
+} from '../../prompt-templates/ExperimentalPromptTemplates';
 
 export default class TestGenerator {
     private gptController = GPTController.getInstance();
@@ -93,7 +99,13 @@ export default class TestGenerator {
         prompt: string,
         retry: boolean = true,
     ): Promise<string | null> {
-        let response = await this.gptController.ask(prompt);
+        let messages: GPT.Message[] = [
+            { role: GPT.Role.SYSTEM, content: systemPromisePrompt },
+            { role: GPT.Role.USER, content: UserMessageComplete },
+            { role: GPT.Role.ASSISTANT, content: assistantCorrectResponse },
+            { role: GPT.Role.USER, content: prompt },
+        ];
+        let response = await this.gptController.ask(messages);
 
         try {
             response = TestValidator.cleanCodeBlocks(response);

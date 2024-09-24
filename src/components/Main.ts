@@ -17,15 +17,14 @@ export class Main {
 
         const promiseGraphTestabilityMarker =
             new PromiseGraphTestabilityMarker();
-        promiseGraph = promiseGraphTestabilityMarker.markGraph(promiseGraph);
+        const markedGraph =
+            await promiseGraphTestabilityMarker.markGraph(promiseGraph);
 
         const callGraph = new CallgraphGenerator().callgraph;
-
         let promptGenerator = new PromptGenerator(callGraph);
-        let prompts = promptGenerator.generatePrompts(promiseGraph);
-
+        let prompts = promptGenerator.generatePrompts(markedGraph);
         const testGenerator = new TestGenerator();
-        let tests = await testGenerator.generateTests(prompts);
+        let tests = testGenerator.generateTests(prompts);
         // testGenerator.augmentTestSuite(tests)
     }
 }

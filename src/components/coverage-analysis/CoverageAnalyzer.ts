@@ -18,8 +18,8 @@ import {
 } from '../../types/JScope.type';
 import FileRepository from '../apis/FileRepository';
 import path from 'path';
-import logger from '../../utils/logger';
 import { FunctionDefinition } from '../../types/Callgraph.type';
+import logger from '../../utils/logger';
 
 export class CoverageAnalyzer {
     coverageData?: PromiseCoverageReport;
@@ -144,6 +144,10 @@ export class CoverageAnalyzer {
             identifier: Number(promiseId),
             enclosingFunction: enclosingFunctionOfPromiseObject!,
             location: decodedLocation,
+            relativeLineNumber:
+                decodedLocation.start.row -
+                enclosingFunctionOfPromiseObject!.start.row +
+                1,
             asyncFunctionDefinition,
             isApiCall: this.isPromiseReturnedByApi(promiseObject),
             type: promiseObject.type as PromiseType,

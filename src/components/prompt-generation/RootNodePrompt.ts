@@ -1,11 +1,10 @@
 import { Prompt } from './Prompt';
-import { rootNodePromptTemplate } from '../../prompt-templates/RootNodePromptTemplate';
 import { PromiseNode } from '../promise-graph/PromiseNode';
 import { Node } from '../../types/Graph.type';
 import { detectModuleSystem } from '../../utils/AST';
 import path from 'path';
 import RuntimeConfig from '../configuration/RuntimeConfig';
-import { P_TYPE } from '../../types/JScope.type';
+import { UserMessageIncomplete } from '../../prompt-templates/ExperimentalPromptTemplates';
 
 export class RootNodePrompt extends Prompt {
     executionPathString: string;
@@ -40,7 +39,10 @@ export class RootNodePrompt extends Prompt {
                 : 'Resolvable',
             candidacyReason: this.candidacyReason || '',
             location: this.promiseNode.promiseInfo.enclosingFunction.file,
+            relativeLineNumber:
+                this.promiseNode.promiseInfo.relativeLineNumber.toString(),
             code: this.promiseNode.promiseInfo.enclosingFunction.sourceCode,
+            statement: this.promiseNode.promiseInfo.code,
             testRunner: this.rc.testRunner,
             executionPath: this.executionPathString,
             asyncFunctionDefinition: this.promiseNode.promiseInfo
@@ -58,6 +60,6 @@ export class RootNodePrompt extends Prompt {
             ),
         };
 
-        return Prompt.replacePlaceholders(rootNodePromptTemplate, placeholders);
+        return Prompt.replacePlaceholders(UserMessageIncomplete, placeholders);
     }
 }
