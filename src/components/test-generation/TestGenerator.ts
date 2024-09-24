@@ -1,5 +1,5 @@
 import { NodeId } from '../../types/Graph.type';
-import { GPTController } from '../apis/GPTController';
+import LLMController from '../apis/LLMController';
 import dotenv from 'dotenv';
 import RuntimeConfig from '../configuration/RuntimeConfig';
 import TestValidator from './TestValidator';
@@ -9,7 +9,7 @@ import { PromiseFlagTypes } from '../../types/PromiseGraph.type';
 import * as fs from 'node:fs';
 import path from 'path';
 import logger from '../../utils/logger';
-import { GPT } from '../../types/GPT.type';
+import { LLM } from '../../types/LLM.type';
 import {
     assistantCorrectResponse,
     systemPromisePrompt,
@@ -17,8 +17,6 @@ import {
 } from '../../prompt-templates/ExperimentalPromptTemplates';
 
 export default class TestGenerator {
-    private gptController = GPTController.getInstance();
-
     constructor() {
         dotenv.config();
     }
@@ -99,13 +97,13 @@ export default class TestGenerator {
         prompt: string,
         retry: boolean = true,
     ): Promise<string | null> {
-        let messages: GPT.Message[] = [
-            { role: GPT.Role.SYSTEM, content: systemPromisePrompt },
-            { role: GPT.Role.USER, content: UserMessageComplete },
-            { role: GPT.Role.ASSISTANT, content: assistantCorrectResponse },
-            { role: GPT.Role.USER, content: prompt },
+        let messages: LLM.Message[] = [
+            { role: LLM.Role.SYSTEM, content: systemPromisePrompt },
+            { role: LLM.Role.USER, content: UserMessageComplete },
+            { role: LLM.Role.ASSISTANT, content: assistantCorrectResponse },
+            { role: LLM.Role.USER, content: prompt },
         ];
-        let response = await this.gptController.ask(messages);
+        let response = await LLMController.ask(messages);
 
         try {
             response = TestValidator.cleanCodeBlocks(response);
