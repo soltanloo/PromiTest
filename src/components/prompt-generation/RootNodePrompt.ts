@@ -1,11 +1,9 @@
 import { Prompt } from './Prompt';
-import { rootNodePromptTemplate } from '../../prompt-templates/RootNodePromptTemplate';
 import { PromiseNode } from '../promise-graph/PromiseNode';
 import { Node } from '../../types/Graph.type';
 import { detectModuleSystem } from '../../utils/AST';
 import path from 'path';
 import RuntimeConfig from '../configuration/RuntimeConfig';
-import { P_TYPE } from '../../types/JScope.type';
 import { UserMessageIncomplete } from '../../prompt-templates/ExperimentalPromptTemplates';
 
 export class RootNodePrompt extends Prompt {
@@ -47,10 +45,13 @@ export class RootNodePrompt extends Prompt {
             statement: this.promiseNode.promiseInfo.code,
             testRunner: this.rc.testRunner,
             executionPath: this.executionPathString,
-            asyncFunctionDefinition: `Here is the definition of the async function that returns the promise:\n${
-                this.promiseNode.promiseInfo.asyncFunctionDefinition
-                    ?.sourceCode || ''
-            }`,
+            asyncFunctionDefinition: this.promiseNode.promiseInfo
+                .asyncFunctionDefinition
+                ? `Here is the definition of the async function that returns the promise:\n${
+                      this.promiseNode.promiseInfo.asyncFunctionDefinition
+                          .sourceCode
+                  }`
+                : '',
             moduleSystem: detectModuleSystem(
                 path.join(
                     RuntimeConfig.getInstance().config.projectPath,

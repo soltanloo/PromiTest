@@ -182,7 +182,9 @@ export function parseFunctionDefinitions(
             if (
                 node.type === 'FunctionDeclaration' ||
                 node.type === 'FunctionExpression' ||
-                node.type === 'ArrowFunctionExpression'
+                node.type === 'ArrowFunctionExpression' ||
+                (node.type === 'MethodDefinition' &&
+                    node.key.type === 'Identifier')
             ) {
                 const functionNode = node;
                 let name = 'anonymous';
@@ -194,6 +196,8 @@ export function parseFunctionDefinitions(
                     parent?.type === 'VariableDeclarator'
                 ) {
                     name = parent!.id!.name;
+                } else if (node.type === 'MethodDefinition') {
+                    name = functionNode.key.name;
                 }
 
                 const exported = exportedFunctions.exports.has(name);

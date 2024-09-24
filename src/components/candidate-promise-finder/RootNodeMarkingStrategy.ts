@@ -27,6 +27,13 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private isRejectable(node: PromiseNode): boolean {
+        if (node.promiseInfo.isApiCall) return true;
+        if (
+            node.promiseInfo.type === P_TYPE.AsyncFunction &&
+            !node.promiseInfo.asyncFunctionDefinition?.sourceCode
+        )
+            return false;
+
         let sourceCode =
             node.promiseInfo.type === P_TYPE.AsyncFunction
                 ? node.promiseInfo.asyncFunctionDefinition!.sourceCode
@@ -37,26 +44,29 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private async isResolvable(node: PromiseNode): Promise<boolean> {
-        if (node.promiseInfo.type === 'NewPromise') {
+        if (node.promiseInfo.isApiCall) return true;
+
+        if (node.promiseInfo.type === P_TYPE.NewPromise) {
             const isPromiseCallingResult = isPromiseCalling(
                 node.promiseInfo.code,
                 'resolve',
             );
             logger.debug('isResolvable', { message: isPromiseCallingResult });
             return isPromiseCallingResult;
-        } else if (node.promiseInfo.type === 'AsyncFunction') {
-            const canThrowBeBypassedResult =
-                await this.canThrowBeBypassed(node);
+        } else if (node.promiseInfo.type === P_TYPE.AsyncFunction) {
+            const canThrowBeBypassedResult = await this.canThrowBeBypassed(
+                node.promiseInfo.asyncFunctionDefinition!.sourceCode,
+            );
             logger.debug('isResolvable', { message: canThrowBeBypassedResult });
             return canThrowBeBypassedResult;
         }
         return false;
     }
 
-    private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
+    private async canThrowBeBypassed(code: string): Promise<boolean> {
         let messages: GPT.Message[] = [
             { role: GPT.Role.SYSTEM, content: ThrowBypassSystemPrompt },
-            { role: GPT.Role.USER, content: node.promiseInfo.code },
+            { role: GPT.Role.USER, content: code },
         ];
         return (await GPTController.getInstance().ask(messages)) === 'T';
     }
