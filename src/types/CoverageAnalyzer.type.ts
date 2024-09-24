@@ -37,6 +37,7 @@ export interface PromiseInfo {
     asyncFunctionDefinition?: FunctionDefinition;
     type: PromiseType;
     warnings: PromiseCoverageWarnings;
+    isApiCall: boolean;
     parent?: PromiseIdentifier;
     links?: PromiseIdentifier[];
     inputs?: PromiseIdentifier[]; // Keeps track of the input promises to .all() and .race()

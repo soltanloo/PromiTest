@@ -84,6 +84,8 @@ export class Graph {
         let inStack = new Set<NodeId>();
 
         const visit = (pid: NodeId) => {
+            if (!pid) return;
+
             if (inStack.has(pid)) {
                 throw new Error('Graph is not a DAG - detected a cycle!');
             }
@@ -93,7 +95,7 @@ export class Graph {
                 inStack.add(pid);
 
                 const edges = nodesAdjacencyList.get(pid) || [];
-                edges.forEach((node) => visit(node.identifier));
+                edges.forEach((node) => visit(node.id));
 
                 inStack.delete(pid);
                 stack.push(pid);

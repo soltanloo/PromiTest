@@ -14,8 +14,8 @@ export class PromiseNode implements Node {
     id: PromiseNodeId;
     incomingEdges: IncomingEdges;
     chainedParent?: PromiseNode;
-    linkedParents?: PromiseNode[];
-    bundledParents?: PromiseNode[];
+    linkedParents: PromiseNode[] = [];
+    bundledParents: PromiseNode[] = [];
 
     prompts: Prompts = {};
 
@@ -48,7 +48,7 @@ export class PromiseNode implements Node {
         const hasBundledInputs = !!this.promiseInfo.inputs?.length;
         const hasChainedParent = !!this.promiseInfo.parent;
         const hasLinkedParent = !!this.promiseInfo.links?.length;
-        let incomingEdges: IncomingEdges = IncomingEdges.NONE;
+        let incomingEdges: IncomingEdges;
         if (hasBundledInputs) {
             incomingEdges = IncomingEdges.MULTIPLE_BUNDLE;
         } else if (hasChainedParent && hasLinkedParent) {

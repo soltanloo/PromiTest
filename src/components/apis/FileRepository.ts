@@ -96,8 +96,7 @@ export default class FileRepository {
 
     private static parseFileForFunctions(filePath: string) {
         if (!FileRepository.functionDefinitions.has(filePath)) {
-            logger.info(`Parsing file for function definitions: ${filePath}`);
-            logger.info(`Parsing file for function definitions: ${filePath}`);
+            logger.debug(`Parsing file for function definitions: ${filePath}`);
             const functionDefinitions = parseFunctionDefinitions(filePath);
             FileRepository.functionDefinitions.set(
                 filePath,
