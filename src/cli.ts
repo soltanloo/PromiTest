@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { LLMController } from './components/apis/LLMController';
+import { ReportGenerator } from './utils/ReportGenerator';
 
 async function cli(
     projectPath: string,
@@ -150,7 +151,6 @@ async function clearAll(directoryPath: string) {
             logger.info(`Running clear command for directory: ${dir}`);
             await clearTestFiles(dir);
         }
-
         logger.info('Clear-all command completed.');
     } catch (err) {
         logger.error('Error in clearAll():');
@@ -190,16 +190,13 @@ async function clearAll(directoryPath: string) {
         )
         .action(async (projectPath, options) => {
             try {
-                if (options.report) {
-                    RuntimeConfig;
-                }
                 if (!options.batch) {
                     logger.info('Single mode enabled');
                     if (options.cycleLLMs) {
                         logger.info('Cycling through LLMs');
                         for (const llm of LLMS_FOR_CYCLE) {
                             logger.info(`Running for ${llm}`);
-                            LLMController.getInstance().setModel(llm);
+                            LLMController.setModel(llm);
                             await singleRun(
                                 projectPath,
                                 options.report,
@@ -221,7 +218,7 @@ async function clearAll(directoryPath: string) {
                         logger.info('Cycling through LLMs');
                         for (const llm of LLMS_FOR_CYCLE) {
                             logger.info(`Running for ${llm}`);
-                            LLMController.getInstance().setModel(llm);
+                            LLMController.setModel(llm);
                             await batchRun(
                                 projectPath,
                                 options.report,
@@ -240,6 +237,7 @@ async function clearAll(directoryPath: string) {
                 logger.error('Error in running cli():');
                 logger.error(err);
             }
+            ReportGenerator.getInstance().generateReport();
         });
 
     program

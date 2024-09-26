@@ -33,6 +33,10 @@ export class GPTController implements LLMControllerInterface {
         GPTController.model = model;
     }
 
+    public getModel(): LLM.Model {
+        return GPTController.model;
+    }
+
     public ask(userMessages: LLM.Message[]): Promise<string> {
         return new Promise((resolve, reject) => {
             const params: OpenAI.Chat.ChatCompletionCreateParams = {

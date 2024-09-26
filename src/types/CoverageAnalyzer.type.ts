@@ -1,11 +1,16 @@
 import { Position } from './File.type';
 import { FunctionDefinition } from './Callgraph.type';
+import logger from 'src/utils/logger';
 
 export interface PromiseLocation {
     encoded: string;
     file: string;
     start: Position;
     end: Position;
+}
+
+export function PromiseLocationToString(location: PromiseLocation): string {
+    return `${location.file}:${location.encoded}:${location.start.row}&${location.start.column}-${location.end.row}&${location.end.column}`;
 }
 
 export type PromiseType =

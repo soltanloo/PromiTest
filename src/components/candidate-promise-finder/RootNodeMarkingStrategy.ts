@@ -58,6 +58,6 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
             { role: LLM.Role.SYSTEM, content: ThrowBypassSystemPrompt },
             { role: LLM.Role.USER, content: node.promiseInfo.code },
         ];
-        return (await LLMController.getInstance().ask(messages)) === 'T';
+        return (await LLMController.ask(messages)) === 'T';
     }
 }

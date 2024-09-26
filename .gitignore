@@ -4,5 +4,6 @@ node_modules
 *.log
 .idea
 .run
+*.csv
 tests/fixtures/code/**/async-coverage-report.json
 tests/fixtures/code/**/promise-*-*-test.js

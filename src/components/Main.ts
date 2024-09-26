@@ -4,6 +4,8 @@ import { PromiseGraphTestabilityMarker } from './candidate-promise-finder/Promis
 import CallgraphGenerator from './call-graph/CallgraphGenerator';
 import { PromptGenerator } from './prompt-generation/PromptGenerator';
 import TestGenerator from './test-generation/TestGenerator';
+import { ReportGenerator } from '../utils/ReportGenerator';
+import RuntimeConfig from './configuration/RuntimeConfig';
 
 export class Main {
     public static async run() {
@@ -24,7 +26,14 @@ export class Main {
         let promptGenerator = new PromptGenerator(callGraph);
         let prompts = promptGenerator.generatePrompts(markedGraph);
         const testGenerator = new TestGenerator();
-        let tests = testGenerator.generateTests(prompts);
+        let tests = await testGenerator.generateTests(prompts);
+
         // testGenerator.augmentTestSuite(tests)
+
+        //attach promisegraph data to the report
+        ReportGenerator.getInstance().processData(
+            promiseGraph,
+            RuntimeConfig.getInstance().config.projectName,
+        );
     }
 }
