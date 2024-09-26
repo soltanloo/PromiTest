@@ -32,6 +32,11 @@ Ensure you have the following installed:
     1. Obtain an [OpenAI API Key](https://openai.com/blog/openai-api) and set the `OPENAI_API_KEY` environment variable
        accordingly.
     2. Set the `JSCOPE_PATH` environment variable to refer to JScope's cli runner.
+    
+    3. Set the `LOG_LEVEL`.
+
+    4. Obtain an [Hugging Face Token](https://huggingface.co/) and set the `HF_INFERENCE_TOKEN` environment variable
+       accordingly.
 
 4. Build the project:
     ```bash

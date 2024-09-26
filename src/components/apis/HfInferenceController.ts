@@ -39,6 +39,10 @@ export class HfInferenceController implements LLMControllerInterface {
         HfInferenceController.model = model;
     }
 
+    public getModel(): LLM.Model {
+        return HfInferenceController.model;
+    }
+
     public ask(userMessages: LLM.Message[]): Promise<string> {
         logger.debug(`Using model: ${HfInferenceController.model}`);
         if (LLM.chatCompletionModels.has(HfInferenceController.model)) {

@@ -1,7 +1,7 @@
 import { LLMControllerInterface } from './LLMControllerInterface';
 import { GPTController } from './GPTController';
 import { HfInferenceController } from './HfInferenceController';
-import { LLM } from 'src/types/LLM.type';
+import { LLM } from '../../types/LLM.type';
 
 // const controllerType = process.env.LLM_CONTROLLER || 'GPT';
 
@@ -17,37 +17,31 @@ import { LLM } from 'src/types/LLM.type';
 
 // export default LLMController;
 
-export class LLMController implements LLMControllerInterface {
-    private static model: LLM.Model;
-    private static instance: LLMControllerInterface;
+export class LLMController {
+    private static model: LLM.Model = LLM.Model.GPT35TURBO;
+    private static LLMInstance: LLMControllerInterface;
 
-    constructor() {
-        LLMController.instance = new GPTController();
-    }
-
-    public static getInstance(): LLMControllerInterface {
-        if (!LLMController.instance) {
-            LLMController.instance = new LLMController();
-            this.model = LLM.Model.GPT35TURBO;
-        }
-
-        return LLMController.instance;
-    }
-
-    public setModel(model: LLM.Model) {
+    public static setModel(model: LLM.Model) {
         LLMController.model = model;
         if (LLM.GPTModels.has(model)) {
             GPTController.getInstance().setModel(model);
-            LLMController.instance = GPTController.getInstance();
+            LLMController.LLMInstance = GPTController.getInstance();
         } else if (LLM.HFModels.has(model)) {
             HfInferenceController.getInstance().setModel(model);
-            LLMController.instance = HfInferenceController.getInstance();
+            LLMController.LLMInstance = HfInferenceController.getInstance();
         } else {
             throw new Error('Unsupported Model');
         }
     }
 
-    public ask(userMessages: LLM.Message[]): Promise<string> {
-        return LLMController.instance.ask(userMessages);
+    public static getModel(): LLM.Model {
+        return LLMController.model;
+    }
+
+    public static ask(userMessages: LLM.Message[]): Promise<string> {
+        if (!LLMController.LLMInstance) {
+            LLMController.setModel(LLMController.model);
+        }
+        return LLMController.LLMInstance.ask(userMessages);
     }
 }

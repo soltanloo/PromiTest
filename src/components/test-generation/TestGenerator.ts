@@ -15,6 +15,8 @@ import {
     systemPromisePrompt,
     UserMessageComplete,
 } from '../../prompt-templates/ExperimentalPromptTemplates';
+import { resolve } from 'node:path';
+import { ReportGenerator } from '../../utils/ReportGenerator';
 
 export default class TestGenerator {
     constructor() {
@@ -103,8 +105,9 @@ export default class TestGenerator {
             { role: LLM.Role.ASSISTANT, content: assistantCorrectResponse },
             { role: LLM.Role.USER, content: prompt },
         ];
-        let response = await LLMController.getInstance().ask(messages);
-
+        let response = await LLMController.ask(messages);
+        let reportGenerator = ReportGenerator.getInstance();
+        let runtimeConfig = RuntimeConfig.getInstance();
         try {
             response = TestValidator.cleanCodeBlocks(response);
 
@@ -115,9 +118,15 @@ export default class TestGenerator {
                     flag,
                 );
                 if (!validRuntime) {
-                    logger.error('Test failed.');
-                    throw new Error('Test failed.'); //FIXME
+                    throw new Error('Runtime error');
                 }
+                reportGenerator.addData(
+                    runtimeConfig.config.projectName,
+                    LLMController.getModel(),
+                    promiseId,
+                    flag as PromiseFlagTypes,
+                    true,
+                );
                 return response;
             } else {
                 if (retry) {
@@ -137,6 +146,13 @@ export default class TestGenerator {
                     );
                 } else {
                     logger.error('Syntax error in response, skipping...');
+                    reportGenerator.addData(
+                        runtimeConfig.config.projectName,
+                        LLMController.getModel(),
+                        promiseId,
+                        flag as PromiseFlagTypes,
+                        false,
+                    );
                     return null;
                 }
             }
@@ -161,6 +177,13 @@ export default class TestGenerator {
                 );
             } else {
                 logger.error('Runtime error in response, skipping...');
+                reportGenerator.addData(
+                    runtimeConfig.config.projectName,
+                    LLMController.getModel(),
+                    promiseId,
+                    flag as PromiseFlagTypes,
+                    false,
+                );
                 return null;
             }
         }

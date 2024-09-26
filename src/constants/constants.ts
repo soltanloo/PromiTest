@@ -1,5 +1,5 @@
 import { report } from 'node:process';
-import { LLM } from 'src/types/LLM.type';
+import { LLM } from '../types/LLM.type';
 
 export const PROMITEST_CONFIG_FILE_NAME = 'promitest.config.json';
 

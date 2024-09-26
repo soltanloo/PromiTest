@@ -27,13 +27,6 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private isRejectable(node: PromiseNode): boolean {
-        if (node.promiseInfo.isApiCall) return true;
-        if (
-            node.promiseInfo.type === P_TYPE.AsyncFunction &&
-            !node.promiseInfo.asyncFunctionDefinition?.sourceCode
-        )
-            return false;
-
         let sourceCode =
             node.promiseInfo.type === P_TYPE.AsyncFunction
                 ? node.promiseInfo.asyncFunctionDefinition!.sourceCode
@@ -44,19 +37,16 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     }
 
     private async isResolvable(node: PromiseNode): Promise<boolean> {
-        if (node.promiseInfo.isApiCall) return true;
-
-        if (node.promiseInfo.type === P_TYPE.NewPromise) {
+        if (node.promiseInfo.type === 'NewPromise') {
             const isPromiseCallingResult = isPromiseCalling(
                 node.promiseInfo.code,
                 'resolve',
             );
             logger.debug('isResolvable', { message: isPromiseCallingResult });
             return isPromiseCallingResult;
-        } else if (node.promiseInfo.type === P_TYPE.AsyncFunction) {
-            const canThrowBeBypassedResult = await this.canThrowBeBypassed(
-                node,
-            );
+        } else if (node.promiseInfo.type === 'AsyncFunction') {
+            const canThrowBeBypassedResult =
+                await this.canThrowBeBypassed(node);
             logger.debug('isResolvable', { message: canThrowBeBypassedResult });
             return canThrowBeBypassedResult;
         }
@@ -66,8 +56,8 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
         let messages: LLM.Message[] = [
             { role: LLM.Role.SYSTEM, content: ThrowBypassSystemPrompt },
-            { role: LLM.Role.USER, content: node.promiseInfo.asyncFunctionDefinition!.sourceCode },
+            { role: LLM.Role.USER, content: node.promiseInfo.code },
         ];
-        return (await LLMController.getInstance().ask(messages)) === 'T';
+        return (await LLMController.ask(messages)) === 'T';
     }
 }
