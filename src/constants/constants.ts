@@ -1,12 +1,13 @@
 import { report } from 'node:process';
 import { LLM } from '../types/LLM.type';
+import { clear } from 'node:console';
 
 export const PROMITEST_CONFIG_FILE_NAME = 'promitest.config.json';
 
 export const CLI_ARGS = {
     projectPath: 'projectPath',
     coverageReport: 'coverageReport',
-    coverageReportShort: 'c',
+    coverageReportShort: 'co',
     useAvailableCoverageReport: 'useAvailableCoverageReport',
     useAvailableCoverageReportShort: 'u',
     directoryPath: 'directoryPath',
@@ -16,6 +17,8 @@ export const CLI_ARGS = {
     reportShort: 'r',
     cycleLLMs: 'cycleLLMs',
     cycleLLMsShort: 'cl',
+    clear: 'clear',
+    clearShort: 'c',
 };
 export const LLMS_FOR_CYCLE = [
     LLM.Model.GPT35TURBO,

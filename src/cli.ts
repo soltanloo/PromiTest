@@ -169,6 +169,10 @@ async function clearAll(directoryPath: string) {
         .command('generate')
         .argument(`<${CLI_ARGS.projectPath}>`, 'path to project')
         .option(
+            `-${CLI_ARGS.clearShort}, --${CLI_ARGS.clear}`,
+            'clear test files before generating new ones',
+        )
+        .option(
             `-${CLI_ARGS.coverageReportShort}, --${CLI_ARGS.coverageReport} <coverageReportPath>`,
             'read coverage report from file',
         )
@@ -190,6 +194,10 @@ async function clearAll(directoryPath: string) {
         )
         .action(async (projectPath, options) => {
             try {
+                if (options.clear) {
+                    logger.info('Clearing promise test files');
+                    await clearTestFiles(projectPath);
+                }
                 if (!options.batch) {
                     logger.info('Single mode enabled');
                     if (options.cycleLLMs) {
