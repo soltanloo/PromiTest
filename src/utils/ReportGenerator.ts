@@ -13,7 +13,6 @@ import { PromiseGraph } from '../components/promise-graph/PromiseGraph';
 import { PromiseNode } from '../components/promise-graph/PromiseNode';
 import { PromiseFlagTypes } from '../types/PromiseGraph.type';
 import RuntimeConfig from '../components/configuration/RuntimeConfig';
-import { json } from 'stream/consumers';
 import { PromiseLocationToString } from '../types/CoverageAnalyzer.type';
 
 export class ReportGenerator {
@@ -33,6 +32,7 @@ export class ReportGenerator {
     get report() {
         return this._report;
     }
+
     public addData(
         projectName: string,
         model: LLM.Model,
@@ -73,12 +73,15 @@ export class ReportGenerator {
             };
             llmReport.promises.push(promiseReport);
         }
+
+        // Add flag data
+        promiseReport.flags.push({ flag, passed });
     }
     public processData(promiseGraph: PromiseGraph, projectName: string) {
         if (RuntimeConfig.getInstance().config.generateReport == false) {
             return;
         }
-        //attach location and code to each promise using the promiseGraph
+        //attach location to each promise using the promiseGraph
         logger.info(`Processing data for ${projectName}`);
         this._report
             .find((r) => r.projectName === projectName)
@@ -112,7 +115,9 @@ export class ReportGenerator {
 
         // CSV headers
         detailedCsvData.push('Project Name,LLM,Promise Location,Flag,Passed');
-        promiseSummaryData.push('Project Name,Location,Flag,Percentage (%)');
+        promiseSummaryData.push(
+            'Project Name,Location,Flag,Percentage (%),Successes,Total',
+        );
 
         // Initialize totals for project success calculation
         const projectTotals: ProjectSummary = {};
@@ -136,7 +141,7 @@ export class ReportGenerator {
                     let totalFlagsForPromise = 0;
                     let passedFlagsForPromise = 0;
 
-                    // Retrieve the promise node to get the location and code
+                    // Retrieve the promise node to get the location
                     let location: string = PromiseLocationToString(
                         promise.location!,
                     );
@@ -159,7 +164,6 @@ export class ReportGenerator {
                             promiseLocationTotals[uniqueLocationWithFlag] || {
                                 passed: 0,
                                 total: 0,
-                                code: '',
                             };
                         promiseLocationTotals[uniqueLocationWithFlag].passed +=
                             flag.passed ? 1 : 0;
@@ -205,13 +209,13 @@ export class ReportGenerator {
         // Calculate Promise success rates (grouped by location and flag)
         for (const [
             uniqueLocationWithFlag,
-            { passed, total, code },
+            { passed, total },
         ] of Object.entries(promiseLocationTotals)) {
             const successRate = total > 0 ? (passed / total) * 100 : 0;
             const [projectName, location, flag] =
                 uniqueLocationWithFlag.split('|'); // Extract projectName, location, and flag
             promiseSummaryData.push(
-                `${projectName},${location},${flag},${successRate.toFixed(2)}`,
+                `${projectName},${location},${flag},${successRate.toFixed(2)},${passed},${total}`,
             );
         }
 
@@ -244,10 +248,13 @@ export class ReportGenerator {
         logger.info(`LLM success summary exported to ${llmSummaryPath}`);
 
         // Write Project success summary to CSV
-        const projectSummaryCsvData = ['Project Name,Success Rate (%)'];
+        const projectSummaryCsvData = [
+            'Project Name,Success Rate (%),Successes,Total',
+        ];
         projectSummaryData.forEach((entry) => {
+            const { passed, total } = projectTotals[entry.projectName]; // Retrieve passed and total for the project
             projectSummaryCsvData.push(
-                `${entry.projectName},${entry.successRate}`,
+                `${entry.projectName},${entry.successRate},${passed},${total}`,
             );
         });
 
