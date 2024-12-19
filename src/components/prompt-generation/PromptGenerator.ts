@@ -10,11 +10,7 @@ import { Prompts } from '../../types/Prompt.type';
 import logger from '../../utils/logger';
 
 export class PromptGenerator {
-    callgraph: CallGraph;
-
-    constructor(callgraph: CallGraph) {
-        this.callgraph = callgraph;
-    }
+    constructor() {}
 
     public generatePrompts(promiseGraph: PromiseGraph) {
         const sortedNodes = promiseGraph.sortedNodes;
@@ -51,7 +47,7 @@ export class PromptGenerator {
                 throw new Error('Unhandled node type');
         }
 
-        return strategy.generatePrompt(node, this.callgraph);
+        return strategy.generatePrompt(node);
     }
 
     public getPromptsAsObject(promptsMap: Map<NodeId, Prompts>) {

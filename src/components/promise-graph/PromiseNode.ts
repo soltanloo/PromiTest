@@ -7,6 +7,8 @@ import {
 import { Node } from '../../types/Graph.type';
 import { Prompts } from '../../types/Prompt.type';
 import logger from '../../utils/logger';
+import { FunctionDefinition } from '../../types/Callgraph.type';
+import { Pid } from '../../types/JScope.type';
 
 //TODO: Define PromiseNode interface that extends Node and then define a new class that implements PromiseNode interface
 export class PromiseNode implements Node {
@@ -62,5 +64,27 @@ export class PromiseNode implements Node {
         }
         logger.debug(`Incoming edges for node ${this.id}: ${incomingEdges}`);
         return incomingEdges;
+    }
+
+    public findPidWithShortestExecutionPath(): Pid {
+        let shortestPathPid: Pid | null = null;
+        let shortestLength = Infinity;
+
+        for (const pid in this.promiseInfo.stackTraces) {
+            const arrayLength = this.promiseInfo.stackTraces[pid].length;
+
+            if (arrayLength < shortestLength) {
+                shortestLength = arrayLength;
+                shortestPathPid = pid as Pid;
+            }
+        }
+
+        if (shortestPathPid) {
+            return shortestPathPid;
+        } else {
+            throw new Error(
+                `Unable to find an execution path for node ${this.id}`,
+            );
+        }
     }
 }

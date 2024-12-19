@@ -6,6 +6,10 @@ import * as fs from 'fs';
 import * as estraverse from 'estraverse';
 import { Position } from '../types/File.type';
 import RuntimeConfig from '../components/configuration/RuntimeConfig';
+import logger from './logger';
+// @ts-ignore
+import * as escodegen from 'escodegen';
+import { child } from 'winston';
 
 interface EspreeNode {
     type: string;
@@ -28,7 +32,7 @@ function toPosition({
 }): Position {
     return {
         row: line,
-        column: column,
+        column: column + 1, // Since it's zero based!
     };
 }
 
@@ -169,6 +173,24 @@ export function parseFunctionDefinitions(
     const functionDefinitions: FunctionDefinition[] = [];
     const RC = RuntimeConfig.getInstance().config;
 
+    // Get the lines of code
+    const lines = code.split('\n');
+
+    // Add the entire file as a function definition
+    const fileDefinition: FunctionDefinition = {
+        location: `${filePath}:file:1:1:${lines.length}:${lines[lines.length - 1].length} + 1`, // Correct end position
+        name: 'entireFile',
+        start: { row: 1, column: 1 }, // Starting at the beginning of the file
+        end: { row: lines.length, column: lines[lines.length - 1].length + 1 }, // Correct end: last line, last character
+        file: filePath.replace(RC.projectPath, ''),
+        exportInfo: {
+            exported: false,
+            defaultExport: false,
+            exportedAs: '',
+        },
+        sourceCode: code,
+    };
+    functionDefinitions.push(fileDefinition);
     const ast = parse(code, {
         ecmaVersion: 2021,
         sourceType: 'module',
@@ -236,7 +258,7 @@ export function parseFunctionDefinitions(
                 filePath = filePath.replace(RC.projectPath, '');
 
                 let functionDefinition = {
-                    location: `${filePath}:${name}:${node.loc!.start.line}:${node.loc!.start.column}:${node.loc!.end.line}:${node.loc!.end.column}`,
+                    location: `${filePath}:${name}:${node.loc!.start.line}:${node.loc!.start.column + 1}:${node.loc!.end.line}:${node.loc!.end.column + 1}`,
                     name,
                     start: toPosition(node.loc!.start),
                     end: toPosition(node.loc!.end),
@@ -253,129 +275,139 @@ export function parseFunctionDefinitions(
 }
 
 export function isPromiseCalling(code: string, functionName: string): boolean {
-    const ast = parse(code, {
-        ecmaVersion: 2021,
-        sourceType: 'module',
-        loc: true,
-    });
+    try {
+        const ast = parse(code, {
+            ecmaVersion: 2021,
+            sourceType: 'module',
+            loc: true,
+        });
 
-    let isUsingFunction = false;
+        let isUsingFunction = false;
 
-    estraverse.traverse(ast, {
-        enter(node: EspreeNode, parent: EspreeNode) {
-            if (
-                node.type === 'NewExpression' &&
-                node.callee.name === 'Promise'
-            ) {
-                let funcVariableNames = new Set();
+        estraverse.traverse(ast, {
+            enter(node: EspreeNode, parent: EspreeNode) {
+                if (
+                    node.type === 'NewExpression' &&
+                    node.callee.name === 'Promise'
+                ) {
+                    let funcVariableNames = new Set();
 
-                estraverse.traverse(node, {
-                    enter(innerNode: EspreeNode, innerParent: EspreeNode) {
-                        if (
-                            innerNode.type === 'FunctionExpression' ||
-                            innerNode.type === 'ArrowFunctionExpression'
-                        ) {
-                            estraverse.traverse(innerNode, {
-                                enter(
-                                    nestedNode: EspreeNode,
-                                    nestedParent: EspreeNode,
-                                ) {
-                                    // Track assignments of the function (resolve or reject)
-                                    if (
-                                        nestedNode.type ===
-                                            'AssignmentExpression' &&
-                                        nestedNode.right.type ===
-                                            'Identifier' &&
-                                        nestedNode.right.name === functionName
+                    estraverse.traverse(node, {
+                        enter(innerNode: EspreeNode, innerParent: EspreeNode) {
+                            if (
+                                innerNode.type === 'FunctionExpression' ||
+                                innerNode.type === 'ArrowFunctionExpression'
+                            ) {
+                                estraverse.traverse(innerNode, {
+                                    enter(
+                                        nestedNode: EspreeNode,
+                                        nestedParent: EspreeNode,
                                     ) {
+                                        // Track assignments of the function (resolve or reject)
                                         if (
-                                            nestedNode.left.type ===
-                                            'Identifier'
+                                            nestedNode.type ===
+                                                'AssignmentExpression' &&
+                                            nestedNode.right.type ===
+                                                'Identifier' &&
+                                            nestedNode.right.name ===
+                                                functionName
                                         ) {
-                                            funcVariableNames.add(
-                                                nestedNode.left.name,
-                                            );
-                                            isUsingFunction = true; //Because we just check the assignment and not if it's actually called later
-                                        } else if (
-                                            nestedNode.left.type ===
-                                                'MemberExpression' &&
-                                            nestedNode.left.object.type ===
-                                                'ThisExpression'
+                                            if (
+                                                nestedNode.left.type ===
+                                                'Identifier'
+                                            ) {
+                                                funcVariableNames.add(
+                                                    nestedNode.left.name,
+                                                );
+                                                isUsingFunction = true; //Because we just check the assignment and not if it's actually called later
+                                            } else if (
+                                                nestedNode.left.type ===
+                                                    'MemberExpression' &&
+                                                nestedNode.left.object.type ===
+                                                    'ThisExpression'
+                                            ) {
+                                                funcVariableNames.add(
+                                                    `this.${nestedNode.left.property.name}`,
+                                                );
+                                                isUsingFunction = true;
+                                            }
+                                        }
+
+                                        // Check for direct or deferred use of the function
+                                        if (
+                                            nestedNode.type === 'CallExpression'
                                         ) {
-                                            funcVariableNames.add(
-                                                `this.${nestedNode.left.property.name}`,
-                                            );
+                                            const callee = nestedNode.callee;
+                                            if (
+                                                callee.type === 'Identifier' &&
+                                                callee.name === functionName
+                                            ) {
+                                                isUsingFunction = true;
+                                            } else if (
+                                                callee.type ===
+                                                    'MemberExpression' &&
+                                                funcVariableNames.has(
+                                                    `this.${callee.property.name}`,
+                                                )
+                                            ) {
+                                                isUsingFunction = true;
+                                            } else if (
+                                                callee.type === 'Identifier' &&
+                                                funcVariableNames.has(
+                                                    callee.name,
+                                                )
+                                            ) {
+                                                isUsingFunction = true;
+                                            }
+                                        }
+
+                                        // Check for throw statements if the function is 'reject'
+                                        if (
+                                            functionName === 'reject' &&
+                                            nestedNode.type === 'ThrowStatement'
+                                        ) {
                                             isUsingFunction = true;
                                         }
-                                    }
+                                    },
+                                });
+                            }
+                        },
+                    });
 
-                                    // Check for direct or deferred use of the function
-                                    if (nestedNode.type === 'CallExpression') {
-                                        const callee = nestedNode.callee;
-                                        if (
-                                            callee.type === 'Identifier' &&
-                                            callee.name === functionName
-                                        ) {
-                                            isUsingFunction = true;
-                                        } else if (
-                                            callee.type ===
-                                                'MemberExpression' &&
-                                            funcVariableNames.has(
-                                                `this.${callee.property.name}`,
-                                            )
-                                        ) {
-                                            isUsingFunction = true;
-                                        } else if (
-                                            callee.type === 'Identifier' &&
-                                            funcVariableNames.has(callee.name)
-                                        ) {
-                                            isUsingFunction = true;
-                                        }
-                                    }
-
-                                    // Check for throw statements if the function is 'reject'
-                                    if (
-                                        functionName === 'reject' &&
-                                        nestedNode.type === 'ThrowStatement'
-                                    ) {
-                                        isUsingFunction = true;
-                                    }
-                                },
-                            });
-                        }
-                    },
-                });
-
-                if (isUsingFunction) {
-                    return estraverse.VisitorOption.Break; // Stop traversal early if found
+                    if (isUsingFunction) {
+                        return estraverse.VisitorOption.Break; // Stop traversal early if found
+                    }
                 }
-            }
-            if (
-                (node.type === 'FunctionDeclaration' ||
-                    node.type === 'FunctionExpression' ||
-                    node.type === 'ArrowFunctionExpression') &&
-                node.async
-            ) {
-                estraverse.traverse(node, {
-                    enter(nestedNode: EspreeNode) {
-                        // Check for throw statements if the function is 'reject'
-                        if (
-                            functionName === 'reject' &&
-                            nestedNode.type === 'ThrowStatement'
-                        ) {
-                            isUsingFunction = true;
-                        }
-                    },
-                });
+                if (
+                    (node.type === 'FunctionDeclaration' ||
+                        node.type === 'FunctionExpression' ||
+                        node.type === 'ArrowFunctionExpression') &&
+                    node.async
+                ) {
+                    estraverse.traverse(node, {
+                        enter(nestedNode: EspreeNode) {
+                            // Check for throw statements if the function is 'reject'
+                            if (
+                                functionName === 'reject' &&
+                                nestedNode.type === 'ThrowStatement'
+                            ) {
+                                isUsingFunction = true;
+                            }
+                        },
+                    });
 
-                if (isUsingFunction) {
-                    return estraverse.VisitorOption.Break; // Stop traversal early if found
+                    if (isUsingFunction) {
+                        return estraverse.VisitorOption.Break; // Stop traversal early if found
+                    }
                 }
-            }
-        },
-    });
+            },
+        });
 
-    return isUsingFunction;
+        return isUsingFunction;
+    } catch (e) {
+        logger.error(e);
+        throw e;
+    }
 }
 
 export function detectModuleSystem(filePath: string): string {
@@ -401,4 +433,113 @@ export function detectModuleSystem(filePath: string): string {
     } else {
         return 'Unknown or unsupported module system';
     }
+}
+
+export function extractTestMetaData(
+    filePath: string,
+    titlePath: string[],
+): string {
+    const code = fs.readFileSync(filePath, 'utf-8');
+    const ast = parse(code, {
+        ecmaVersion: 2021,
+        sourceType: 'module',
+        range: true,
+        loc: true,
+    });
+
+    // Recursive function to match nodes against the title path
+    function matchTitlePath(node: EspreeNode, titles: string[]): boolean {
+        if (titles.length === 0) {
+            // All titles have been matched
+            return true;
+        }
+
+        if (
+            !node ||
+            node.type !== 'CallExpression' ||
+            (node.callee.name !== 'describe' && node.callee.name !== 'it')
+        ) {
+            // Node is not a valid 'describe' or 'it' call
+            return false;
+        }
+
+        const [firstArg] = node.arguments;
+        if (firstArg.type !== 'Literal' || firstArg.value !== titles[0]) {
+            // Title does not match
+            return false;
+        }
+
+        if (titles.length === 1) {
+            // Last title matched
+            return true;
+        }
+
+        // Recursively search in the child 'describe' or 'it' blocks
+        const bodyNodes = node.arguments[1]?.body?.body || [];
+        for (const childNode of bodyNodes) {
+            if (
+                childNode.type === 'ExpressionStatement' &&
+                childNode.expression.type === 'CallExpression' &&
+                (childNode.expression.callee.name === 'describe' ||
+                    childNode.expression.callee.name === 'it')
+            ) {
+                if (matchTitlePath(childNode.expression, titles.slice(1))) {
+                    return true;
+                }
+            }
+        }
+
+        // No matching child found
+        return false;
+    }
+
+    // Function to recursively filter the AST
+    function filterAST(node: EspreeNode, titles: string[]) {
+        if (node.type === 'Program') {
+            node.body = node.body.filter((child: EspreeNode) =>
+                filterAST(child, titles),
+            );
+        } else if (
+            node.type === 'ExpressionStatement' &&
+            node.expression.type === 'CallExpression'
+        ) {
+            const expr = node.expression;
+            const isHook = [
+                'beforeEach',
+                'afterEach',
+                'before',
+                'after',
+            ].includes(expr?.callee?.name);
+            if (isHook) return true;
+
+            if (matchTitlePath(expr, titles)) {
+                if (titles.length === 1) {
+                    // Keep this node
+                    return true;
+                } else {
+                    // Recursively filter the child nodes
+                    expr.arguments[1].body.body =
+                        expr.arguments[1].body.body.filter(
+                            (childNode: EspreeNode) => {
+                                return filterAST(childNode, titles.slice(1));
+                            },
+                        );
+                    return true;
+                }
+            }
+
+            // For unmatched nodes at other levels
+            return false;
+        }
+
+        // Keep other nodes (e.g., import statements)
+        return true;
+    }
+
+    // Apply the filter to the AST
+    filterAST(ast, titlePath);
+
+    // Generate the new code using escodegen
+    const outputCode = escodegen.generate(ast);
+    return outputCode;
 }

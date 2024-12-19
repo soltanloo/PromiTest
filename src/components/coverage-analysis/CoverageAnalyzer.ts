@@ -3,6 +3,7 @@ import {
     PromiseIdentifier,
     PromiseInfo,
     PromiseLocation,
+    PromiseStackTracesInfo,
     PromiseType,
 } from '../../types/CoverageAnalyzer.type';
 import RuntimeConfig from '../configuration/RuntimeConfig';
@@ -111,17 +112,19 @@ export class CoverageAnalyzer {
     }
 
     private refinePromiseObject(promiseObject: PInfo, promiseId: string) {
-        let decodedLocation = this.decodeLocation(promiseObject.location);
+        let decodedPromiseLocation = this.decodeLocation(
+            promiseObject.location,
+        );
         logger.debug(
-            `Decoded location for promise ${promiseId}: ${JSON.stringify(decodedLocation)}`,
+            `Decoded location for promise ${promiseId}: ${JSON.stringify(decodedPromiseLocation)}`,
         );
 
         let enclosingFunctionOfPromiseObject =
             FileRepository.getEnclosingFunction(
-                path.join(this.projectPath, decodedLocation.file),
+                path.join(this.projectPath, decodedPromiseLocation.file),
                 {
-                    startPosition: decodedLocation.start,
-                    endPosition: decodedLocation.end,
+                    startPosition: decodedPromiseLocation.start,
+                    endPosition: decodedPromiseLocation.end,
                 },
             );
         if (enclosingFunctionOfPromiseObject) {
@@ -129,8 +132,42 @@ export class CoverageAnalyzer {
                 `Enclosing function found for promise ${promiseId}: ${enclosingFunctionOfPromiseObject.name}`,
             );
         } else {
+            //TODO: The whole file would be an alternative to the non-existent enclosing function
             logger.warn(`No enclosing function found for promise ${promiseId}`);
         }
+
+        let enrichedStackTraces: PromiseStackTracesInfo = {};
+
+        Object.entries(promiseObject.stackTraces).forEach(
+            ([pid, stackTrace]) => {
+                let enrichedStackTrace: FunctionDefinition[] = [];
+
+                stackTrace.forEach((functionLocation) => {
+                    let decodedFunctionLocation =
+                        this.decodeLocation(functionLocation);
+                    let enclosingFunction = FileRepository.getEnclosingFunction(
+                        path.join(
+                            this.projectPath,
+                            decodedFunctionLocation.file,
+                        ),
+                        {
+                            startPosition: decodedFunctionLocation.start,
+                            endPosition: decodedFunctionLocation.end,
+                        },
+                    );
+
+                    if (enclosingFunction)
+                        enrichedStackTrace.push(enclosingFunction);
+                    else {
+                        logger.error(
+                            `Enclosing function not found for ${functionLocation}`,
+                        );
+                    }
+                });
+
+                enrichedStackTraces[pid as Pid] = enrichedStackTrace;
+            },
+        );
 
         let warnings = this.getWarningsOfPromise(promiseObject);
         logger.debug(
@@ -143,17 +180,21 @@ export class CoverageAnalyzer {
         let refinedPromiseInfo: PromiseInfo = {
             identifier: Number(promiseId),
             enclosingFunction: enclosingFunctionOfPromiseObject!,
-            location: decodedLocation,
+            location: decodedPromiseLocation,
             relativeLineNumber:
-                decodedLocation.start.row -
+                decodedPromiseLocation.start.row -
                 enclosingFunctionOfPromiseObject!.start.row +
                 1,
             asyncFunctionDefinition,
             isApiCall: this.isPromiseReturnedByApi(promiseObject),
-            type: promiseObject.type as PromiseType,
+            type: asyncFunctionDefinition
+                ? P_TYPE.AsyncFunction
+                : (promiseObject.type as PromiseType),
             warnings,
             code: promiseObject.code ?? '',
             links: promiseObject.links.map((link) => Number(link.id)),
+            stackTraces: enrichedStackTraces,
+            testInfo: promiseObject.testInfo,
         };
 
         if (promiseObject.parent) {
@@ -177,8 +218,10 @@ export class CoverageAnalyzer {
         return !!(
             promiseObject.type === P_TYPE.NewPromise &&
             !promiseObject._types.includes(P_TYPE.AsyncFunction) &&
-            (promiseObject.settle.fulfill.length ||
-                promiseObject.settle.reject.length) &&
+            // (
+            //     promiseObject.settle.fulfill.length ||
+            //     promiseObject.settle.reject.length
+            // ) &&
             promiseObject.code &&
             !nativePromiseRegex.test(promiseObject.code)
         );
@@ -203,8 +246,8 @@ export class CoverageAnalyzer {
             let decodedAsyncFunctionLocation = this.decodeLocation(
                 settlementFunction.location,
             );
-            decodedAsyncFunctionLocation.start.column--;
-            decodedAsyncFunctionLocation.end.column--;
+            decodedAsyncFunctionLocation.start.column;
+            decodedAsyncFunctionLocation.end.column;
 
             return FileRepository.getFunctionDefinition(
                 path.join(this.projectPath, decodedAsyncFunctionLocation.file),

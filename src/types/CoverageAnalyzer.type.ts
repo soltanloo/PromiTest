@@ -1,5 +1,6 @@
 import { Position } from './File.type';
 import { FunctionDefinition } from './Callgraph.type';
+import { Pid, TInfo } from './JScope.type';
 
 export interface PromiseLocation {
     encoded: string;
@@ -42,6 +43,10 @@ export interface PromiseInfo {
     links?: PromiseIdentifier[];
     inputs?: PromiseIdentifier[]; // Keeps track of the input promises to .all() and .race()
     code: string;
+    stackTraces: PromiseStackTracesInfo;
+    testInfo: { [cid: string]: TInfo };
 }
+
+export type PromiseStackTracesInfo = { [pid: string]: FunctionDefinition[] };
 
 export type PromiseCoverageReport = PromiseInfo[];

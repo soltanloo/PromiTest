@@ -5,12 +5,20 @@ import { Configuration } from '../../types/Configuration.type';
 export abstract class Prompt {
     promiseNode: PromiseNode;
     rc: Configuration;
-    string: string;
 
     constructor(promiseNode: PromiseNode) {
         this.promiseNode = promiseNode;
         this.rc = RuntimeConfig.getInstance().config;
-        this.string = this.getPromptText();
+    }
+
+    private _string: string = '';
+
+    get string(): string {
+        return this._string;
+    }
+
+    set string(value: string) {
+        this._string = value;
     }
 
     get candidacyReason(): string | undefined {

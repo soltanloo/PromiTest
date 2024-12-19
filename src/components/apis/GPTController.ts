@@ -3,7 +3,9 @@ import logger from '../../utils/logger';
 import { LLMControllerInterface } from './LLMControllerInterface';
 import { LLM } from '../../types/LLM.type';
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 export class GPTController implements LLMControllerInterface {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
@@ -21,7 +23,7 @@ export class GPTController implements LLMControllerInterface {
         if (!GPTController.instance) {
             logger.debug('Creating new instance of GPTController.');
             GPTController.instance = new GPTController();
-            this.model = LLM.GPTModel.GPT35TURBO;
+            this.model = LLM.GPTModel.GPT4O;
         } else {
             logger.debug('Returning existing instance of GPTController.');
         }

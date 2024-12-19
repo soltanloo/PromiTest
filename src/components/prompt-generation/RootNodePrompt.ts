@@ -5,27 +5,35 @@ import { detectModuleSystem } from '../../utils/AST';
 import path from 'path';
 import RuntimeConfig from '../configuration/RuntimeConfig';
 import { UserMessageIncomplete } from '../../prompt-templates/ExperimentalPromptTemplates';
+import { FunctionDefinition } from '../../types/Callgraph.type';
 
 export class RootNodePrompt extends Prompt {
     executionPathString: string;
+    testMetaData: string;
 
-    constructor(promiseNode: PromiseNode, executionPath: Node[]) {
+    constructor(
+        promiseNode: PromiseNode,
+        executionPath: FunctionDefinition[],
+        testMetaData: string,
+    ) {
         super(promiseNode);
+        this.testMetaData = testMetaData;
         this.executionPathString = this.executionPathToString(executionPath);
         this.string = this.getPromptText();
     }
 
-    executionPathToString(executionPath: Node[]): string {
+    executionPathToString(executionPath: FunctionDefinition[]): string {
         let executionPathString = '';
-        for (const node of executionPath) {
-            executionPathString += `Location: ${node.fileDetails.file}
-            
-            ${node.fileDetails.sourceCode}
-            
-            exported: ${node.fileDetails.exportInfo.exported}
-            isDefaultExport: ${node.fileDetails.exportInfo.defaultExport}
-            ${node.fileDetails.exportInfo.exportedAs ? 'exportedAs: ' + node.fileDetails.exportInfo.exportedAs : ''}
-            ---`;
+        for (const func of executionPath) {
+            executionPathString += `--------
+            Location: ${func.file}
+            \`\`\`
+            ${func.sourceCode}
+            \`\`\`
+            exported: ${func.exportInfo.exported}
+            isDefaultExport: ${func.exportInfo.defaultExport}
+            ${func.exportInfo.exportedAs ? 'exportedAs: ' + func.exportInfo.exportedAs : ''}
+            --------`;
         }
         return executionPathString;
     }
@@ -47,10 +55,10 @@ export class RootNodePrompt extends Prompt {
             executionPath: this.executionPathString,
             asyncFunctionDefinition: this.promiseNode.promiseInfo
                 .asyncFunctionDefinition
-                ? `Here is the definition of the async function that returns the promise:\n${
+                ? `Here is the definition of the async function that returns the promise:\n\`\`\`${
                       this.promiseNode.promiseInfo.asyncFunctionDefinition
                           .sourceCode
-                  }`
+                  }\n\`\`\``
                 : '',
             moduleSystem: detectModuleSystem(
                 path.join(
@@ -58,6 +66,7 @@ export class RootNodePrompt extends Prompt {
                     this.promiseNode.promiseInfo.location.file,
                 ),
             ),
+            testMetaData: this.testMetaData,
         };
 
         return Prompt.replacePlaceholders(UserMessageIncomplete, placeholders);

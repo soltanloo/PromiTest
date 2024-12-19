@@ -29,6 +29,13 @@ export type CoverageStatusTypeFlattened = {
     execute_reject: null | boolean;
 };
 
+export type TInfo = {
+    file: string;
+    location?: Location;
+    titlePath: string[];
+    sourceCode?: string;
+};
+
 export type PInfo = {
     id: ID;
     location: Location;
@@ -47,6 +54,8 @@ export type PInfo = {
     execute: { fulfill: any[]; reject: any[] };
     _logs: any[]; // For debugging purposes
     coverage: CoverageStatusTypeFlattened;
+    testInfo: { [cid: Pid]: TInfo };
+    stackTraces: { [cid: Pid]: Location[] };
 };
 
 export type PMap = { [id: string]: PInfo };

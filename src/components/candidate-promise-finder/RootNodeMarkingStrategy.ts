@@ -36,8 +36,12 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
 
         let sourceCode =
             node.promiseInfo.type === P_TYPE.AsyncFunction
-                ? node.promiseInfo.asyncFunctionDefinition!.sourceCode
+                ? node.promiseInfo.asyncFunctionDefinition!.sourceCode.replace(
+                      /^async(?=\s+(\w+\s*\(|function\s*\())/, // Replaces if async is not followed by 'function' or '(' (for arrow functions)
+                      'async function ',
+                  )
                 : node.promiseInfo.code;
+
         let isPromiseCallingResult = isPromiseCalling(sourceCode, 'reject');
         logger.debug('isRejectable', { message: isPromiseCallingResult });
         return isPromiseCallingResult;
@@ -54,9 +58,8 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
             logger.debug('isResolvable', { message: isPromiseCallingResult });
             return isPromiseCallingResult;
         } else if (node.promiseInfo.type === P_TYPE.AsyncFunction) {
-            const canThrowBeBypassedResult = await this.canThrowBeBypassed(
-                node,
-            );
+            const canThrowBeBypassedResult =
+                await this.canThrowBeBypassed(node);
             logger.debug('isResolvable', { message: canThrowBeBypassedResult });
             return canThrowBeBypassedResult;
         }
@@ -66,7 +69,10 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
     private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {
         let messages: LLM.Message[] = [
             { role: LLM.Role.SYSTEM, content: ThrowBypassSystemPrompt },
-            { role: LLM.Role.USER, content: node.promiseInfo.asyncFunctionDefinition!.sourceCode },
+            {
+                role: LLM.Role.USER,
+                content: node.promiseInfo.asyncFunctionDefinition!.sourceCode,
+            },
         ];
         return (await LLMController.ask(messages)) === 'T';
     }

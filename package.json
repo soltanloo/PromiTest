@@ -29,6 +29,7 @@
         "@huggingface/inference": "^2.8.0",
         "commander": "^12.1.0",
         "dotenv": "^16.4.5",
+        "escodegen": "^2.1.0",
         "espree": "^10.1.0",
         "estraverse": "^5.3.0",
         "jscg": "^2.2.0",

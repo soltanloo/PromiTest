@@ -18,7 +18,7 @@ export function runUnitTest(testName: string): void {
             let promiseGraphTestabilityMarker =
                 new PromiseGraphTestabilityMarker();
             promiseGraph =
-                promiseGraphTestabilityMarker.markGraph(promiseGraph);
+                await promiseGraphTestabilityMarker.markGraph(promiseGraph);
 
             let expectedPromiseGraph = await readJson(
                 `./fixtures/expected-outputs/${testName}/expected-marked-promise-graph.json`,
