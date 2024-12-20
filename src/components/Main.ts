@@ -23,7 +23,6 @@ export class Main {
 
         Main.calculateStats(markedGraph);
 
-        // const callGraph = new CallgraphGenerator().callgraph;
         let promptGenerator = new PromptGenerator();
         let prompts = promptGenerator.generatePrompts(markedGraph);
         const testGenerator = new TestGenerator();
