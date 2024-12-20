@@ -25,8 +25,10 @@ export class PromptGenerator {
                         logger.debug(
                             `Generating a prompt for node ${node.id} that is ${key}`,
                         );
-                        node.prompts[key as PromiseFlagTypes] =
-                            this.generatePrompt(node as PromiseNode);
+                        let prompt = this.generatePrompt(node as PromiseNode);
+                        if (prompt) {
+                            node.prompts[key as PromiseFlagTypes] = prompt;
+                        }
                     }
                 });
                 prompts.set(pid, node.prompts);
@@ -35,7 +37,7 @@ export class PromptGenerator {
         return prompts;
     }
 
-    public generatePrompt(node: PromiseNode): Prompt {
+    public generatePrompt(node: PromiseNode): Prompt | undefined {
         let strategy: PromptGenerationStrategy;
 
         switch (node.incomingEdges) {

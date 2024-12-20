@@ -3,5 +3,5 @@ import { Prompt } from './Prompt';
 import { CallGraph } from '../call-graph/CallGraph';
 
 export interface PromptGenerationStrategy {
-    generatePrompt(node: PromiseNode): Prompt;
+    generatePrompt(node: PromiseNode): Prompt | undefined;
 }

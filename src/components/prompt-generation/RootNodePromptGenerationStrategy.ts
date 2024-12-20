@@ -9,13 +9,16 @@ import { extractTestMetaData } from '../../utils/AST';
 export class RootNodePromptGenerationStrategy
     implements PromptGenerationStrategy
 {
-    generatePrompt(node: PromiseNode): Prompt {
+    generatePrompt(node: PromiseNode): Prompt | undefined {
         let location =
             node.promiseInfo.type === P_TYPE.AsyncFunction
                 ? node.promiseInfo.asyncFunctionDefinition!.location
                 : node.promiseInfo.enclosingFunction.location;
         const shortestPathPid = node.findPidWithShortestExecutionPath();
         const shortestPath = node.promiseInfo.stackTraces[shortestPathPid];
+
+        if (!(shortestPathPid in node.promiseInfo.testInfo)) return undefined;
+
         const testInfo = node.promiseInfo.testInfo[shortestPathPid];
         const testMetaData = extractTestMetaData(
             testInfo.file,

@@ -43,6 +43,8 @@ export default class TestGenerator {
             const promiseResponses: Responses = {};
 
             for (const [flag, prompt] of Object.entries(promisePrompts)) {
+                if (!prompt.string) continue;
+
                 const response = await this.processPrompt(
                     promiseId,
                     flag,
