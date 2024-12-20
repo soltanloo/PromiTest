@@ -16,7 +16,7 @@ export class PromiseGraphTestabilityMarker {
             const node = promiseGraph.getNode(pid);
             if (node) {
                 logger.debug(`Marking node with id: ${node.id}`);
-                this.markNode(node as PromiseNode);
+                await this.markNode(node as PromiseNode);
             } else {
                 logger.warn(
                     `Node with id: ${pid} not found in the promise graph.`,
@@ -56,7 +56,7 @@ export class PromiseGraphTestabilityMarker {
         //     case P_TYPE.AsyncFunction:
         // }
 
-        strategy.markNode(node);
+        await strategy.markNode(node);
         logger.debug(
             `Node ${node.id} marked successfully with strategy: ${strategy.constructor.name}`,
         );
