@@ -25,6 +25,11 @@ export class RootNodePromptGenerationStrategy
             testInfo.titlePath,
         );
 
-        return new RootNodePrompt(node, shortestPath, testMetaData);
+        return new RootNodePrompt(
+            node,
+            shortestPath,
+            testInfo.file,
+            testMetaData,
+        );
     }
 }

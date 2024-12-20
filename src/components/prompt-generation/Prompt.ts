@@ -5,6 +5,7 @@ import { Configuration } from '../../types/Configuration.type';
 export abstract class Prompt {
     promiseNode: PromiseNode;
     rc: Configuration;
+    testPath?: string;
 
     constructor(promiseNode: PromiseNode) {
         this.promiseNode = promiseNode;

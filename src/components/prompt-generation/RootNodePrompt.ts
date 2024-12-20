@@ -14,9 +14,11 @@ export class RootNodePrompt extends Prompt {
     constructor(
         promiseNode: PromiseNode,
         executionPath: FunctionDefinition[],
+        testPath: string,
         testMetaData: string,
     ) {
         super(promiseNode);
+        this.testPath = testPath;
         this.testMetaData = testMetaData;
         this.executionPathString = this.executionPathToString(executionPath);
         this.string = this.getPromptText();

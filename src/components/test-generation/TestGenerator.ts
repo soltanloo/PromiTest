@@ -25,11 +25,14 @@ export default class TestGenerator {
         return `promise-${promiseId}-${flag}-test.js`;
     }
 
-    static getTestFilePathForPromise(promiseId: NodeId, flag: string): string {
+    static getTestFilePathForPromise(
+        promiseId: NodeId,
+        flag: string,
+        existingTestFilePath: string,
+    ): string {
         const RC = RuntimeConfig.getInstance().config;
         return path.join(
-            RC.projectPath,
-            RC.testDirectory,
+            path.dirname(existingTestFilePath),
             TestGenerator.getTestFileNameForPromise(promiseId, flag),
         );
     }
@@ -49,6 +52,7 @@ export default class TestGenerator {
                     promiseId,
                     flag,
                     prompt.string,
+                    prompt.testPath!,
                 );
                 if (response) {
                     promiseResponses[flag as PromiseFlagTypes] = response;
@@ -61,34 +65,12 @@ export default class TestGenerator {
         return responses;
     }
 
-    augmentTestSuite(tests: Map<NodeId, Responses>) {
-        for (const [promiseId, responses] of tests.entries()) {
-            this.writePromiseTestsToFile(promiseId, responses);
-        }
-    }
-
-    writePromiseTestsToFile(promiseId: NodeId, tests: Responses) {
-        for (const [flag, testString] of Object.entries(tests)) {
-            this.writePromiseTestToFile(promiseId, flag, testString);
-        }
-    }
-
-    writePromiseTestToFile(
-        promiseId: NodeId,
-        flag: string,
-        testString: string,
-    ) {
-        logger.debug(`Writing test for promise ${promiseId} with flag ${flag}`);
-        let filePath = TestGenerator.getTestFilePathForPromise(promiseId, flag);
-        fs.writeFileSync(filePath, testString);
+    writePromiseTestToFile(filePath: string, testString: string) {
+        fs.writeFileSync(filePath, testString, { flag: 'w' });
         logger.info(`Test written to ${filePath}`);
     }
 
-    deleteTestFile(promiseId: NodeId, flag: string) {
-        logger.debug(
-            `Deleting test file for promise ${promiseId} with flag ${flag}`,
-        );
-        let filePath = TestGenerator.getTestFilePathForPromise(promiseId, flag);
+    deleteTestFile(filePath: string) {
         fs.unlinkSync(filePath);
         logger.info(`Test file deleted at ${filePath}`);
     }
@@ -97,8 +79,15 @@ export default class TestGenerator {
         promiseId: NodeId,
         flag: string,
         prompt: string,
+        existingTestFilePath: string,
         retry: boolean = true,
     ): Promise<string | null> {
+        let filePath = TestGenerator.getTestFilePathForPromise(
+            promiseId,
+            flag,
+            existingTestFilePath,
+        );
+
         let messages: LLM.Message[] = [
             { role: LLM.Role.SYSTEM, content: systemPromisePrompt },
             { role: LLM.Role.USER, content: UserMessageComplete },
@@ -111,14 +100,15 @@ export default class TestGenerator {
             response = TestValidator.cleanCodeBlocks(response);
 
             if (TestValidator.validateSyntax(response)) {
-                this.writePromiseTestToFile(promiseId, flag, response);
+                this.writePromiseTestToFile(filePath, response);
                 let validRuntime = await TestValidator.validateRuntime(
                     promiseId,
                     flag,
+                    filePath,
                 );
-                if (!validRuntime) {
-                    logger.error('Test failed.');
-                    throw new Error('Test failed.'); //FIXME
+                if (!validRuntime.success) {
+                    logger.error('Runtime error in test.');
+                    throw new Error(validRuntime.errorOutput); //FIXME
                 }
                 return response;
             } else {
@@ -135,6 +125,7 @@ export default class TestGenerator {
                         promiseId,
                         flag,
                         newPrompt,
+                        filePath,
                         false,
                     );
                 } else {
@@ -143,7 +134,7 @@ export default class TestGenerator {
                 }
             }
         } catch (error) {
-            this.deleteTestFile(promiseId, flag);
+            this.deleteTestFile(filePath);
             if (retry) {
                 logger.warn('Runtime error in response, retrying...');
                 let newPrompt =
@@ -159,6 +150,7 @@ export default class TestGenerator {
                     promiseId,
                     flag,
                     newPrompt,
+                    filePath,
                     false,
                 );
             } else {
