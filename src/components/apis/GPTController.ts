@@ -9,8 +9,10 @@ dotenv.config();
 export class GPTController implements LLMControllerInterface {
     private static instance: GPTController;
     private static apiInstance: OpenAI;
-    private static readonly MAX_TOKENS = 1000;
-    private static model: LLM.GPTModel; //default model set in constructor
+    private static readonly MAX_TOKENS = 5000;
+    private static model: LLM.GPTModel; // Default model set in constructor
+    private static readonly RATE_LIMIT_DELAY = 10000; // Initial delay in ms for retries
+    private static readonly RETRY_LIMIT = 5; // Max retries for rate-limited requests
 
     constructor() {
         GPTController.apiInstance = new OpenAI({
@@ -35,46 +37,67 @@ export class GPTController implements LLMControllerInterface {
         this.model = model;
     }
 
-    public ask(userMessages: LLM.Message[]): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const params: OpenAI.Chat.ChatCompletionCreateParams = {
-                messages: userMessages,
-                model: GPTController.model,
-                max_tokens: GPTController.MAX_TOKENS,
-            };
+    public async ask(userMessages: LLM.Message[]): Promise<string> {
+        const params: OpenAI.Chat.ChatCompletionCreateParams = {
+            messages: userMessages,
+            model: GPTController.model,
+            max_tokens: GPTController.MAX_TOKENS,
+        };
 
-            logger.debug(
-                `Sending question to GPT model:\n${JSON.stringify(
-                    userMessages.map((message) => ({
-                        ...message,
-                        content: message.content,
-                    })),
-                    null,
-                    2, // Adds indentation for better readability
-                ).replace(/\\n/g, '\n')}`, // Replace \n in the JSON output itself
-            );
+        logger.debug(
+            `Sending question to GPT model:\n${JSON.stringify(
+                userMessages.map((message) => ({
+                    ...message,
+                    content: message.content,
+                })),
+                null,
+                2, // Adds indentation for better readability
+            ).replace(/\\n/g, '\n')}`, // Replace \n in the JSON output itself
+        );
 
-            GPTController.apiInstance.chat.completions
-                .create(params)
-                .then((res) => {
-                    const responseContent = res.choices[0]?.message?.content;
+        let retries = 0;
 
-                    if (!responseContent) {
-                        logger.error('No response received from GPT model.');
-                        reject(new Error('No response'));
-                    } else {
-                        logger.info(
-                            `Received response from GPT model: ${responseContent}`,
-                        );
-                        resolve(responseContent);
-                    }
-                })
-                .catch((err) => {
-                    logger.error(
-                        `Error occurred while communicating with GPT model. ${err.message}`,
+        while (retries < GPTController.RETRY_LIMIT) {
+            try {
+                const res =
+                    await GPTController.apiInstance.chat.completions.create(
+                        params,
                     );
-                    reject(err);
-                });
-        });
+                const responseContent = res.choices[0]?.message?.content;
+
+                if (!responseContent) {
+                    logger.error('No response received from GPT model.');
+                    throw new Error('No response');
+                }
+
+                logger.info(
+                    `Received response from GPT model: ${responseContent}`,
+                );
+                return responseContent;
+            } catch (err: any) {
+                if (
+                    err.response?.status === 429 &&
+                    retries < GPTController.RETRY_LIMIT
+                ) {
+                    retries++;
+                    logger.warn(
+                        `Rate limit exceeded. Retrying ${retries}/${GPTController.RETRY_LIMIT}...`,
+                    );
+                    await new Promise((resolve) =>
+                        setTimeout(
+                            resolve,
+                            GPTController.RATE_LIMIT_DELAY * retries,
+                        ),
+                    );
+                } else {
+                    logger.error(
+                        `Error occurred while communicating with GPT model: ${err.message}`,
+                    );
+                    throw err;
+                }
+            }
+        }
+
+        throw new Error('Max retries exceeded for rate-limited requests');
     }
 }
