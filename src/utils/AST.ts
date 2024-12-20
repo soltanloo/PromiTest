@@ -178,7 +178,7 @@ export function parseFunctionDefinitions(
 
     // Add the entire file as a function definition
     const fileDefinition: FunctionDefinition = {
-        location: `${filePath}:file:1:1:${lines.length}:${lines[lines.length - 1].length} + 1`, // Correct end position
+        location: `${filePath}:file:1:1:${lines.length}:${lines[lines.length - 1].length + 1}`, // Correct end position
         name: 'entireFile',
         start: { row: 1, column: 1 }, // Starting at the beginning of the file
         end: { row: lines.length, column: lines[lines.length - 1].length + 1 }, // Correct end: last line, last character
