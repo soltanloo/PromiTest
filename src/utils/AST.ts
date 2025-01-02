@@ -39,12 +39,20 @@ function toPosition({
 interface ExportInfo {
     exports: Set<string>;
     defaultExport: string | null;
+    defaultExportLocation: {
+        start: { line: number; column: number };
+        end: { line: number; column: number };
+    } | null;
     renamedExports: Map<string, string>; // Mapping from local name to exported name
 }
 
 export function detectExports(ast: EspreeNode): ExportInfo {
     const exportedFunctions: Set<string> = new Set();
     let defaultExport: string | null = null;
+    let defaultExportLocation: {
+        start: { line: number; column: number };
+        end: { line: number; column: number };
+    } | null = null;
     const renamedExports: Map<string, string> = new Map();
 
     estraverse.traverse(ast, {
@@ -80,6 +88,13 @@ export function detectExports(ast: EspreeNode): ExportInfo {
                     });
                 }
             } else if (node.type === 'ExportDefaultDeclaration') {
+                if (node.declaration.loc) {
+                    defaultExportLocation = {
+                        start: node.declaration.loc.start,
+                        end: node.declaration.loc.end,
+                    };
+                }
+
                 if (node.declaration.type === 'FunctionDeclaration') {
                     defaultExport = node.declaration.id
                         ? node.declaration.id.name
@@ -97,63 +112,21 @@ export function detectExports(ast: EspreeNode): ExportInfo {
                 node.left.property.type === 'Identifier' &&
                 node.left.property.name === 'exports'
             ) {
-                if (node.right.type === 'Identifier') {
+                if (node.right.loc) {
+                    defaultExportLocation = {
+                        start: node.right.loc.start,
+                        end: node.right.loc.end,
+                    };
+                }
+
+                if (
+                    node.right.type === 'FunctionExpression' ||
+                    node.right.type === 'ArrowFunctionExpression'
+                ) {
+                    defaultExport = 'default';
+                } else if (node.right.type === 'Identifier') {
                     exportedFunctions.add(node.right.name);
                     defaultExport = node.right.name;
-                } else if (node.right.type === 'ObjectExpression') {
-                    node.right.properties.forEach((property: any) => {
-                        if (
-                            property.key.type === 'Identifier' &&
-                            property.value.type === 'Identifier'
-                        ) {
-                            exportedFunctions.add(property.value.name);
-                            if (property.key.name !== property.value.name) {
-                                renamedExports.set(
-                                    property.value.name,
-                                    property.key.name,
-                                );
-                            }
-                        }
-                    });
-                }
-            } else if (
-                node.type === 'AssignmentExpression' &&
-                node.left.type === 'MemberExpression' &&
-                node.left.object.type === 'Identifier' &&
-                node.left.object.name === 'exports'
-            ) {
-                if (
-                    node.left.property.type === 'Identifier' &&
-                    node.right.type === 'Identifier'
-                ) {
-                    exportedFunctions.add(node.right.name);
-                    renamedExports.set(
-                        node.right.name,
-                        node.left.property.name,
-                    );
-                } else if (
-                    node.left.property.type === 'Identifier' &&
-                    node.right.type === 'FunctionExpression'
-                ) {
-                    exportedFunctions.add(node.left.property.name);
-                } else if (
-                    node.left.property.type === 'Identifier' &&
-                    node.right.type === 'ObjectExpression'
-                ) {
-                    node.right.properties.forEach((property: any) => {
-                        if (
-                            property.key.type === 'Identifier' &&
-                            property.value.type === 'Identifier'
-                        ) {
-                            exportedFunctions.add(property.value.name);
-                            if (property.key.name !== property.value.name) {
-                                renamedExports.set(
-                                    property.value.name,
-                                    property.key.name,
-                                );
-                            }
-                        }
-                    });
                 }
             }
         },
@@ -161,8 +134,9 @@ export function detectExports(ast: EspreeNode): ExportInfo {
 
     return {
         exports: exportedFunctions,
-        defaultExport: defaultExport,
-        renamedExports: renamedExports,
+        defaultExport,
+        defaultExportLocation,
+        renamedExports,
     };
 }
 
@@ -222,13 +196,34 @@ export function parseFunctionDefinitions(
                     name = functionNode.key.name;
                 }
 
-                const exported = exportedFunctions.exports.has(name);
-                const defaultExport = exportedFunctions.defaultExport === name;
-                const exportedAs = exported
+                let exported = exportedFunctions.exports.has(name);
+                const isDefaultExportByLocation =
+                    exportedFunctions.defaultExportLocation &&
+                    functionNode.loc &&
+                    functionNode.loc.start.line ===
+                        exportedFunctions.defaultExportLocation.start.line &&
+                    functionNode.loc.start.column ===
+                        exportedFunctions.defaultExportLocation.start.column &&
+                    functionNode.loc.end.line ===
+                        exportedFunctions.defaultExportLocation.end.line &&
+                    functionNode.loc.end.column ===
+                        exportedFunctions.defaultExportLocation.end.column;
+
+                const defaultExport = !!(
+                    exportedFunctions.defaultExport === name ||
+                    isDefaultExportByLocation
+                );
+
+                let exportedAs = exported
                     ? exportedFunctions.renamedExports.has(name)
                         ? exportedFunctions.renamedExports.get(name)
                         : name
                     : '';
+
+                if (defaultExport) {
+                    exported = true;
+                    exportedAs = 'default';
+                }
 
                 const exportInfo = {
                     exported,
