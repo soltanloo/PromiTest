@@ -9,7 +9,7 @@ export const systemPromisePrompt = `
     Things to consider:
     1. Your response should be runnable as a standalone file, i.e it should contain all the imports/hooks I give you in the current test suite.
     2. All code blocks given to you are surrounded by triple backticks.
-    3. You can mock only if the promise statement is a call to a library function, or if the test suite already uses mocking. Also, don't add a mocking library if it's not already imported in the test suite.
+    3. You can mock only if the promise statement is a call to a library function, or if the test suite already uses mocking. Also, don't add a mocking library like sinon if it's not already imported in the test suite.
 `;
 
 export const UserMessageComplete = `
