@@ -1,54 +1,54 @@
 {
-  "80": {
-    "prompts": {},
-    "flags": {
-      "rejectable": true
-    },
-    "id": 80,
-    "promiseInfo": {
-      "identifier": 80,
-      "enclosingFunction": {
-        "location": "index.js:bar:9:0:14:1",
-        "name": "bar",
-        "start": {
-          "row": 9,
-          "column": 0
+    "80": {
+        "prompts": {},
+        "flags": {
+            "rejectable": true
         },
-        "end": {
-          "row": 14,
-          "column": 1
+        "id": 80,
+        "promiseInfo": {
+            "identifier": 80,
+            "enclosingFunction": {
+                "location": "index.js:bar:9:0:14:1",
+                "name": "bar",
+                "start": {
+                    "row": 9,
+                    "column": 0
+                },
+                "end": {
+                    "row": 14,
+                    "column": 1
+                },
+                "file": "index.js",
+                "exportInfo": {
+                    "exported": true,
+                    "defaultExport": false,
+                    "exportedAs": "bar"
+                },
+                "sourceCode": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}"
+            },
+            "location": {
+                "encoded": "index.js:10:9:13:4",
+                "file": "index.js",
+                "start": {
+                    "row": 10,
+                    "column": 9
+                },
+                "end": {
+                    "row": 13,
+                    "column": 4
+                }
+            },
+            "type": "NewPromise",
+            "warnings": {
+                "fulfillment": false,
+                "fulfillReactionRegistration": false,
+                "fulfillReactionExecution": false,
+                "rejection": true,
+                "rejectReactionRegistration": true,
+                "rejectReactionExecution": true
+            },
+            "code": "new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})"
         },
-        "file": "index.js",
-        "exportInfo": {
-          "exported": true,
-          "defaultExport": false,
-          "exportedAs": "bar"
-        },
-        "sourceCode": "function bar(condition) {\n\treturn new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})\n}"
-      },
-      "location": {
-        "encoded": "index.js:10:9:13:4",
-        "file": "index.js",
-        "start": {
-          "row": 10,
-          "column": 9
-        },
-        "end": {
-          "row": 13,
-          "column": 4
-        }
-      },
-      "type": "NewPromise",
-      "warnings": {
-        "fulfillment": false,
-        "fulfillReactionRegistration": false,
-        "fulfillReactionExecution": false,
-        "rejection": true,
-        "rejectReactionRegistration": true,
-        "rejectReactionExecution": true
-      },
-      "code": "new Promise((resolve, reject) => {\n\t\tif (condition) resolve(\"Hello World!\");\n\t\telse reject(\"Rejected\");\n\t})"
-    },
-    "incomingEdges": "NONE"
-  }
+        "incomingEdges": "NONE"
+    }
 }

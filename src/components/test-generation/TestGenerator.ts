@@ -1,39 +1,59 @@
-import {NodeId} from "../../types/Graph.type";
-import {GPTController} from "../apis/GPTController";
-import dotenv from "dotenv";
-import RuntimeConfig from "../configuration/RuntimeConfig";
-import TestValidator from "./TestValidator";
+import { NodeId } from '../../types/Graph.type';
+import LLMController from '../apis/LLMController';
+import dotenv from 'dotenv';
+import RuntimeConfig from '../configuration/RuntimeConfig';
+import TestValidator from './TestValidator';
 
-import {Prompts, Responses} from "../../types/Prompt.type";
-import {PromiseFlagTypes} from "../../types/PromiseGraph.type";
-import * as fs from "node:fs";
-import path from "path";
+import { Prompts, Responses } from '../../types/Prompt.type';
+import { PromiseFlagTypes } from '../../types/PromiseGraph.type';
+import * as fs from 'node:fs';
+import path from 'path';
+import logger from '../../utils/logger';
+import { LLM } from '../../types/LLM.type';
+import {
+    assistantCorrectResponse,
+    systemPromisePrompt,
+    UserMessageComplete,
+} from '../../prompt-templates/ExperimentalPromptTemplates';
 
 export default class TestGenerator {
-    private gptController = GPTController.getInstance();
-
-
     constructor() {
-        dotenv.config()
+        dotenv.config();
     }
 
     static getTestFileNameForPromise(promiseId: NodeId, flag: string): string {
         return `promise-${promiseId}-${flag}-test.js`;
     }
 
-    static getTestFilePathForPromise(promiseId: NodeId, flag: string): string {
+    static getTestFilePathForPromise(
+        promiseId: NodeId,
+        flag: string,
+        existingTestFilePath: string,
+    ): string {
         const RC = RuntimeConfig.getInstance().config;
-        return path.join(RC.projectPath, RC.testDirectory, TestGenerator.getTestFileNameForPromise(promiseId, flag));
+        return path.join(
+            path.dirname(existingTestFilePath),
+            TestGenerator.getTestFileNameForPromise(promiseId, flag),
+        );
     }
 
-    public async generateTests(prompts: Map<NodeId, Prompts>): Promise<Map<NodeId, Responses>> {
+    public async generateTests(
+        prompts: Map<NodeId, Prompts>,
+    ): Promise<Map<NodeId, Responses>> {
         const responses: Map<NodeId, Responses> = new Map();
 
         for (const [promiseId, promisePrompts] of prompts.entries()) {
             const promiseResponses: Responses = {};
 
             for (const [flag, prompt] of Object.entries(promisePrompts)) {
-                const response = await this.processPrompt(promiseId, flag, prompt.string);
+                if (!prompt.string) continue;
+
+                const response = await this.processPrompt(
+                    promiseId,
+                    flag,
+                    prompt.string,
+                    prompt.testPath!,
+                );
                 if (response) {
                     promiseResponses[flag as PromiseFlagTypes] = response;
                 }
@@ -45,67 +65,103 @@ export default class TestGenerator {
         return responses;
     }
 
-    augmentTestSuite(tests: Map<NodeId, Responses>) {
-        for (const [promiseId, responses] of tests.entries()) {
-            this.writePromiseTestsToFile(promiseId, responses);
-        }
+    writePromiseTestToFile(filePath: string, testString: string) {
+        fs.writeFileSync(filePath, testString, { flag: 'w' });
+        logger.info(`Test written to ${filePath}`);
     }
 
-    writePromiseTestsToFile(promiseId: NodeId, tests: Responses) {
-        for (const [flag, testString] of Object.entries(tests)) {
-            this.writePromiseTestToFile(promiseId, flag, testString);
-        }
-    }
-
-    writePromiseTestToFile(promiseId: NodeId, flag: string, testString: string) {
-        let filePath = TestGenerator.getTestFilePathForPromise(promiseId, flag);
-        fs.writeFileSync(filePath, testString);
-    }
-
-    deleteTestFile(promiseId: NodeId, flag: string) {
-        let filePath = TestGenerator.getTestFilePathForPromise(promiseId, flag);
+    deleteTestFile(filePath: string) {
         fs.unlinkSync(filePath);
+        logger.info(`Test file deleted at ${filePath}`);
     }
 
-    private async processPrompt(promiseId: NodeId, flag: string, prompt: string, retry: boolean = true): Promise<string | null> {
-        let response = await this.gptController.ask(prompt);
+    private async processPrompt(
+        promiseId: NodeId,
+        flag: string,
+        prompt: string,
+        existingTestFilePath: string,
+        retry: boolean = true,
+    ): Promise<string | null> {
+        let filePath = TestGenerator.getTestFilePathForPromise(
+            promiseId,
+            flag,
+            existingTestFilePath,
+        );
+
+        let messages: LLM.Message[] = [
+            { role: LLM.Role.SYSTEM, content: systemPromisePrompt },
+            { role: LLM.Role.USER, content: UserMessageComplete },
+            { role: LLM.Role.ASSISTANT, content: assistantCorrectResponse },
+            { role: LLM.Role.USER, content: prompt },
+        ];
+        let response = await LLMController.ask(messages);
 
         try {
-            response = TestValidator.cleanCodeBlocks(response);
+            let codeBlock = TestValidator.extractCodeBlock(response);
+            if (!codeBlock) {
+                return null;
+            } else {
+                response = codeBlock.code;
+            }
 
             if (TestValidator.validateSyntax(response)) {
-                this.writePromiseTestToFile(promiseId, flag, response);
-                let validRuntime = await TestValidator.validateRuntime(promiseId, flag);
-                if (!validRuntime) {
-                    throw new Error("Test failed.") //FIXME
+                this.writePromiseTestToFile(filePath, response);
+                let validRuntime = await TestValidator.validateRuntime(
+                    promiseId,
+                    flag,
+                    filePath,
+                );
+                if (!validRuntime.success) {
+                    logger.error('Runtime error in test.');
+                    throw new Error(validRuntime.errorOutput); //FIXME
                 }
                 return response;
             } else {
-                console.log("Syntax error", response);
                 if (retry) {
-                    let newPrompt = "This prompt that I gave you before (separated by $$$) generated a response that had syntactic issues:\n" +
-                        "$$$\n" + prompt + "\n$$$\n" +
-                        "Now give me a new response that has this issue fixed. Your old response was:\n" +
+                    logger.warn('Syntax error in response, retrying...');
+                    let newPrompt =
+                        'This prompt that I gave you before (separated by $$$) generated a response that had syntactic issues:\n' +
+                        '$$$\n' +
+                        prompt +
+                        '\n$$$\n' +
+                        'Now give me a new response that has this issue fixed. Your old response was:\n' +
                         response;
-                    return await this.processPrompt(promiseId, flag, newPrompt, false);
+                    return await this.processPrompt(
+                        promiseId,
+                        flag,
+                        newPrompt,
+                        filePath,
+                        false,
+                    );
                 } else {
+                    logger.error('Syntax error in response, skipping...');
                     return null;
                 }
             }
         } catch (error) {
-            console.error("Error processing prompt", error);
-            this.deleteTestFile(promiseId, flag);
+            this.deleteTestFile(filePath);
             if (retry) {
-                let newPrompt = "This prompt that I gave you before (separated by $$$) generated a response that had runtime issues:\n" +
-                    "$$$\n" + prompt + "\n$$$\n" +
-                    "Now give me a new response that has this issue fixed. Your old response was:\n" +
-                    response + "\nThe error is:\n" + error;
-                return await this.processPrompt(promiseId, flag, newPrompt, false);
+                logger.warn('Runtime error in response, retrying...');
+                let newPrompt =
+                    'This prompt that I gave you before (separated by $$$) generated a response that had runtime issues:\n' +
+                    '$$$\n' +
+                    prompt +
+                    '\n$$$\n' +
+                    'Now give me a new response that has this issue fixed. Your old response was:\n' +
+                    response +
+                    '\nThe error is:\n' +
+                    error;
+                return await this.processPrompt(
+                    promiseId,
+                    flag,
+                    newPrompt,
+                    filePath,
+                    false,
+                );
             } else {
+                logger.error('Runtime error in response, skipping...');
                 return null;
             }
         }
     }
-
-
 }

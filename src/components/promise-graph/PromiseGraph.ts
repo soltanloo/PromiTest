@@ -1,6 +1,6 @@
-import {PromiseNode} from "./PromiseNode";
-import {PromiseNodeId} from "../../types/PromiseGraph.type";
-import {Graph} from "../data-structures/Graph";
+import { PromiseNode } from './PromiseNode';
+import { PromiseNodeId } from '../../types/PromiseGraph.type';
+import { Graph } from '../data-structures/Graph';
 
 export class PromiseGraph extends Graph {
     constructor(nodes?: Map<PromiseNodeId, PromiseNode>) {
@@ -19,16 +19,33 @@ export class PromiseGraph extends Graph {
             inputs: bundledParentsIds,
         } = newNode.promiseInfo;
 
-        const parents = [
-            ...(chainedParentId ? [chainedParentId] : []),
-            ...(linkedParentsIds ?? []),
-            ...(bundledParentsIds ?? [])
-        ];
+        if (chainedParentId && chainedParentId !== newNode.id) {
+            newNode.chainedParent = this.getNode(
+                chainedParentId,
+            ) as PromiseNode;
+            this.addEdge(chainedParentId, newNode.id);
+        }
 
-        parents.forEach((parentId) => {
-            this.addEdge(parentId, newNode.id)
-        })
+        if (linkedParentsIds)
+            linkedParentsIds.forEach((linkedParentId) => {
+                if (newNode.id === linkedParentId) return;
+
+                newNode.linkedParents.push(
+                    this.getNode(linkedParentId) as PromiseNode,
+                );
+                this.addEdge(linkedParentId, newNode.id);
+            });
+
+        if (bundledParentsIds)
+            bundledParentsIds.forEach((bundledParentId) => {
+                if (newNode.id === bundledParentId) return;
+
+                newNode.bundledParents.push(
+                    this.getNode(bundledParentId) as PromiseNode,
+                );
+                this.addEdge(bundledParentId, newNode.id);
+            });
+
+        newNode.calculateIncomingEdges();
     }
-
-
 }
