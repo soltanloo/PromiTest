@@ -7,6 +7,7 @@ import Mocha from 'mocha';
 import TestGenerator from './TestGenerator';
 import logger from '../../utils/logger';
 import RuntimeConfig from '../configuration/RuntimeConfig';
+import fs from 'fs';
 
 interface ValidationResult {
     success: boolean;
@@ -14,9 +15,18 @@ interface ValidationResult {
 }
 
 export default class TestValidator {
-    static cleanCodeBlocks(text: string): string {
-        // Use a regular expression to remove the code block markers
-        return text.replace(/```[a-z]*\n/g, '').replace(/```/g, '');
+    static extractCodeBlock(
+        text: string,
+    ): { code: string; language?: string } | null {
+        const regex = /```([a-z]*)\n([\s\S]*?)```/i;
+        const match = regex.exec(text);
+        if (match) {
+            return {
+                language: match[1] || undefined, // Extract the language or undefined if not specified
+                code: match[2], // Extract the code block content
+            };
+        }
+        return null; // No code block found
     }
 
     static validateSyntax(text: string): boolean {
@@ -76,20 +86,22 @@ export default class TestValidator {
         flag: string,
     ): Promise<ValidationResult> {
         const mocha = new Mocha({
-            timeout: 10000,
+            timeout: 30000,
         });
+        delete require.cache[require.resolve(testFilePath)];
         mocha.addFile(testFilePath);
+        logger.info(
+            `Test file content: ${fs.readFileSync(testFilePath, 'utf-8')}`,
+        );
 
         try {
-            mocha.addFile(testFilePath);
-
             await mocha.loadFilesAsync();
         } catch (error: any) {
             logger.error(`Error loading test files: ${error.message || error}`);
-            return {
+            return Promise.resolve({
                 success: false,
                 errorOutput: `Error loading test files: ${error.message || String(error)}`,
-            };
+            });
         }
 
         return new Promise((resolve) => {

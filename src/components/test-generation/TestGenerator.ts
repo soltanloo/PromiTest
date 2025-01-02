@@ -97,7 +97,12 @@ export default class TestGenerator {
         let response = await LLMController.ask(messages);
 
         try {
-            response = TestValidator.cleanCodeBlocks(response);
+            let codeBlock = TestValidator.extractCodeBlock(response);
+            if (!codeBlock) {
+                return null;
+            } else {
+                response = codeBlock.code;
+            }
 
             if (TestValidator.validateSyntax(response)) {
                 this.writePromiseTestToFile(filePath, response);
