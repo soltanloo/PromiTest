@@ -7,16 +7,16 @@ uncovered `Promise`s.
 
 Ensure you have the following installed:
 
--   [JScope](https://github.com/SEatSFU/JScope) ([Installation Guide](./docs/INSTALL-JSCOPE.md))
--   Node.js (v14.0.0 or later recommended)
--   npm (v6.0.0 or later)
+- [Modified JScope](https://anonymous.4open.science/r/JScope-414C) ([Installation Guide](./docs/INSTALL-JSCOPE.md))
+- Node.js (v14.0.0 or later recommended)
+- npm (v6.0.0 or later)
 
 ## Installation
 
 1. Clone the repository to your local machine:
 
     ```bash
-    git clone git@github.com:SEatSFU/PromiTest.git
+    git clone https://anonymous.4open.science/r/PromiTest
     cd PromiTest
     ```
 
@@ -59,15 +59,15 @@ tests
     |__ expected-outputs
 ```
 
--   The [code](tests/fixtures/code) directory hosts the source codes of different test cases, each relating to a certain
-    scenario, grouped by type.
--   The [expected-outputs](tests/fixtures/expected-outputs) directory hosts the expected outputs of each module for
-    different test cases, each relating to a certain scenario, grouped by type.
--   After adding the source code and the expected outputs of a new scenario, you should add a new line to
-    the [Test Pipeline](tests/Pipeline.test.ts), calling the `runUnitTest` function with the title of the scenario. The
-    title should be formatted like this: `<group>/<scenario-title>`
--   **NOTE:** The source code folder of a scenario must include the two configuration files described
-    in [this section](#configuration).
+- The [code](tests/fixtures/code) directory hosts the source codes of different test cases, each relating to a certain
+  scenario, grouped by type.
+- The [expected-outputs](tests/fixtures/expected-outputs) directory hosts the expected outputs of each module for
+  different test cases, each relating to a certain scenario, grouped by type.
+- After adding the source code and the expected outputs of a new scenario, you should add a new line to
+  the [Test Pipeline](tests/Pipeline.test.ts), calling the `runUnitTest` function with the title of the scenario. The
+  title should be formatted like this: `<group>/<scenario-title>`
+- **NOTE:** The source code folder of a scenario must include the two configuration files described
+  in [this section](#configuration).
 
 ## Usage
 
@@ -76,21 +76,21 @@ tests
 Before running the tool, you need to make sure that both of the following configuration files are included in root
 folder of the project under test:
 
--   `promitest.config.json`
-    ```json
-    {
-        "testDirectory": "path/to/tests",
-        "testRunner": "mocha|tap"
-    }
-    ```
--   `jscope.json`
-    ```json
-    {
-        "test_framework": "mocha|tap",
-        "test_subdir": "path/to/tests",
-        "test_regex": "*-test.js"
-    }
-    ```
+- `promitest.config.json`
+  ```json
+  {
+      "testDirectory": "path/to/tests",
+      "testRunner": "mocha|tap"
+  }
+  ```
+- `jscope.json`
+  ```json
+  {
+      "test_framework": "mocha|tap",
+      "test_subdir": "path/to/tests",
+      "test_regex": "*-test.js"
+  }
+  ```
 
 ### Running the Tool
 

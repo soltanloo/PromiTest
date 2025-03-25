@@ -2,15 +2,15 @@
 
 ### Prerequisites
 
--   Node.js (v14.0.0 or later recommended)
--   npm (v6.0.0 or later)
+- Node.js (v14.0.0 or later recommended)
+- npm (v6.0.0 or later)
 
 ### Installation
 
-1. Clone `JScope` repository
+1. Clone the modified `JScope` repository
 
     ```bash
-    git clone https://github.com/SEatSFU/JScope.git
+    git clone https://anonymous.4open.science/r/JScope-414C
     ```
 
 2. Install `mx`
