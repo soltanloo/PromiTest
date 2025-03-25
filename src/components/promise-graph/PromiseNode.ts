@@ -17,7 +17,6 @@ export class PromiseNode implements Node {
     incomingEdges: IncomingEdges;
     chainedParent?: PromiseNode;
     linkedParents: PromiseNode[] = [];
-    bundledParents: PromiseNode[] = [];
 
     prompts: Prompts = {};
 
@@ -47,13 +46,10 @@ export class PromiseNode implements Node {
 
     //FIXME: calculate based on the promise graph edges, not the properties of promiseInfo.
     public calculateIncomingEdges(): IncomingEdges {
-        const hasBundledInputs = !!this.promiseInfo.inputs?.length;
         const hasChainedParent = !!this.promiseInfo.parent;
         const hasLinkedParent = !!this.promiseInfo.links?.length;
         let incomingEdges: IncomingEdges;
-        if (hasBundledInputs) {
-            incomingEdges = IncomingEdges.MULTIPLE_BUNDLE;
-        } else if (hasChainedParent && hasLinkedParent) {
+        if (hasChainedParent && hasLinkedParent) {
             incomingEdges = IncomingEdges.LINK_AND_CHAIN;
         } else if (hasChainedParent) {
             incomingEdges = IncomingEdges.ONE_CHAIN;

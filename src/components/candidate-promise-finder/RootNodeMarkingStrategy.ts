@@ -12,7 +12,7 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         logger.info(`Marking node ${node.id} as root node.`);
 
         const _isRejectable = this.isRejectable(node);
-        const _isResolvable = await this.isResolvable(node);
+        const _isResolvable = this.isResolvable(node);
 
         logger.debug(`Warnings: ${JSON.stringify(node.promiseInfo.warnings)}`);
 
@@ -60,29 +60,41 @@ export class RootNodeMarkingStrategy implements NodeMarkingStrategy {
         }
     }
 
-    private async isResolvable(node: PromiseNode): Promise<boolean> {
+    private isResolvable(node: PromiseNode): boolean {
         if (node.promiseInfo.isApiCall) return true;
+        if (
+            node.promiseInfo.type === P_TYPE.AsyncFunction &&
+            !node.promiseInfo.asyncFunctionDefinition?.sourceCode
+        )
+            return false;
 
-        if (node.promiseInfo.type === P_TYPE.NewPromise) {
-            try {
-                const isPromiseCallingResult = isPromiseCalling(
-                    node.promiseInfo.code,
-                    'resolve',
-                );
-                logger.debug('isResolvable', {
-                    message: isPromiseCallingResult,
-                });
-                return isPromiseCallingResult;
-            } catch (e) {
-                logger.error('isResolvable', { message: e });
-            }
-        } else if (node.promiseInfo.type === P_TYPE.AsyncFunction) {
-            const canThrowBeBypassedResult =
-                await this.canThrowBeBypassed(node);
-            logger.debug('isResolvable', { message: canThrowBeBypassedResult });
-            return canThrowBeBypassedResult;
+        let sourceCode =
+            node.promiseInfo.type === P_TYPE.AsyncFunction
+                ? node.promiseInfo.asyncFunctionDefinition!.sourceCode.replace(
+                      /^async(?!\s+function)(?=\s+\w+\s*\(|\s*\()(?!(.*)=>)/,
+                      'async function ',
+                  )
+                : node.promiseInfo.code;
+
+        sourceCode =
+            node.promiseInfo.type === P_TYPE.AsyncFunction
+                ? sourceCode.replace(
+                      /^async function\s*\((?!.*=>)/, // Avoids matching arrow functions
+                      'async function foo(', // Temporary name for the function
+                  )
+                : node.promiseInfo.code;
+
+        try {
+            let isPromiseCallingResult = isPromiseCalling(
+                sourceCode,
+                'resolve',
+            );
+            logger.debug('isResolvable', { message: isPromiseCallingResult });
+            return isPromiseCallingResult;
+        } catch (e) {
+            logger.error('isResolvable', { message: e });
+            return false;
         }
-        return false;
     }
 
     private async canThrowBeBypassed(node: PromiseNode): Promise<boolean> {

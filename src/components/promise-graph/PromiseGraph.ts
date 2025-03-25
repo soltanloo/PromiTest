@@ -13,11 +13,8 @@ export class PromiseGraph extends Graph {
     }
 
     private addIncomingEdges(newNode: PromiseNode) {
-        const {
-            parent: chainedParentId,
-            links: linkedParentsIds,
-            inputs: bundledParentsIds,
-        } = newNode.promiseInfo;
+        const { parent: chainedParentId, links: linkedParentsIds } =
+            newNode.promiseInfo;
 
         if (chainedParentId && chainedParentId !== newNode.id) {
             newNode.chainedParent = this.getNode(
@@ -28,22 +25,12 @@ export class PromiseGraph extends Graph {
 
         if (linkedParentsIds)
             linkedParentsIds.forEach((linkedParentId) => {
-                if (newNode.id === linkedParentId) return;
+                if (!linkedParentId || newNode.id === linkedParentId) return;
 
                 newNode.linkedParents.push(
                     this.getNode(linkedParentId) as PromiseNode,
                 );
                 this.addEdge(linkedParentId, newNode.id);
-            });
-
-        if (bundledParentsIds)
-            bundledParentsIds.forEach((bundledParentId) => {
-                if (newNode.id === bundledParentId) return;
-
-                newNode.bundledParents.push(
-                    this.getNode(bundledParentId) as PromiseNode,
-                );
-                this.addEdge(bundledParentId, newNode.id);
             });
 
         newNode.calculateIncomingEdges();

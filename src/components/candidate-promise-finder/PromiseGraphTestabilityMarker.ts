@@ -36,14 +36,12 @@ export class PromiseGraphTestabilityMarker {
 
         switch (node.incomingEdges) {
             case IncomingEdges.NONE:
+            case IncomingEdges.ONE_CHAIN:
                 strategy = new RootNodeMarkingStrategy();
                 logger.info(
                     `Using RootNodeMarkingStrategy for node ${node.id}`,
                 );
                 break;
-
-            // case IncomingEdges.ONE_LINK:
-            // case IncomingEdges.ONE_CHAIN:
 
             default:
                 logger.error(
@@ -51,10 +49,6 @@ export class PromiseGraphTestabilityMarker {
                 );
                 break;
         }
-
-        // switch (node.promiseInfo.type) {
-        //     case P_TYPE.AsyncFunction:
-        // }
 
         await strategy.markNode(node);
         logger.debug(

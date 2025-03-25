@@ -6,21 +6,26 @@ export namespace LLM {
         ASSISTANT = 'assistant',
         SYSTEM = 'system',
     }
+
     export type Message = {
         role: Role;
         content: string;
     };
+
     export enum GPTModel {
         GPT4OMINI = 'gpt-4o-mini',
         GPT4O = 'gpt-4o',
         GPT4TURBO = 'gpt-4-turbo',
         GPT4 = 'gpt-4',
         GPT35TURBO = 'gpt-3.5-turbo',
+        LLAMA_3_3_70B = 'meta-llama/llama-3.3-70b-instruct',
     }
+
     export enum HFModel {
         // instruct models
         //LLAMA_3_1_70B = 'meta-llama/Meta-Llama-3.1-70B-Instruct',
         //LLAMA_3_1_8B = 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+
         PHI_3_MINI_4k = 'microsoft/Phi-3-mini-4k-instruct',
         MISTRAL_7B = 'mistralai/Mistral-7B-Instruct-v0.3',
         MISTRAL_8X7B = 'mistralai/Mixtral-8x7B-Instruct-v0.1',

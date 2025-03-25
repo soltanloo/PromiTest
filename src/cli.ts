@@ -164,7 +164,10 @@ async function clearAll(directoryPath: string) {
                     await cli(projectPath, coverageReportPath);
                 } else {
                     logger.info('Batch mode enabled');
-                    batchRun(projectPath, options.useAvailableCoverageReport);
+                    await batchRun(
+                        projectPath,
+                        options.useAvailableCoverageReport,
+                    );
                 }
             } catch (err) {
                 logger.error('Error in running cli():');

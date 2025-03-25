@@ -43,9 +43,9 @@ export abstract class Prompt {
                 case P_TYPE.NewPromise:
                     if (this.promiseNode.promiseInfo.isApiCall)
                         return 'is an call to a function outside the program and may be able to reject';
-                    return 'contains a call to reject() function or a throw keyword';
+                    return 'contains a call to reject() or assert() functions, or a throw keyword';
                 case P_TYPE.AsyncFunction:
-                    return 'contains a throw statement';
+                    return 'contains a throw statement, or a call to assert()';
                 default:
                     return '';
             }
