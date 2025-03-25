@@ -41,7 +41,6 @@ export interface PromiseInfo {
     isApiCall: boolean;
     parent?: PromiseIdentifier;
     links?: PromiseIdentifier[];
-    inputs?: PromiseIdentifier[]; // Keeps track of the input promises to .all() and .race()
     code: string;
     stackTraces: PromiseStackTracesInfo;
     testInfo: { [cid: string]: TInfo };

@@ -10,7 +10,6 @@ export enum IncomingEdges {
     ONE_CHAIN = 'ONE_CHAIN',
     ONE_LINK = 'ONE_LINK',
     LINK_AND_CHAIN = 'LINK_AND_CHAIN',
-    MULTIPLE_BUNDLE = 'MULTIPLE_BUNDLE',
 }
 
 export type PromiseFlagTypes = 'rejectable' | 'fulfillable' | 'nonSettlable';

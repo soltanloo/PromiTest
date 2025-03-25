@@ -16,6 +16,8 @@ export class Main {
         );
         let promiseGraph = promiseGraphConstructor.constructGraph();
 
+        let graphStats = promiseGraph.getGraphStatistics();
+
         const promiseGraphTestabilityMarker =
             new PromiseGraphTestabilityMarker();
         const markedGraph =
@@ -32,6 +34,10 @@ export class Main {
 
     private static calculateStats(promiseGraph: PromiseGraph) {
         let stats: any = {};
+        let totalRejectable = 0;
+        let totalResolvable = 0;
+        let totalPromises = 0;
+
         promiseGraph.nodes.forEach((node) => {
             let actualType;
             if (
@@ -48,6 +54,8 @@ export class Main {
             else if (node.promiseInfo.asyncFunctionDefinition)
                 actualType = P_TYPE.AsyncFunction;
             else actualType = node.promiseInfo.type;
+
+            // Initialize stats for new types
             if (!stats[actualType]) {
                 stats[actualType] = {
                     count: 1,
@@ -55,23 +63,53 @@ export class Main {
                     rejectable: node.isRejectable ? 1 : 0,
                     unresolved: node.promiseInfo.warnings.fulfillment ? 1 : 0,
                     unrejected: node.promiseInfo.warnings.rejection ? 1 : 0,
+                    resolvableIds: node.isFulfillable ? [node.id] : [],
+                    rejectableIds: node.isRejectable ? [node.id] : [],
+                    unresolvedIds: node.promiseInfo.warnings.fulfillment
+                        ? [node.id]
+                        : [],
+                    unrejectedIds: node.promiseInfo.warnings.rejection
+                        ? [node.id]
+                        : [],
                 };
+
+                // Count for total promises, resolvable, and rejectable
+                totalPromises++;
+                if (node.isRejectable) totalRejectable++;
+                if (node.isFulfillable) totalResolvable++;
             } else {
                 stats[actualType].count++;
                 if (node.isRejectable) {
                     stats[actualType].rejectable++;
+                    stats[actualType].rejectableIds.push(node.id);
+                    totalRejectable++;
                 }
                 if (node.isFulfillable) {
                     stats[actualType].resolvable++;
+                    stats[actualType].resolvableIds.push(node.id);
+                    totalResolvable++;
                 }
                 if (node.promiseInfo.warnings.fulfillment) {
                     stats[actualType].unresolved++;
+                    stats[actualType].unresolvedIds.push(node.id);
                 }
                 if (node.promiseInfo.warnings.rejection) {
                     stats[actualType].unrejected++;
+                    stats[actualType].unrejectedIds.push(node.id);
                 }
+
+                // Increment total promises count
+                totalPromises++;
             }
         });
+
+        // Add the totals to the stats object
+        stats.total = {
+            totalRejectable,
+            totalResolvable,
+            totalPromises,
+        };
+
         return stats;
     }
 }

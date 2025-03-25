@@ -151,4 +151,142 @@ export class Graph {
 
         return { path: [], distance: Infinity }; // No path found
     }
+
+    getGraphStatistics(): {
+        numVertices: number;
+        numEdges: number;
+        numComponents: number;
+        maxDepth: number;
+        pdd: number;
+        graphString: string;
+    } {
+        const numVertices = this._nodes.size;
+        const numEdges = Array.from(this._adjacencyList.values()).reduce(
+            (sum, edges) => sum + edges.length,
+            0,
+        );
+
+        // Store graph structure as a string
+        let graphLines: string[] = [];
+
+        // Add nodes and edges to graph representation
+        for (let nodeId of this._nodes.keys()) {
+            graphLines.push(nodeId.toString());
+
+            for (let neighbor of this.getEdges(nodeId)) {
+                graphLines.push(`${nodeId} ${neighbor.id}`);
+            }
+        }
+
+        // Find root nodes (nodes with no incoming edges)
+        const hasIncomingEdge = new Set<NodeId>();
+
+        for (let nodeId of this._nodes.keys()) {
+            for (let neighbor of this.getEdges(nodeId)) {
+                hasIncomingEdge.add(neighbor.id);
+            }
+        }
+
+        // Count components using BFS
+        const visited = new Set<NodeId>();
+        let numComponents = 0;
+
+        // Simple BFS to explore a component
+        const bfs = (startNode: NodeId) => {
+            const queue: NodeId[] = [startNode];
+            visited.add(startNode);
+
+            while (queue.length > 0) {
+                const node = queue.shift()!;
+
+                for (const neighbor of this.getEdges(node)) {
+                    if (!visited.has(neighbor.id)) {
+                        visited.add(neighbor.id);
+                        queue.push(neighbor.id);
+                    }
+                }
+            }
+        };
+
+        // First, start from all root nodes
+        for (let nodeId of this._nodes.keys()) {
+            if (!hasIncomingEdge.has(nodeId) && !visited.has(nodeId)) {
+                numComponents++;
+                bfs(nodeId);
+            }
+        }
+
+        // Then handle any remaining nodes (could be in cycles or isolated)
+        for (let nodeId of this._nodes.keys()) {
+            if (!visited.has(nodeId)) {
+                numComponents++;
+                bfs(nodeId);
+            }
+        }
+
+        // Calculate node depths for PDD
+        let maxDepth = 0;
+        let totalDepth = 0;
+
+        // Create a reversed graph for depth calculation
+        const reversedGraph = new Map<NodeId, NodeId[]>();
+
+        // Initialize reversed graph
+        for (let nodeId of this._nodes.keys()) {
+            reversedGraph.set(nodeId, []);
+        }
+
+        // Populate reversed graph
+        for (let nodeId of this._nodes.keys()) {
+            for (let neighbor of this.getEdges(nodeId)) {
+                reversedGraph.get(neighbor.id)!.push(nodeId);
+            }
+        }
+
+        // Calculate longest path to a node in the directed graph
+        const calculateNodeDepth = (targetNode: NodeId): number => {
+            const longestPath = new Map<NodeId, number>();
+
+            for (let nodeId of this._nodes.keys()) {
+                longestPath.set(nodeId, 0);
+            }
+
+            const dfs = (node: NodeId): number => {
+                if (longestPath.get(node)! > 0) {
+                    return longestPath.get(node)!;
+                }
+
+                let maxLength = 0;
+
+                for (const predecessor of reversedGraph.get(node)!) {
+                    const pathLength = dfs(predecessor) + 1;
+                    maxLength = Math.max(maxLength, pathLength);
+                }
+
+                longestPath.set(node, maxLength);
+                return maxLength;
+            };
+
+            return dfs(targetNode);
+        };
+
+        // Calculate depths for all nodes
+        for (let nodeId of this._nodes.keys()) {
+            const nodeDepth = calculateNodeDepth(nodeId);
+            totalDepth += nodeDepth;
+            maxDepth = Math.max(maxDepth, nodeDepth);
+        }
+
+        // Calculate PDD
+        const pdd = numVertices > 0 ? totalDepth / numVertices : 0;
+
+        return {
+            numVertices,
+            numEdges,
+            numComponents,
+            maxDepth,
+            pdd,
+            graphString: graphLines.join('\n'),
+        };
+    }
 }

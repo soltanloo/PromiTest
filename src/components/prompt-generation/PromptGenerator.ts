@@ -25,7 +25,10 @@ export class PromptGenerator {
                         logger.debug(
                             `Generating a prompt for node ${node.id} that is ${key}`,
                         );
-                        let prompt = this.generatePrompt(node as PromiseNode);
+                        let prompt = this.generatePrompt(
+                            node as PromiseNode,
+                            key as PromiseFlagTypes,
+                        );
                         if (prompt) {
                             node.prompts[key as PromiseFlagTypes] = prompt;
                         }
@@ -37,7 +40,10 @@ export class PromptGenerator {
         return prompts;
     }
 
-    public generatePrompt(node: PromiseNode): Prompt | undefined {
+    public generatePrompt(
+        node: PromiseNode,
+        flag: PromiseFlagTypes,
+    ): Prompt | undefined {
         let strategy: PromptGenerationStrategy;
 
         switch (node.incomingEdges) {
@@ -49,7 +55,7 @@ export class PromptGenerator {
                 throw new Error('Unhandled node type');
         }
 
-        return strategy.generatePrompt(node);
+        return strategy.generatePrompt(node, flag);
     }
 
     public getPromptsAsObject(promptsMap: Map<NodeId, Prompts>) {

@@ -3,11 +3,13 @@ import { LLM } from '../../types/LLM.type';
 import logger from '../../utils/logger';
 import { LLMControllerInterface } from './LLMControllerInterface';
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 export class HfInferenceController implements LLMControllerInterface {
     private static instance: HfInferenceController;
     private static apiInstance: HfInference;
-    private static readonly MAX_TOKENS = 1000;
+    private static readonly MAX_TOKENS = 5000;
     private static model: LLM.HFModel; //default model set in constructor
     private static temperature: number = 0.1;
     private static seed: number = 0;

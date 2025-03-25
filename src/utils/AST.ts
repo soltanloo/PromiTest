@@ -356,6 +356,34 @@ export function isPromiseCalling(code: string, functionName: string): boolean {
                                             }
                                         }
 
+                                        // Check if `reject` is passed directly as an argument
+                                        if (
+                                            nestedNode.type ===
+                                                'CallExpression' &&
+                                            nestedNode.arguments.some(
+                                                (arg: {
+                                                    type: string;
+                                                    name: string;
+                                                }) =>
+                                                    arg.type === 'Identifier' &&
+                                                    arg.name === functionName,
+                                            )
+                                        ) {
+                                            isUsingFunction = true;
+                                        }
+
+                                        // Check if there is a call to `assert()`
+                                        if (
+                                            functionName === 'reject' &&
+                                            nestedNode.type ===
+                                                'CallExpression' &&
+                                            nestedNode.callee.type ===
+                                                'Identifier' &&
+                                            nestedNode.callee.name === 'assert'
+                                        ) {
+                                            isUsingFunction = true;
+                                        }
+
                                         // Check for throw statements if the function is 'reject'
                                         if (
                                             functionName === 'reject' &&
@@ -385,6 +413,24 @@ export function isPromiseCalling(code: string, functionName: string): boolean {
                             if (
                                 functionName === 'reject' &&
                                 nestedNode.type === 'ThrowStatement'
+                            ) {
+                                isUsingFunction = true;
+                            }
+                            // Check if there is a call to `assert()`
+                            if (
+                                functionName === 'reject' &&
+                                nestedNode.type === 'CallExpression' &&
+                                nestedNode.callee.type === 'Identifier' &&
+                                nestedNode.callee.name === 'assert'
+                            ) {
+                                isUsingFunction = true;
+                            }
+                            // Only check for a return statement if functionName is 'resolve'
+                            // and it's an async function, not inside a new Promise
+                            if (
+                                functionName === 'resolve' &&
+                                nestedNode.type === 'ReturnStatement' &&
+                                parent?.type !== 'NewExpression' // Ensure it's not inside a new Promise
                             ) {
                                 isUsingFunction = true;
                             }

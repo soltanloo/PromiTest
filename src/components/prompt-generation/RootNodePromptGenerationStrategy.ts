@@ -5,11 +5,15 @@ import { RootNodePrompt } from './RootNodePrompt';
 import { CallGraph } from '../call-graph/CallGraph';
 import { P_TYPE } from '../../types/JScope.type';
 import { extractTestMetaData } from '../../utils/AST';
+import { PromiseFlagTypes } from '../../types/PromiseGraph.type';
 
 export class RootNodePromptGenerationStrategy
     implements PromptGenerationStrategy
 {
-    generatePrompt(node: PromiseNode): Prompt | undefined {
+    generatePrompt(
+        node: PromiseNode,
+        flag: PromiseFlagTypes,
+    ): Prompt | undefined {
         let location =
             node.promiseInfo.type === P_TYPE.AsyncFunction
                 ? node.promiseInfo.asyncFunctionDefinition!.location
@@ -30,6 +34,7 @@ export class RootNodePromptGenerationStrategy
             shortestPath,
             testInfo.file,
             testMetaData,
+            flag,
         );
     }
 }

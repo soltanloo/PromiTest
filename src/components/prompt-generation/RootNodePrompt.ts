@@ -6,6 +6,7 @@ import path from 'path';
 import RuntimeConfig from '../configuration/RuntimeConfig';
 import { UserMessageIncomplete } from '../../prompt-templates/ExperimentalPromptTemplates';
 import { FunctionDefinition } from '../../types/Callgraph.type';
+import { PromiseFlagTypes } from '../../types/PromiseGraph.type';
 
 export class RootNodePrompt extends Prompt {
     executionPathString: string;
@@ -16,8 +17,10 @@ export class RootNodePrompt extends Prompt {
         executionPath: FunctionDefinition[],
         testPath: string,
         testMetaData: string,
+        flag: PromiseFlagTypes,
     ) {
         super(promiseNode);
+        this.flag = flag;
         this.testPath = testPath;
         this.testMetaData = testMetaData;
         this.executionPathString = this.executionPathToString(executionPath);
@@ -43,10 +46,9 @@ export class RootNodePrompt extends Prompt {
     getPromptText(): string {
         const placeholders = {
             promiseType: this.promiseNode.promiseInfo.type,
-            notStatus: this.promiseNode.neverRejected ? 'Rejected' : 'Resolved',
-            potentiallyStatus: this.promiseNode.isRejectable
-                ? 'Rejectable'
-                : 'Resolvable',
+            notStatus: this.flag === 'rejectable' ? 'Rejected' : 'Resolved',
+            potentiallyStatus:
+                this.flag === 'rejectable' ? 'Rejectable' : 'Resolvable',
             candidacyReason: this.candidacyReason || '',
             location: this.promiseNode.promiseInfo.enclosingFunction.file,
             relativeLineNumber:

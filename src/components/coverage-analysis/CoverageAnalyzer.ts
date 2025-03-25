@@ -192,7 +192,9 @@ export class CoverageAnalyzer {
                 : (promiseObject.type as PromiseType),
             warnings,
             code: promiseObject.code ?? '',
-            links: promiseObject.links.map((link) => Number(link.id)),
+            links: [
+                ...new Set(promiseObject.links.map((link) => Number(link.id))),
+            ],
             stackTraces: enrichedStackTraces,
             testInfo: promiseObject.testInfo,
         };
